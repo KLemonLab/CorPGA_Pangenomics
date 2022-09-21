@@ -1,0 +1,14 @@
+---
+title: "SupplementalMethods_Anvio"
+author: "Tommy Tran (KLemonLab)"
+date: 'Last updated: 09/20/2022'
+output:
+  rmdformats::robobook:
+    use_bookdown: true
+    code_folding: show
+  github_document:
+    toc: true
+    toc_depth: 4
+---
+
+

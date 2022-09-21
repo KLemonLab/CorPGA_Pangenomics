@@ -11,3 +11,322 @@ output:
     toc_depth: 4
 ---
 
+# FILE ORGANIZATION
+
+All the information for this project is stored in 3 main places:
+
+1.  **The KLemon Lab NAS (Network Attached Storage):** This is the main place that contains all the files. Notebooks and some key files get transferred here via git. While most of the analysis data should be moved directly to the "ONLY_IN_NAS" folder without being committed to the remote repository.
+2.  **Remote GitHub:** The repository for this project contains the .Rmd notebooks with the code and methods for this project, as well as only some essential files and useful outputs. This repository is cloned into the KLemon Lab NAS (Network Attached Storage) and most of the analysis folders are archived into the "ONLY_IN_NAS" folder. The "ONLY_IN_NAS" folder is ignored by git and therefore the files contained on it are only available in the NAS.
+3.  **Local copies of the repository:** This is usually the main working space on individual user computers from where Notebooks are committed to the remote GitHub. Any new analysis folders might be temporally in local copies of the repository and should be moved directly to the "ONLY_IN_NAS" folder and only committed to the remote repository if is really necessary for follow-up analysis.
+
+## Moving data directly in and out of the NAS
+
+This code can be used to move or copy the files in this project from your computer to the ONLY_IN_NAS folder (or the other way around). You need to be connected to the VPN and have the NAS folder mounted into your computer to run this.
+
+```{bash, eval=FALSE}
+mv analysis_folder /Volumes/KLemonLab/Projects/Coryne_Pangenomics_2021/_ONLY_IN_NAS #move to the NAS
+cp -R analysis_folder /Volumes/KLemonLab/Projects/Coryne_Pangenomics_2021/_ONLY_IN_NAS #copy to the NAS
+mv /Volumes/KLemonLab/Projects/Coryne_Pangenomics_2021/_ONLY_IN_NAS/analysis_folder . #move from the NAS to current folder
+cp -R Volumes/KLemonLab/Projects/Coryne_Pangenomics_2021/_ONLY_IN_NAS/analysis_folder . #copy from the NAS to current folder
+```
+
+## Working with Git/GitHub
+
+### Making a new repository on GitHub
+
+You can create a repo on your own profile page, click on "Repositories", then click the green "New" button. If this is a LemonLab Project please create the repository on the [Lemon Lab Team](https://github.com/KLemonLab) page.
+
+When creating a new repository is a good idea to add a README file and a .gitignore (with the R template).
+
+### Making a local copy of your repository via RStudio
+
+In RStudio, start a new Project: \*\*File \> New Project \> Version Control \> Git.\*\*
+
+In "Repository URL", paste the SSH of the GitHub repository you are cloning (copy to your clipboard via the green "Clone or Download" button in the GitHub repository). If you have issues setting up keys for SHH visit this [website](https://happygitwithr.com/ssh-keys.html).
+
+Accept the default project directory name, e.g. Test, which coincides with the GitHub repository name and pay attention to where you save it! I recommend having a GitHub folder with all your repositories.
+
+### Useful Git commands
+
+You can interact with Git from the Rstudio interface, use the GitHub desktop app or the command line. You will need to use these commands if you want to update the repositories in the KLemonLab NAS. This [website](https://docs.gitlab.com/ee/gitlab-basics/start-using-git.html) can help you with the basics of Git on the command line.
+
+```{bash, eval = FALSE}
+cd /path/to/your/gitprojectfolder  # Takes you into your project directory
+git clone # To clone a repository
+git pull # Makes sure you are up to date
+git status # Will show you everything in your commit box, items will be red if they are not staged
+git add . # This will stage all of the changes in the commit box
+git status # All the changes should be a green color now
+git commit -m "your message" # This will commit all the staged changes after the -m is where you write your message about what the changes are
+git commit -a -m "your message" # if you want to skip the git add . staging step
+git push # This will push your changes to Github repository
+
+git reset --soft HEAD~1 #Undo 1 commit to GitHub but keeps the changes in yout local repo
+git reset --hard HEAD~1 #Undo 1 commit to GitHub and goes back to the GitHub version 
+```
+
+The command line is especially useful if you need to clear out your commit box when it is too full or too laggy to commit through Rstudio. This can happen if you put too many files that add up to a lot of data or one file that might be too big. You shouldn't be committing those files in the first place, since those should be moved directly from your computer to the "ONLY_IN_NAS" folder.
+
+### Ignoring temporary analysis folders
+
+If you have temporary analysis folders in your local repository you can add their path at the end of the .gitignore file:
+
+```{r, eval=FALSE}
+file.edit(".gitignore")
+```
+
+The .gitignore file's purpose is to prevent everyone who collaborates on the same project from accidentally committing some local files in a project, such as generated cache files. While you are actively working in a new analysis folder it makes sense to ignore that folder, this way the folder is only in your local machine and the generated files don't clutter your commit box. This means there is no backup or version control on those files, only on the ones committed via Git/GitHub. Once you are ready to archive your folder, or if you want to do backups during your analysis, just move it to the "ONLY_IN_NAS" folder.
+
+If you need to edit the .gitignore file directly from the NAS you can use:
+
+```{bash, eval=FALSE}
+open -e .gitignore
+```
+
+### Committing big files
+
+GitHub doesn't allow commits of files bigger than 100MB. In general it is not a good idea to include big files in the repository and those should be moved to the "ONLY_IN_NAS" folder as described before. However, if is really essential (like for publication purposes) this can be done installing [Git LFS](https://git-lfs.github.com). The storage space for LFS committed files is very limited, extra storage can be purchased, but this option should be used only if open access to these files is required.
+
+In the repository you create a .gitattributes file that works quite similar to the .gitignore one. You can add files to track (including file extensions) with this code:
+
+```{bash, eval=FALSE}
+git lfs track "BigFilePath"
+```
+
+```{r, eval=FALSE}
+file.edit(".gitattributes")
+```
+
+The files listed in this file are included as links in the repository in GitHub. Once added to .gitattributes you can commit and push as usual.
+
+## Working with .Rmd Notebooks
+
+Notebooks are written with [Markdown](https://rmarkdown.rstudio.com/lesson-1.html) as .Rmd documents. They include formatted text and chunks of code. Notebooks are render (knit) into .md (rmarkdown::github_document) to be easily visualized in GitHub. Please always edit the .Rmd version and then knit into a .md file. The knitted .md version shouldn't be directly edited, it is the final output, not the working file.
+
+The chunks of code can use different language engines. Some examples:
+
+```{r, eval=FALSE}
+R.Version()$version.string
+```
+
+```{bash, eval=FALSE}
+which python
+```
+
+```{python.reticulate = FALSE}
+print ("hello")
+```
+
+# INSTALLATIONS
+
+## Installing Conda (MacOSX)
+
+First you can check if you have conda on your system by opening terminal and typing `conda` then pressing enter. If the command was not found you need follow up with this installation. If you already have it installed then run the command `conda update conda`.
+
+```{bash, eval=FALSE}
+conda
+conda update conda
+```
+
+These are the [instructions](https://www.codecademy.com/articles/install-python-data-analysis) for installing Miniconda, a mini version of Anaconda that includes just conda, its dependencies, and Python. You can also install the full anaconda following this [link](https://docs.anaconda.com/anaconda/install/).
+
+Use this [link](https://docs.conda.io/en/latest/miniconda.html) to find the correct Miniconda you need to download for your system such as MacOSX, Windows, and Linux.
+
+1.  Once you have downloaded it you will need to open terminal.
+2.  Now that terminal is open you will need to use this command: `miniconda-filename.sh`. The "miniconda-filename.sh" should be replaced with the actual name of the file you downloaded. Your file name will look something like Miniconda2-latest-MacOSX-x86_64.sh
+3.  Continue to press `enter`, and type `yes` when it is needed.
+4.  When it is all completed I recommend running `conda update conda`.
+5.  Then check which conda you have by running `conda --version`.
+
+Use this command if you do not prefer conda's base environment to be activated on startup in terminal.
+
+```{bash, eval=FALSE}
+conda config --set auto_activate_base false
+```
+
+Here is a [link](https://docs.conda.io/projects/conda/en/4.6.0/_downloads/52a95608c49671267e40c689e0bc00ca/conda-cheatsheet.pdf) to some conda commands that may come in handy.
+
+## Installing PanACoTa
+
+We create a new Python environment on the Mac Terminal:
+
+```{bash, eval=FALSE}
+conda create -y --name PanACoTa python=3.6
+conda activate PanACoTa
+```
+
+### Dependencies
+
+I install all dependencies in the new PanACoTa environment on the Mac Terminal:
+
+```{bash, eval=FALSE}
+conda install -c conda-forge -c bioconda -c defaults prokka
+conda install -c conda-forge -c bioconda mmseqs2
+```
+
+-   For prepare module: mash (to filter genomes) From <https://github.com/marbl/Mash/releases> I get mash-OSX64-v2.2.tar, unzip and move the 'mash' binary to /usr/local/bin
+-   For annotate module: prokka and/or prodigal (to uniformly annotate your genomes)
+-   For pangenome module: mmseqs (to generate pangenomes)
+-   For align module: mafft (to align persistent genome) From <https://mafft.cbrc.jp/alignment/software/macstandard.html>. I download and install mafft-7.453-signed.pkg
+-   For tree module: IQ Tree, FastTreeMP, FastME or Quicktree (to infer a phylogenetic tree) From <http://www.iqtree.org> I get the Stable release 1.6.12 (August 15, 2019) and move the 'iqtree' binary to /usr/local/bin
+
+### PanACoTA
+
+PanACoTA Documentation:
+
+-   <https://github.com/gem-pasteur/PanACoTA>
+-   <https://aperrin.pages.pasteur.fr/pipeline_annotation/html-doc/>
+
+By cloning the GitHub repository, you will then be able to update the code to new versions very easily and quickly. Here is how to clone the repository and install PanACoTA from it on the Mac Terminal:
+
+```{bash, eval=FALSE}
+git clone https://github.com/gem-pasteur/PanACoTA.git
+cd PanACoTA
+./make --user
+```
+
+To update source code to the new version: Here we use Version 1.0.1
+
+```{bash, eval=FALSE}
+cd PanACoTA
+git pull 
+./make upgrade
+```
+
+## Installing Anvi'o v7
+
+Follow instructions here: <https://merenlab.org/2016/06/26/installation-v2/#3-install-anvio>
+
+> If you are using Windows WSL2 Linux through Ubuntu 20.04 LTS and get to the step of doing the `anvi-self-test`, and the html site cannot be reached. Then try and use 127.0.0.1:8080 or <http://localhost:8080/> to get the interactive display to work.
+
+### Updating Anvi'o from GitHub
+
+```{bash, eval=FALSE}
+conda activate anvio-7
+pip install git+https://github.com/merenlab/anvio.git
+#pip install --upgrade git+git://github.com/merenlab/anvio.git
+```
+
+### Anvi'o Help
+
+-   Help <http://merenlab.org/2019/10/07/getting-help/>
+-   All Programs and Scripts <http://merenlab.org/software/anvio/vignette/>
+-   A course on microbial 'omics <http://merenlab.org/momics/>
+-   Vocabulary <http://merenlab.org/vocabulary/>
+-   Interactive interface <http://merenlab.org/2016/02/27/the-anvio-interactive-interface/>
+
+## Installing Prokka
+
+Guide to installing Prokka using this link: <https://github.com/tseemann/prokka>
+
+Install using conda through terminal. You can try installing it into your specific anvi'o environment but that did not work for us. So, we installed Prokka on our base python environment.
+
+Run the command:
+
+```{bash, eval=FALSE}
+`conda install -c conda-forge -c bioconda -c defaults prokka`
+```
+
+Then check if you have prokka installed by running the command `prokka -v`
+
+## Installing PPanGGOLiN
+
+We create a new Python environment on the Terminal:
+
+```{bash, eval=FALSE}
+conda create -y --name PPanGGOLiN python=3.6
+conda activate PPanGGOLiN
+```
+
+For basic info on PPanGGOLiN go here: <https://github.com/labgem/PPanGGOLiN/wiki>
+
+The public release doesn't include the "Regions of Genome Plasticity" analysis, so we want the version from GitHub.
+
+First we install on the Terminal the required dependencies:
+
+```{bash, eval=FALSE}
+conda activate PPanGGOLiN
+conda install --file other/requirements.txt
+```
+
+Also on the Terminal we install PPanGGOLiN:
+
+```{bash, eval=FALSE}
+pip install git+https://github.com/labgem/PPanGGOLiN.git#egg=PPanGGOLiN
+#pip install --upgrade git+git://github.com/labgem/PPanGGOLiN.git
+```
+
+## Installing GET_HOMOLOGUES
+
+This should be done in your MacOSX terminal or in your Linux WSL2 subsystem if you are on a Windows machine operating machine.
+
+For more info on get_homologues go here: <http://eead-csic-compbio.github.io/get_homologues/manual/>
+
+Run the following commands below to clone the current get_homologues software from Github onto your system:
+
+```{bash, eval=FALSE}
+cd # path of directory of where you want get_homologues to be
+git clone https://github.com/eead-csic-compbio/get_homologues.git
+```
+
+Run this perl script and install and necessary packages it may ask for.
+
+```{bash eval=FALSE}
+perl install.pl
+```
+
+Once you have finished these steps you can update get_homologues anytime by:
+
+```{bash, eval=FALSE}
+cd # this should be the path to your get_homologues
+git pull
+```
+
+Test if it is on your system by running:
+
+```{bash, eval=FALSE}
+./get_homologues.pl -v 
+```
+
+The output of this will be the version and credits of get_homologues.
+
+## Installing GET_PHYLOMARKERS
+
+This should be done in your MacOSX terminal or in your Linux WSL2 subsystem if you are on a Windows machine operating machine.
+
+For more info on get_phylomarkers go here: <https://vinuesa.github.io/get_phylomarkers/>
+
+Run the following commands below to clone the current get_pylomarkers software from Github onto your system:
+
+```{bash, eval=FALSE}
+cd # path of directory of where you want get_homologues to be
+git clone https://github.com/vinuesa/get_phylomarkers.git
+```
+
+After get_phylomarkers has been installed and you are within it's directory use the command below. This will install Rpackages that get_phylomarkers needs. If you are getting errors then you may need to install xquartz and updated R cran packages manually. I had to do both on my MacOSX system. Go to [xquartz](https://www.xquartz.org "xquartz official website") or [cran-r](https://cran.r-project.org "cran.r project official website") websites by clinking on the hyperlinks and then download and install packages you need.
+
+```{bash, eval=FALSE}
+./install_R\_deps.R
+```
+
+Test get_phylomarkers:
+
+```{bash, eval=FALSE}
+cd # into a directory that holds .faa and corresponding .fna files
+your/path/to/run_get_phylomarkers_pipeline.sh -R 1 -t DNA
+```
+
+It should run smoothly and create an output folder that has get_phylomarkers and the date as the title.
+
+You may want to add get_phylomarkers to your \$PATH. I did this on MacOSX.
+
+```{bash, eval=FALSE}
+nano ~/.zshrc
+export PATH=$PATH:/Users/tommytran/bin # For this line use your own path /Users/yourname/bin
+```
+
+After you added your path exit nano and then close terminal. Start a new window and check if your path was added by running.
+
+```{bash, eval=FALSE}
+echo $PATH
+```
