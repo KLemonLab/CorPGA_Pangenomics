@@ -1,0 +1,1346 @@
+---
+title: "Notebook18_THT_CorPGA_GET_HOMOLOGUES"
+author: "Tommy Tran (KLemonLab)"
+date: 'Last updated: 08/30/2022'
+output:
+  rmdformats::robobook:
+    use_bookdown: true
+    code_folding: show
+  github_document:
+    toc: true
+    toc_depth: 4
+---
+
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy(c('r', 'bash'))
+```
+
+# Genome Sourcing
+
+Initially 212 *Corynebacterium* assemblies were collected and analyzed using PanACoTa [\@] in order to filter low quality assemblies (maximum value of L90 allowed = 100 & maximum number of contigs allowed to keep a genome = 999).
+
+1.  **93 JASHHK genomes:** 94 KPL isolates were sequenced at NIH in collaboration with Julia Segre & Heidi Kong. This is follow up work on Wei Gao work with the CSF isolates. Only 1 out of 94 genomes was discarded because of low quality of the assembly (bovis_3648.spades.pilon.fasta, gsize=2626186, nb_conts=776 & L90=368). Several assemblies were identified as redundant pairs, but kept for follow up analysis.
+
+2.  **16 BROAD genomes:** 16 KPL isolates were deposited at NCBI by the Broad as *Corynebacterium* sp. KPL#. None of the genomes were discarded because of low quality of the assembly. Several assemblies were identified as redundant pairs, but kept for follow up analysis.
+
+3.  **32 RefSeq genomes:** We downloaded from NCBI reference assemblies using `PanACoTA prepare -s` subcommand. Default parameters were used, therefore genomes with mash distances that was not between 1e-4 and 0.06 were discarded to avoid redundant pairs or mislabeled assemblies.
+
+4.  **71 KELLY genomes:** 71 nasal isolates from Botswana were provided by Dr. Matthew Kelly at Duke. None of the genomes were discarded due to quality. However, 6 discarded due to redundancy. We choose the strain with higher quality to keep between the pairs.
+
+Download NCBI reference assemblies with `PanACoTa prepare -s`:
+
+```{bash, eval=FALSE}
+    PanACoTA prepare -s "Corynebacterium accolens" -o "GENOMES/Genomes_NCBI/C_accolens"
+    PanACoTA prepare -s "Corynebacterium macginleyi" -o "GENOMES/Genomes_NCBI/C_macginleyi"
+    PanACoTA prepare -s "Corynebacterium propinquum" -o "GENOMES/Genomes_NCBI/C_propinquum"
+    PanACoTA prepare -s "Corynebacterium pseudodiphtheriticum" -o "GENOMES/Genomes_NCBI/C_pseudodiphtheriticum"
+    PanACoTA prepare -s "Corynebacterium tuberculostearicum" -o "GENOMES/Genomes_NCBI/C_tuberculostearicum"
+```
+
+# Finalize Genome Selection
+
+## Quality Control and Mash Redundancy
+
+We used PanACoTa [\@] in order to filter low quality assemblies with the default setting of a maximum L90 allowed to be = 100 and maximum number of contigs allowed to keep a genome = 999.
+
+All *Corynebacterium* assemblies we have of these four species were batched into one folder.
+
+I first use --max 1 and --min 0 in order to keep all strains from all species:
+
+```{bash, eval=FALSE}
+PanACoTA prepare --norefseq -d "/Users/tommytran/Downloads/CorPGA_genomes_final" -o "/Users/tommytran/Downloads/MASH_CorPGA_Final" --max 1 --min 0 
+```
+
+I run again the mash analysis with --max 1 and default --min 1e-4. With this step we can identify assemblies that are very similar and might be redundant:
+
+```{bash, eval=FALSE}
+PanACoTA prepare --norefseq -d "/Users/tommytran/Downloads/CorPGA_genomes_final" -o "/Users/tommytran/Downloads/MASH_CorPGA_Final_MinMash" --max 1 -M --info "/Users/tommytran/Downloads/MASH_CorPGA_Final/LSTINFO-NA-filtered-0.0_1.0.txt"
+```
+
+## Eliminating Genomes with **\<** 95% Identity to the Type Strain
+
+We created ANI (Average Nucleotide Identity) matrices for each of the four *Corynebacterium* species. These ANIs were generated using blastn and which means they were generated at the nucleotide level. We decided to look at all shared CDS (CoDing Sequences) regions and eliminated strains that did not meet a threshold of 95% of higher to the type strain of the concerning species.
+
+ANIb(nt) of all shared CDS (CoDing Sequences) regions
+
+# Prokka Annotation
+
+This loop annotates all the genomes and names then with --genus 'Corynebacterium' --species 'sp' and --strain based on the file name. The Prokka annotation uses [Prokka v1.14.6](https://github.com/tseemann/prokka/releases/tag/v1.14.6) [\@Seemann2014] with default parameters, including gene recognition and translation initiation site identification with Prodigal [\@Hyatt2010].
+
+```{bash, eval=FALSE}
+path_f="/Users/klemonlab/Downloads/CorPGA_genomes_final"
+path_o="/Users/klemonlab/Downloads/CorPGA_prokka_out_GH"
+
+for file in $path_f/*.f*; do
+    FILENAME=`basename ${file%.*}`
+    prokka --prefix $FILENAME --outdir $path_o --genus 'Corynebacterium' --species 'sp' --strain $FILENAME --centre X --compliant --cpus 0 --force $file; 
+done
+```
+
+# GET_HOMOLOGUES
+
+This notebook contains analyses using the genomic software GET_HOMOLOGUES version xxx. If you want to know more in-depth information about GET_HOMOLOGUES you can go to their official online manual here: <http://eead-csic-compbio.github.io/get_homologues/manual/>
+
+We will want to use the gbk (genebank) file for each genome from the prokka output. We isolated the gbk files in new folders.
+
+```{bash, eval=FALSE}
+cd /directory/holding/prokka/output
+mv *.gbk /new/directory/only/containing/gbk/files
+
+We will want to use the gbk file for each genome from the prokka output. We isolated the gbk files in new folders.
+
+cd /directory/holding/prokka/output
+mv *.gbk /new/directory/only/containing/gbk/files
+```
+
+# ANI (Average Nucleotide Identity)
+
+There will be **two** ANI matrices at the nucleotide level for each of the four species using OMCL (OrthoMuscle). The first one is to calculate ANI percentages from the core CDS (coding sequences) and the second is to calculate ANI values from all shared CDS regions. You must use gbk files outputted from prokka annoation.
+
+## Generate ANI tab files
+
+*C. propinquum* core CDS ANI tab file:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA_Anvio/108_gbf/Cpr" -A -t 19 -M -n 8 -C 90
+```
+
+*C. propinquum* all shared CDS regions ANI tab file:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA_Anvio/108_gbf/Cpr" -A -t 0 -M -n 8 -C 90
+```
+
+*C. pseudodiphtheriticum* core CDS ANI tab file:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA_Anvio/108_gbf/Cps" -A -t 43 -M -n 8 -C 90
+```
+
+*C. pseudodiphtheriticum* all shared CDS regions ANI tab file:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA_Anvio/108_gbf/Cps" -A -t 0 -M -n 8 -C 90
+```
+
+*C. tuberculostearicum* core CDS ANI tab file:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA_Anvio/108_gbf/Ctu" -A -t 8 -M -n 8 -C 90   
+```
+
+*C. tuberculostearicum* all shared CDS regions ANI tab file:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA_Anvio/108_gbf/Ctu" -A -t 0 -M -n 8 -C 90
+```
+
+*C. accolens* core CDS ANI tab file:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA_Anvio/108_gbf/Cac" -A -t 34 -M -n 8 -C 90
+```
+
+*C. accolens* all shared CDS regions ANI tab file:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA_Anvio/108_gbf/Cac" -A -t 0 -M -n 8 -C 90
+```
+
+## Convert ANI Tab Files into Editable svgs
+
+*C. propinquum* core CDS ANI tab file:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./plot_matrix_heatmap.sh -i "/Users/klemonlab/get_homologues/Cpr_homologues/CprBWA290_f0_19taxa_algOMCL_e0_C90_Avg_identity.tab" -d 1 -t "Cpr Core CDS ANI" -H 9 -W 13
+```
+
+*C. propinquum* all shared CDS regions ANI tab file:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./plot_matrix_heatmap.sh -i "/Users/klemonlab/get_homologues/Cpr_homologues/CprBWA290_f0_0taxa_algOMCL_e0_C90_Avg_identity.tab" -d 1 -t "Cpr All Shared CDS Regions ANI" -H 9 -W 13
+```
+
+*C. pseudodiphtheriticum* core CDS ANI tab file:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./plot_matrix_heatmap.sh -i "/Users/klemonlab/get_homologues/Cps_homologues/CpsDU080_f0_43taxa_algOMCL_e0_C90_Avg_identity.tab" -d 1 -t "Cps Core CDS ANI" -H 16 -W 23
+```
+
+*C. pseudodiphtheriticum* all shared CDS regions ANI tab file:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./plot_matrix_heatmap.sh -i "/Users/klemonlab/get_homologues/Cps_homologues/CpsDU080_f0_0taxa_algOMCL_e0_C90_Avg_identity.tab" -d 1 -t "Cps All Shared CDS Regions ANI" -H 16 -W 23
+```
+
+*C. tuberculostearicum* core CDS ANI tab file:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./plot_matrix_heatmap.sh -i "/Users/klemonlab/get_homologues/Ctu_homologues/CtuBWA207_f0_8taxa_algOMCL_e0_C90_Avg_identity.tab" -d 1 -t "Ctu Core CDS ANI" -H 7 -W 8
+```
+
+*C. tuberculostearicum* all shared CDS regions ANI tab file:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./plot_matrix_heatmap.sh -i "/Users/klemonlab/get_homologues/Ctu_homologues/CtuBWA207_f0_0taxa_algOMCL_e0_C90_Avg_identity.tab" -d 1 -t "Ctu All Shared CDS Regions ANI" -H 7 -W 8
+```
+
+*C. accolens* core CDS ANI tab file:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./plot_matrix_heatmap.sh -i "/Users/klemonlab/get_homologues/Cac_homologues/CacKPL3832_f0_34taxa_algOMCL_e0_C90_Avg_identity.tab" -d 1 -t "Cac Core CDS ANI" -H 15 -W 19
+```
+
+*C. accolens* all shared CDS regions ANI tab file:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./plot_matrix_heatmap.sh -i "/Users/klemonlab/get_homologues/Cac_homologues/CacKPL3832_f0_0taxa_algOMCL_e0_C90_Avg_identity.tab" -d 1 -t "Cac All Shared CDS Regions ANI" -H 15 -W 19
+```
+
+## Edit ANI svg files
+
+Once all eight svg files were created, they were each opened with adobe illustrator and edited to look like our figures.
+
+# Conservative Core and Phylogeny of All 107 *Corynebacterium* Genomes
+
+The core has to be determined by three seperate clustering algorithms. These algorithms include BDBH (bidirectional best hits), COGS (Clusters of Orthologous Genes), and OMCL (OrthoMCL). Once the core has been determined for each algorithm we will generate a venn diagram of the shared conservative gene clusters between them. This will be the number in the middle of the venn diagram where all three algorithms intersect.
+
+## Running BDBH, COGS, & OMCL with 107 *Corynebacterium* Genomes
+
+107 *Corynebacterium* genomes clustered with BDBH:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA/108_gbk/All_107_Coryne" -n 8 -t 107 -C 90
+```
+
+107 *Corynebacterium* genomes clustered with COGS:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA/108_gbk/All_107_Coryne" -n 8 -t 0 -C 90
+```
+
+107 *Corynebacterium* genomes clustered with OMCL:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA/108_gbk/All_107_Coryne" -n 8 -t 0 -C 90
+```
+
+## Creating a Conservative Core Venn Diagram
+
+From my experience you will run into less issues here if you move the three cluster folders and cluster list files into a new directory. Then use the paths to those cluster folders after the `-d` flag seperated by commas.
+
+Create conservative core venn diagram intersection to output faa files:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./compare_clusters.pl -o "/Users/klemonlab/Downloads/CorPGA_107_intersect" -d "/Users/klemonlab/Downloads/CorPGA_107_cluster_files/CpsDU080_f0_107taxa_algBDBH_e0_C90_","/Users/klemonlab/Downloads/CorPGA_107_cluster_files/CpsDU080_f0_0taxa_algOMCL_e0_C90_","/Users/klemonlab/Downloads/CorPGA_107_cluster_files/CpsDU080_f0_0taxa_algCOG_e0_C90_" -t 107
+```
+
+Create conservative core venn diagram intersection to output fna files:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./compare_clusters.pl -o "/Users/klemonlab/Downloads/CorPGA_107_intersect" -d "/Users/klemonlab/Downloads/CorPGA_107_cluster_files/CpsDU080_f0_107taxa_algBDBH_e0_C90_","/Users/klemonlab/Downloads/CorPGA_107_cluster_files/CpsDU080_f0_0taxa_algOMCL_e0_C90_","/Users/klemonlab/Downloads/CorPGA_107_cluster_files/CpsDU080_f0_0taxa_algCOG_e0_C90_" -t 107 -n
+```
+
+## Generate a Phylogenomic Tree of four *Corynebacterium* species from the Conservative Core
+
+At this point we have created faa and faa files of the core gene clusters from 107 *Corynebacterium* genomes. To begin generating a phylogenomic tree we begin by isolating only the faa and fna files into one folder.
+
+1.  At this point we have created faa and faa files of the core gene clusters from 107 *Corynebacterium* genomes. To begin generating a phylogenomic tree we begin by isolating only the faa and fna files into one folder.
+
+Move all files with the extension .faa and fna to new destination folder:
+
+```{bash, eval=FALSE}
+cd /path/where/the/faa/and/fna/files/are # this should be the output folder from creating the venn diagram intersection
+mv *.faa /Users/klemonlab/Downloads/CorPGA_107_faa_fna_only
+mv *.fna /Users/klemonlab/Downloads/CorPGA_107_faa_fna_only
+```
+
+Now we use GET_PHYLOMARKERS version xxx to generate concatenated alignment file for each single copy core gene cluster. Delete Lines
+
+1.  Now we use GET_PHYLOMARKERS version xxx to generate concatenated alignment file for each single copy core gene cluster. Delete Lines
+
+Concatenate and align the faa and fna files to generate codon alignment files:
+
+```{bash, eval=FALSE}
+cd /new/path/where/only/faa/fna/files/are # go to directory holding all the .fna and .faa intersection of Corynebacterium
+/Users/klemonlab/get_phylomarkers/run_get_phylomarkers_pipeline.sh -R 1 -t DNA -k 0.7 -m 0.7
+```
+
+Create a folder in IQTree v2.1.3 directory and move the codon alignment files outputted from GET_PHYLOMARKERS into that folder.
+
+1.  Create a folder in IQTree v2.1.3 directory and move the codon alignment files outputted from GET_PHYLOMARKERS into that folder.
+
+Make a directory to hold codon alignment files and move codon alignment files into that directory:
+
+```{bash, eval=FALSE}
+cd IQTree2
+mkdir -p CorPGA_107_codon_alignment_files
+cd /path/to/where/codon/alignment/files/are
+mv *.fasta /Users/klemonlab/Documents/iqtree-2.1.3-MacOSX/CorPGA_107_codon_alignment_files
+```
+
+This will create a maximum likely hood tree and a consensus tree. **This tree is being generated from the gene clustering.** The .treefile was used because it is the best fit maximum likely hood tree. It was viewed through iTOL tree editor on google chrome browser.
+
+The `-p` flag performs edge-linked proportional partition model for each of the individual clusters. Fast model selection for each cluster was determined by ModelFinder.
+
+Run IQTree2.1.3 with the codon alignment files in the new folder:
+
+```{bash, eval=FALSE}
+cd IQTree2
+bin/iqtree2 -p "CorPGA_107_codon_alignment_files" --prefix CorPGA_107_codon_alignment_files -alrt 1000 -B 1000 -T 8
+```
+
+The treefile generated from IQTree2 was then opened in iTol to scale and assign strain names from the `tree_labels.list` file created from GET_PHYLOMARKERS. After scaling and assigning strain names the svg version was exported from iTol and further edited in Adobe Illustrator.
+
+# Generate *Corynebacterium* species Specific Phylogenomic Trees with an Outgroup
+
+We are able to create phylogenies with an addition of an outgroup without losing the gene clusters not shared by the outgroup to the species of interest.
+
+## Setting Up Two Datasets for Each of the Four Species
+
+1.  First, we created a directory for each of the four species and only have the gbk (genebank) files for each of the four species in their corresponding directory.
+2.  Secondly, we created another directory with the same four folders with the addition of an outgroup we chose for each species.
+
+There was **eight** total directories. The first four only contain n (# of genomes of that specific species) in each of its directory. The latter four directories have n+1 genomes due to the addition of the outgroup we chose.
+
+## Running BDBH, COGS, and OMCL on Each Directory
+
+Running BDBH, COGS, and OMCL on only *C. propinquum*
+
+```{bash, eval=FALSE}
+cd get_homologues
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr" -n 8 -t 19 -C 90 # Runs BDBH
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr" -n 8 -t 0 -C 90 -M # Runs COGS
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr" -n 8 -t 0 -C 90 -G # Runs OMCL
+```
+
+Running BDBH, COGS, and OMCL on *C. propinquum* with an Outgroup
+
+```{bash, eval=FALSE}
+cd get_homologues
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr" -n 8 -t 20 -C 90 # Runs BDBH
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr" -n 8 -t 0 -C 90 -M # Runs COGS
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr" -n 8 -t 0 -C 90 -G # Runs OMCL
+```
+
+Running BDBH, COGS, and OMCL on only *C. pseudodiphtheriticum*
+
+```{bash, eval=FALSE}
+cd get_homologues
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps" -n 8 -t 43 -C 90 # Runs BDBH
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps" -n 8 -t 0 -C 90 -M # Runs COGS
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps" -n 8 -t 0 -C 90 -G # Runs OMCL
+```
+
+Running BDBH, COGS, and OMCL on *C. pseudodiphtheriticum* with an Outgroup
+
+```{bash, eval=FALSE}
+cd get_homologues
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps" -n 8 -t 44 -C 90 # Runs BDBH
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps" -n 8 -t 0 -C 90 -M # Runs COGS
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps" -n 8 -t 0 -C 90 -G # Runs OMCL
+```
+
+Running BDBH, COGS, and OMCL on only *C. tuberculostearicum*
+
+```{bash, eval=FALSE}
+cd get_homologues
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu" -n 8 -t 8 -C 90 # Runs BDBH
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu" -n 8 -t 0 -C 90 -M # Runs COGS
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu" -n 8 -t 0 -C 90 -G # Runs OMCL
+```
+
+Running BDBH, COGS, and OMCL on *C. tuberculostearicum* with an Outgroup
+
+```{bash, eval=FALSE}
+cd get_homologues
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu" -n 8 -t 9 -C 90 # Runs BDBH
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu" -n 8 -t 0 -C 90 -M # Runs COGS
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu" -n 8 -t 0 -C 90 -G # Runs OMCL
+```
+
+Running BDBH, COGS, and OMCL on only *C. accolens*
+
+```{bash, eval=FALSE}
+cd get_homologues
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac" -n 8 -t 34 -C 90 # Runs BDBH
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac" -n 8 -t 0 -C 90 -M # Runs COGS
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac" -n 8 -t 0 -C 90 -G # Runs OMCL
+```
+
+Running BDBH, COGS, and OMCL on *C. accolens* with an Outgroup
+
+```{bash, eval=FALSE}
+cd get_homologues
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac" -n 8 -t 35 -C 90 # Runs BDBH
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac" -n 8 -t 0 -C 90 -M # Runs COGS
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac" -n 8 -t 0 -C 90 -G # Runs OMCL
+```
+
+## Creating a Conservative Core of Only the Species of Interest and with the Additional Outgroup per Species
+
+From my experience you will run into less issues here if you move the three cluster folders and cluster list files into a new directory. Then use the paths to those cluster folders after the `-d` flag seperated by commas.
+
+Create conservative core venn diagram intersection to output faa and fna files for *C. propinquum*:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./compare_clusters.pl -o "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_intersection_19" -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_19/CprBWA290_f0_0taxa_algCOG_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_19/CprBWA290_f0_0taxa_algOMCL_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_19/CprBWA290_f0_19taxa_algBDBH_e0_C90_" -t 19 # Creates a conservative core with the output of faa files
+./compare_clusters.pl -o "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_intersection_19" -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_19/CprBWA290_f0_0taxa_algCOG_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_19/CprBWA290_f0_0taxa_algOMCL_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_19/CprBWA290_f0_19taxa_algBDBH_e0_C90_" -t 19 -n # Creates a conservative core with the output of fna files from the additional `-n` flag
+```
+
+Create conservative core venn diagram intersection to output faa and fna files for *C. propinquum* with an outgroup:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./compare_clusters.pl -o "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_intersection_outgroup_20" -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_outgroup_20/CpsDSM44287_f0_0taxa_algCOG_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_outgroup_20/CpsDSM44287_f0_0taxa_algOMCL_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_outgroup_20/CpsDSM44287_f0_20taxa_algBDBH_e0_C90_" -t 20  # Creates a conservative core with the output of faa files
+./compare_clusters.pl -o "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_intersection_outgroup_20" -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_outgroup_20/CpsDSM44287_f0_0taxa_algCOG_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_outgroup_20/CpsDSM44287_f0_0taxa_algOMCL_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_outgroup_20/CpsDSM44287_f0_20taxa_algBDBH_e0_C90_" -t 20 -n # Creates a conservative core with the output of fna files from the additional `-n` flag
+```
+
+Create conservative core venn diagram intersection to output faa and fna files for *C. pseudodiphtheriticum*:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./compare_clusters.pl -o "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_intersection_43" -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_clusters_43/CpsDU080_f0_43taxa_algBDBH_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_clusters_43/CpsDU080_f0_43taxa_algCOG_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_clusters_43/CpsDU080_f0_43taxa_algOMCL_e0_C90_" -t 43 # Creates a conservative core with the output of faa files
+./compare_clusters.pl -o "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_intersection_43" -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_clusters_43/CpsDU080_f0_43taxa_algBDBH_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_clusters_43/CpsDU080_f0_43taxa_algCOG_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_clusters_43/CpsDU080_f0_43taxa_algOMCL_e0_C90_" -t 43 -n # Creates a conservative core with the output of fna files from the additional `-n` flag
+```
+
+Create conservative core venn diagram intersection to output faa and fna files for *C. pseudodiphtheriticum* with an outgroup:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./compare_clusters.pl -o "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_intersection_outgroup_44" -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_clusters_outgroup_44/CpsDU080_f0_0taxa_algCOG_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_clusters_outgroup_44/CpsDU080_f0_0taxa_algOMCL_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_clusters_outgroup_44/CpsDU080_f0_44taxa_algBDBH_e0_C90_" -t 44  # Creates a conservative core with the output of faa files
+./compare_clusters.pl -o "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_intersection_outgroup_44" -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_clusters_outgroup_44/CpsDU080_f0_0taxa_algCOG_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_clusters_outgroup_44/CpsDU080_f0_0taxa_algOMCL_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_clusters_outgroup_44/CpsDU080_f0_44taxa_algBDBH_e0_C90_" -t 44 -n # Creates a conservative core with the output of fna files from the additional `-n` flag
+```
+
+Create conservative core venn diagram intersection to output faa and fna files for *C. tuberculostearicum*:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./compare_clusters.pl -o "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_intersection_8" -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_clusters_8/CtuBWA207_f0_0taxa_algCOG_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_clusters_8/CtuBWA207_f0_0taxa_algOMCL_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_clusters_8/CtuBWA207_f0_8taxa_algBDBH_e0_C90_" -t 8 # Creates a conservative core with the output of faa files
+./compare_clusters.pl -o "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_intersection_8" -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_clusters_8/CtuBWA207_f0_0taxa_algCOG_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_clusters_8/CtuBWA207_f0_0taxa_algOMCL_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_clusters_8/CtuBWA207_f0_8taxa_algBDBH_e0_C90_" -t 8 -t 8 -n # Creates a conservative core with the output of fna files from the additional `-n` flag
+```
+
+Create conservative core venn diagram intersection to output faa and fna files for *C. tuberculostearicum* with an outgroup:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./compare_clusters.pl -o "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_intersection_outgroup_9" -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_clusters_outgroup_9/CtuBWA207_f0_0taxa_algCOG_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_clusters_outgroup_9/CtuBWA207_f0_0taxa_algOMCL_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_clusters_outgroup_9/CtuBWA207_f0_9taxa_algBDBH_e0_C90_" -t 9  # Creates a conservative core with the output of faa files
+./compare_clusters.pl -o "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_intersection_outgroup_9" -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_clusters_outgroup_9/CtuBWA207_f0_0taxa_algCOG_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_clusters_outgroup_9/CtuBWA207_f0_0taxa_algOMCL_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_clusters_outgroup_9/CtuBWA207_f0_9taxa_algBDBH_e0_C90_" -t 9 -n # Creates a conservative core with the output of fna files from the additional `-n` flag
+```
+
+Create conservative core venn diagram intersection to output faa and fna files for *C. accolens*:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./compare_clusters.pl -o "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_intersection_34" -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_clusters_34/CacKPL3832_f0_0taxa_algCOG_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_clusters_34/CacKPL3832_f0_0taxa_algOMCL_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_clusters_34/CacKPL3832_f0_34taxa_algBDBH_e0_C90_" -t 34 # Creates a conservative core with the output of faa files
+./compare_clusters.pl -o "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_intersection_34" -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_clusters_34/CacKPL3832_f0_0taxa_algCOG_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_clusters_34/CacKPL3832_f0_0taxa_algOMCL_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_clusters_34/CacKPL3832_f0_34taxa_algBDBH_e0_C90_" -t 34 -n # Creates a conservative core with the output of fna files from the additional `-n` flag
+```
+
+Create conservative core venn diagram intersection to output faa and fna files for *C. accolens* with an outgroup:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./compare_clusters.pl -o "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_intersection_outgroup_35" -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_clusters_outgroup_35/CacKPL3832_f0_35taxa_algBDBH_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_clusters_outgroup_35/CacKPL3832_f0_0taxa_algOMCL_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_clusters_outgroup_35/CacKPL3832_f0_0taxa_algCOG_e0_C90_" -t 35  # Creates a conservative core with the output of faa files
+./compare_clusters.pl -o "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_intersection_outgroup_35" -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_clusters_outgroup_35/CacKPL3832_f0_35taxa_algBDBH_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_clusters_outgroup_35/CacKPL3832_f0_0taxa_algOMCL_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_clusters_outgroup_35/CacKPL3832_f0_0taxa_algCOG_e0_C90_" -t 35 -n # Creates a conservative core with the output of fna files from the additional `-n` flag
+```
+
+## Isolate fna and faa Files Together into a New Directory
+
+Isolate the faa and fna files that make of the Conservative Core for *C. propinquum*:
+
+```{bash, eval=FALSE}
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_intersection_19" # Go to the directory holding the faa and fna files
+mv *.faa "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_faa_fna_19" # Moves all faa files into the new folder holding only faa and fna files
+mv *.fna "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_faa_fna_19" # Moves all fna files into the new folder holding only faa and fna files
+```
+
+Isolate the faa and fna files that make of the Conservative Core for *C. propinquum* with an Outgroup:
+
+```{bash, eval=FALSE}
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_intersection_outgroup_20" # Go to the directory holding the faa and fna files
+mv *.faa "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_faa_fna_20" # Moves all faa files into the new folder holding only faa and fna files
+mv *.fna "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_faa_fna_20" # Moves all fna files into the new folder holding only faa and fna files
+```
+
+Isolate the faa and fna files that make of the Conservative Core for *C. pseudodiphtheriticum*:
+
+```{bash, eval=FALSE}
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_intersection_43" # Go to the directory holding the faa and fna files
+mv *.faa "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_faa_fna_43" # Moves all faa files into the new folder holding only faa and fna files
+mv *.fna "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_faa_fna_43" # Moves all fna files into the new folder holding only faa and fna files
+```
+
+Isolate the faa and fna files that make of the Conservative Core for *C. pseudodiptheriticum* with an Outgroup:
+
+```{bash, eval=FALSE}
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_intersection_outgroup_44" # Go to the directory holding the faa and fna files
+mv *.faa "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_faa_fna_44" # Moves all faa files into the new folder holding only faa and fna files
+mv *.fna "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_faa_fna_44" # Moves all fna files into the new folder holding only faa and fna files
+```
+
+Isolate the faa and fna files that make of the Conservative Core for *C. tuberculostearicum*:
+
+```{bash, eval=FALSE}
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_intersection_8" # Go to the directory holding the faa and fna files
+mv *.faa "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_faa_fna_8" # Moves all faa files into the new folder holding only faa and fna files
+mv *.fna "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_faa_fna_8" # Moves all fna files into the new folder holding only faa and fna files
+```
+
+Isolate the faa and fna files that make of the Conservative Core for *C. tuberculostearicum* with an Outgroup:
+
+```{bash, eval=FALSE}
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_intersection_outgroup_9" # Go to the directory holding the faa and fna files
+mv *.faa "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_faa_fna_9" # Moves all faa files into the new folder holding only faa and fna files
+mv *.fna "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_faa_fna_9" # Moves all fna files into the new folder holding only faa and fna files
+```
+
+Isolate the faa and fna files that make of the Conservative Core for *C. accolens*:
+
+```{bash, eval=FALSE}
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_intersection_34" # Go to the directory holding the faa and fna files
+mv *.faa "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_faa_fna_34" # Moves all faa files into the new folder holding only faa and fna files
+mv *.fna "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_faa_fna_34" # Moves all fna files into the new folder holding only faa and fna files
+```
+
+Isolate the faa and fna files that make of the Conservative Core for *C. accolens* with an Outgroup:
+
+```{bash, eval=FALSE}
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_intersection_outgroup_35" # Go to the directory holding the faa and fna files
+mv *.faa "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_faa_fna_35" # Moves all faa files into the new folder holding only faa and fna files
+mv *.fna "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_faa_fna_35" # Moves all fna files into the new folder holding only faa and fna files
+```
+
+## Comparing the Conservative Core of the Species of Interest to the Conservative Core with an Additional Outgroup
+
+This will compare the two conservative core of only the specis of interest to the conservative of the species of interest plus an outgroup. The addition of an outgroup causes the conservative core to decrase in value due to less gene clusters being shared with the outgroup. We are able to generate a list of which gene clusters are not shared with the outgroup from the strict conservative core. We can use this list to recover the lost gene clusters back into our analysis when making phylogenies.
+
+*C. propinquum* Conservative Core vs *C. propinquum* Conservative Core + Outgroup:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./compare_clusters.pl -o "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_compare_clusters_19_20" -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_faa_fna_19","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_faa_fna_20" -r 
+```
+
+*C. pseudodiphtheriticum* Conservative Core vs *C. pseudodiphtheriticum* Conservative Core + Outgroup:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./compare_clusters.pl -o "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_compare_clusters_43_44" -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_faa_fna_43","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_faa_fna_44" -r 
+```
+
+*C. tuberculostearicum* Conservative Core vs *C. tuberculostearicum* Conservative Core + Outgroup:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./compare_clusters.pl -o "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_compare_clusters_8_9" -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_faa_fna_8","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_faa_fna_9" -r 
+```
+
+*C. accolens* Conservative Core vs *C. accolens* Conservative Core + Outgroup:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./compare_clusters.pl -o "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_compare_34_35_clusters" -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_faa_fna_34","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_faa_fna_35" -r 
+```
+
+## Recover Lost Gene Clusters Due to the Addition of an Outgroup
+
+Now in the output folder from the section above there will be a text file listing the gene clusters that the outgroup did NOT share with the species of interest. Find and move this text file to the directory holding only the faa and fna files of the conservative core of the specis of interest. We will use this text file to isolate and add these gene clusters into the directory holding the faa and fna files of the conservative core from the species of interest plus the outgroup.
+
+Recover lost gene clusters due to addition of an outgroup *C. propinquum*:
+
+```{bash, eval=FALSE}
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_compare_clusters_19_20"
+mv "unique_Cpr_faa_fna_19.venn_t0.txt" "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_faa_fna_19"
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_faa_fna_19"
+mkdir -p Recovered_GCs_Cpr
+cat "unique_Cpr_faa_fna_19.venn_t0.txt" | xargs -J % cp % "Recovered_GCs_Cpr"
+---
+# We also need the fna files of these gene clusters. So, open the txt file with a text editor we use BBEdit. Search up ".faa" and replace all with ".fna". Then re-run the cat and xargs pipe. 
+cat "unique_Cpr_faa_fna_19.venn_t0.txt" | xargs -J % cp % "Recovered_GCs_Cpr" # second run for fna files
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_faa_fna_19/Recovered_GCs_Cpr" # Go inside recovered GCs folder
+mv *.f* "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_faa_fna_20" # Move all the recovered GCs into the conservative  core + outgroup faa and fna directory
+```
+
+Recover lost gene clusters due to addition of an outgroup *C. pseudodiphtheriticum*:
+
+```{bash, eval=FALSE}
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_compare_clusters_43_44"
+mv "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_compare_clusters_43_44/unique_Cps_faa_fna_43.venn_t0.txt" "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_faa_fna_43"
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_faa_fna_43"
+mkdir -p Recovered_GCs_Cps
+cat "unique_Cps_faa_fna_43.venn_t0.txt" | xargs -J % cp % "Recovered_GCs_Cps"
+---
+# We also need the fna files of these gene clusters. So, open the txt file with a text editor we use BBEdit. Search up ".faa" and replace all with ".fna". Then re-run the cat and xargs pipe. 
+cat "unique_Cps_faa_fna_43.venn_t0.txt" | xargs -J % cp % "Recovered_GCs_Cps" # second run for fna files
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_faa_fna_43/Recovered_GCs_Cps" # Go inside recovered GCs folder
+mv *.f* "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_faa_fna_44" # Move all the recovered GCs into the conservative  core + outgroup faa and fna directory
+```
+
+Recover lost gene clusters due to addition of an outgroup *C. tuberculostearicum*:
+
+```{bash, eval=FALSE}
+cd  "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_compare_clusters_8_9"
+mv "unique_Ctu_faa_fna_8.venn_t0.txt" "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_faa_fna_8"
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_faa_fna_8"
+mkdir -p Recovered_GCs_Ctu
+cat "unique_Ctu_faa_fna_8.venn_t0.txt" | xargs -J % cp % "Recovered_GCs_Ctu"
+---
+# We also need the fna files of these gene clusters. So, open the txt file with a text editor we use BBEdit. Search up ".faa" and replace all with ".fna". Then re-run the cat and xargs pipe. 
+cat "unique_Ctu_faa_fna_8.venn_t0.txt" | xargs -J % cp % "Recovered_GCs_Ctu" # second run for fna files
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_faa_fna_8/Recovered_GCs_Ctu" # Go inside recovered GCs folder
+mv *.f* "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_faa_fna_9" # Move all the recovered GCs into the conservative  core + outgroup faa and fna directory
+```
+
+Recover lost gene clusters due to addition of an outgroup *C. accolens*:
+
+```{bash, eval=FALSE}
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_compare_34_35_clusters"
+mv "unique_Cac_faa_fna_34.venn_t0.txt" "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_faa_fna_34"
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_faa_fna_34"
+mkdir -p Recovered_GCs_Cac
+cat "unique_Cac_faa_fna_34.venn_t0.txt" | xargs -J % cp % "Recovered_GCs_Cac"
+---
+# We also need the fna files of these gene clusters. So, open the txt file with a text editor we use BBEdit. Search up ".faa" and replace all with ".fna". Then re-run the cat and xargs pipe. 
+cat "unique_Cac_faa_fna_34.venn_t0.txt" | xargs -J % cp % "Recovered_GCs_Cac" # second run for fna files
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_faa_fna_34/Recovered_GCs_Cac" # Go inside recovered GCs folder
+mv *.f* "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_faa_fna_35" # Move all the recovered GCs into the conservative  core + outgroup faa and fna directory
+```
+
+## Concatenate and Align Files using GET_PHYLOMARKERS vxxx for Each of the Four *Corynebacterium* species
+
+Find the file "run_get_phylomarkers_pipeline.sh" in the get_phylomarkers directory. Then delete lines 925-935.
+
+*C. propinquum* concatenate and align the faa and fna files to generate codon alignment files:
+
+```{bash, eval=FALSE}
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_faa_fna_20" # go to directory holding all the .fna and .faa intersection of Corynebacterium
+/Users/klemonlab/get_phylomarkers/run_get_phylomarkers_pipeline.sh -R 1 -t DNA -k 0.7 -m 0.7
+```
+
+*C. pseudodiphtheriticum* concatenate and align the faa and fna files to generate codon alignment files:
+
+```{bash, eval=FALSE}
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_faa_fna_44" # go to directory holding all the .fna and .faa intersection of Corynebacterium
+/Users/klemonlab/get_phylomarkers/run_get_phylomarkers_pipeline.sh -R 1 -t DNA -k 0.7 -m 0.7
+```
+
+*C. tuberculostearicum* concatenate and align the faa and fna files to generate codon alignment files:
+
+```{bash, eval=FALSE}
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_faa_fna_9" # go to directory holding all the .fna and .faa intersection of Corynebacterium
+/Users/klemonlab/get_phylomarkers/run_get_phylomarkers_pipeline.sh -R 1 -t DNA -k 0.7 -m 0.7
+```
+
+*C. accolens* concatenate and align the faa and fna files to generate codon alignment files:
+
+```{bash, eval=FALSE}
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_faa_fna_35" # go to directory holding all the .fna and .faa intersection of Corynebacterium
+/Users/klemonlab/get_phylomarkers/run_get_phylomarkers_pipeline.sh -R 1 -t DNA -k 0.7 -m 0.7
+```
+
+## Generate a Phylogeny treefile using IQTree v2.1.3 for Four *Corynebacterium* species with Their Corresponding Outgroups
+
+*C.propinquum* make a directory to hold codon alignment files and move codon alignment files into that directory:
+
+```{bash, eval=FALSE}
+cd "/Users/klemonlab/Documents/iqtree-2.1.3-MacOSX"
+mkdir -p CorPGA_20_Cpr_outgroup
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_faa_fna_20/get_phylomarkers_run_AIR1tDNA_k0.7_m0.7_Tmedium_11Jun22/codon_alignments"
+mv *.fasta "/Users/klemonlab/Documents/iqtree-2.1.3-MacOSX/CorPGA_20_Cpr_outgroup"
+```
+
+*C. propinquum* run IQTree v2.1.3 with the codon alignment files:
+
+```{bash, eval=FALSE}
+cd "/Users/klemonlab/Documents/iqtree-2.1.3-MacOSX"
+bin/iqtree2 -p "CorPGA_20_Cpr_outgroup" --prefix CorPGA_20_Cpr_outgroup -alrt 1000 -B 1000 -T 8
+```
+
+*C. pseudodiphtheriticum* make a directory to hold codon alignment files and move codon alignment files into that directory:
+
+```{bash, eval=FALSE}
+cd "/Users/klemonlab/Documents/iqtree-2.1.3-MacOSX"
+mkdir -p CorPGA_44_Cps_outgroup
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_faa_fna_44/get_phylomarkers_run_AIR1tDNA_k0.7_m0.7_Tmedium_11Jun22/codon_alignments"
+mv *.fasta "/Users/klemonlab/Documents/iqtree-2.1.3-MacOSX/CorPGA_44_Cps_outgroup"
+```
+
+*C. pseudodiphtheriticum* run IQTree v2.1.3 with the codon alignment files:
+
+```{bash, eval=FALSE}
+cd "/Users/klemonlab/Documents/iqtree-2.1.3-MacOSX"
+bin/iqtree2 -p "CorPGA_44_Cps_outgroup" --prefix CorPGA_44_Cps_outgroup -alrt 1000 -B 1000 -T 8
+```
+
+*C. tuberculostearicum* make a directory to hold codon alignment files and move codon alignment files into that directory:
+
+```{bash, eval=FALSE}
+cd "/Users/klemonlab/Documents/iqtree-2.1.3-MacOSX"
+mkdir -p CorPGA_9_Ctu_outgroup
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_faa_fna_9/get_phylomarkers_run_AIR1tDNA_k0.7_m0.7_Tmedium_11Jun22/codon_alignments"
+mv *.fasta "/Users/klemonlab/Documents/iqtree-2.1.3-MacOSX/CorPGA_9_Ctu_outgroup"
+```
+
+*C. tuberculostearicum* run IQTree v2.1.3 with the codon alignment files:
+
+```{bash, eval=FALSE}
+cd "/Users/klemonlab/Documents/iqtree-2.1.3-MacOSX"
+bin/iqtree2 -p "CorPGA_9_Ctu_outgroup" --prefix CorPGA_9_Ctu_outgroup -alrt 1000 -B 1000 -T 8
+```
+
+*C. accolens* make a directory to hold codon alignment files and move codon alignment files into that directory:
+
+```{bash, eval=FALSE}
+cd "/Users/klemonlab/Documents/iqtree-2.1.3-MacOSX"
+mkdir -p CorPGA_35_Cac_outgroup
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_faa_fna_35/get_phylomarkers_run_AIR1tDNA_k0.7_m0.7_Tmedium_11Jun22/codon_alignments"
+mv *.fasta "/Users/klemonlab/Documents/iqtree-2.1.3-MacOSX/CorPGA_35_Cac_outgroup"
+```
+
+*C. accolens* run IQTree v2.1.3 with the codon alignment files:
+
+```{bash, eval=FALSE}
+cd "/Users/klemonlab/Documents/iqtree-2.1.3-MacOSX"
+bin/iqtree2 -p "CorPGA_35_Cac_outgroup" --prefix CorPGA_35_Cac_outgroup -alrt 1000 -B 1000 -T 8
+```
+
+This will create a maximum likely hood tree and a consensus tree for each species. **The trees are generated from the gene clustering.** The .treefiles were used because they are the best fit maximum likely hood tree. They was viewed through iTOL tree editor on google chrome browser.
+
+The `-p` flag performs edge-linked proportional partition model for each of the individual clusters. Fast model selection for each cluster was determined by ModelFinder.
+
+# Rarefaction Curves of Four *Corynebacterium* species
+
+Here we will be using `./get_homologues.pl` with the flag `-c` to report genome composition analysis at the nucleotide level using OMCL.
+
+The file **lib/marfil_homology.pm**, lines 136-137, which control how a gene is compared to previously processed pangenome genes in order to call it novel were changed: (We keep it at the default value)
+
+From:
+
+```{bash, eval=FALSE}
+$MIN_PERSEQID_HOM = 0;
+$MIN_COVERAGE_HOM = 20;
+```
+
+To:
+
+```{bash, eval=FALSE}
+$MIN_PERSEQID_HOM = 50;
+$MIN_COVERAGE_HOM = 50;
+```
+
+## Create Core-genome and Pangenome Tab Files
+
+Create *C. propinquum* rarefaction core-genome and pangenome tab file:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_gbk_19" -c -n 8 -M -C 90 
+```
+
+Create *C. pseudodiphtheriticum* rarefaction core-genome and pangenome tab file:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_gbk_43" -c -n 8 -M -C 90 
+```
+
+Create *C. tuberculostearicum* rarefaction core-genome and pangenome tab file:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_gbk_8" -c -n 8 -M -C 90 
+```
+
+Create *C. accolens* rarefaction core-genome and pangenome tab file:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_gbk_34" -c -n 8 -M -C 90 
+```
+
+## Plot Core-genome and Pangenome Tab Files
+
+Plot *C. propinquum* rarefaction core-genome curve:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./plot_pancore_matrix.pl -i "/Users/klemonlab/get_homologues/Cpr_gbk_19_homologues/core_genome_algOMCL_C90.tab" -f core_both
+```
+
+Plot *C. propinquum* rarefaction pangenome curve:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./plot_pancore_matrix.pl -i "/Users/klemonlab/get_homologues/Cpr_gbk_19_homologues/pan_genome_algOMCL_C90.tab" -f pan
+```
+
+Plot *C. pseudodiphtheriticum* rarefaction core-genome curve:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./plot_pancore_matrix.pl -i "/Users/klemonlab/get_homologues/Cps_gbk_43_homologues/core_genome_algOMCL_C90.tab" -f core_both
+```
+
+Plot *C. pseudodiphtheriticum* rarefaction pangenome curve:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./plot_pancore_matrix.pl -i "/Users/klemonlab/get_homologues/Cps_gbk_43_homologues/pan_genome_algOMCL_C90.tab" -f pan
+```
+
+Plot *C. tuberculostearicum* rarefaction core-genome curve:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./plot_pancore_matrix.pl -i "/Users/klemonlab/get_homologues/Ctu_gbk_8_homologues/core_genome_algOMCL_C90.tab" -f core_both
+```
+
+Plot *C. tuberculostearicum* rarefaction pangenome curve:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./plot_pancore_matrix.pl -i "/Users/klemonlab/get_homologues/Ctu_gbk_8_homologues/pan_genome_algOMCL_C90.tab" -f pan
+```
+
+Plot *C. accolens* rarefaction core-genome curve:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./plot_pancore_matrix.pl -i "/Users/klemonlab/get_homologues/Cac_gbk_34_homologues/core_genome_algOMCL_C90.tab" -f core_both
+```
+
+Plot *C. accolens* rarefaction pangenome curve:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./plot_pancore_matrix.pl -i "/Users/klemonlab/get_homologues/Cac_gbk_34_homologues/pan_genome_algOMCL_C90.tab" -f pan
+```
+
+## Edit svg Rarefaction Files
+
+The svg rarefaction curves were opened and edited in Adobe Illustrator to their final forms.
+
+# Create a Pangenome Matrix for Each of the Four *Corynebacterium* species
+
+This will involve using the command `./get_homologues.pl`. However, this time we will use the flag `-t 0` to get all the possible clusters. Also, this can only be performed with the **OrthoMCL and COGS clustering algorithms.**
+
+We have already ran these previously, so if you want you can use the cluster output directory that was produced and move to the next step.
+
+*C. propinquum* find all the possible clusters with the COG algorithm:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_gbk_43" -n 8 -G -t 0 -C 90
+```
+
+*C. propinquum* find all the possible clusters with the OrthoMCL algorithm:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_gbk_19s" -n 8 -M -t 0 -C 90
+```
+
+## Compile and Create Pangenome Matrix Tab File
+
+This will compile the following data and make a pangenome matrix. Here we add the flag `-m` to create the pangenome matrices intersection. This will create a pangenome_matrix.tab file that will be used next.
+
+*C. propinquum* intersection pangenomes of OMCL & COGS:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./compare_clusters.pl -o "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_pan_intersection" -m -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_19/CprBWA290_f0_0taxa_algOMCL_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_19/CprBWA290_f0_0taxa_algCOG_e0_C90_"
+```
+
+*C. pseudodiphtheriticum* intersection pangenomes of OMCL & COGS:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./compare_clusters.pl -o "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_pan_intersection" -m -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_clusters_43/CpsDU080_f0_0taxa_algOMCL_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_clusters_43/CpsDU080_f0_0taxa_algCOG_e0_C90_"
+```
+
+*C. accolens* intersection pangenomes of OMCL & COGS:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./compare_clusters.pl -o "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_pan_intersection" -m -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_clusters_34/CacKPL3832_f0_0taxa_algOMCL_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_clusters_34/CacKPL3832_f0_0taxa_algCOG_e0_C90_"
+```
+
+*C. tuberculostearicum* intersection pangenomes of OMCL & COGS:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./compare_clusters.pl -o "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_pan_intersection" -m -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_clusters_8/CtuBWA207_f0_0taxa_algOMCL_e0_C90_","/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_clusters_8/CtuBWA207_f0_0taxa_algCOG_e0_C90_"
+```
+
+## Plot the Pangenome Matrix Tab File
+
+*C. propinquum* plot pangenome:
+
+```{bash, eval=FALSE}
+./parse_pangenome_matrix.pl -m "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_pan_intersection/pangenome_matrix_t0.tab" -s -x
+```
+
+*C. pseudodiphtheriticum* plot pangenome:
+
+```{bash, eval=FALSE}
+./parse_pangenome_matrix.pl -m "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_pan_intersection/pangenome_matrix_t0.tab" -s -x
+```
+
+*C. accolens* plot pangenome:
+
+```{bash, eval=FALSE}
+./parse_pangenome_matrix.pl -m "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_pan_intersection/pangenome_matrix_t0.tab" -s -x
+```
+
+*C. tuberculostearicum* plot pangenome:
+
+```{bash, eval=FALSE}
+./parse_pangenome_matrix.pl -m "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_pan_intersection/pangenome_matrix_t0.tab" -s -x
+```
+
+# Virulence Factors
+
+This notebook uses VFDB (Virulence factors of Pathogenic Bacteria) - The
+tool is called VF analyzer and is a systematic screen for virulence
+factors in complete/draft bacterial genomes.
+<http://www.mgc.ac.cn/cgi-bin/VFs/v5/main.cgi?func=VFanalyzer>
+
+1.  On the website for "Option 3" we chose *Corynebacterium* genus to
+    compare our *Coryne* genomes to.
+
+2.  We selected "pre-annotated DRAFT genome in GenBank format" file
+    upload. Each of our 111 *Corynebacterium* genomes was uploaded one
+    by one for analysis within their server.
+
+3.  The "Specify a representative genome" and "Choose genome(s) for
+    comparison" was left blank so the pipeline can the optimal genomes.
+
+```{r, eval=FALSE}
+install.packages("dplyr")
+```
+
+Load the following packages
+
+```{r, eval=FALSE}
+library(dbplyr)
+library(data.table)
+library(tidyverse)
+```
+
+## Batch File conversion from .xls to .csv
+
+The Gnumeric spreadsheet application comes with a command line utility
+called **ssconvert** that can convert between a variety of spreadsheet
+formats:
+
+How to install:
+
+Install on Windows Ubuntu (Linux)
+
+```{bash, eval=FALSE}
+apt-get install gnumeric 
+```
+
+Install on MacOS
+
+```{bash, eval=FALSE}
+brew install gnumeric
+```
+
+I used this loop to convert all of the .xls files to .csv files in a
+folder
+
+```{bash, eval=FALSE}
+for i in *.csv; do ssconvert "$i" "${i%.*}".xls; done
+```
+
+## R to Concatenate the Files Properly
+
+This reads all the .csv files in a folder to create a list of the data
+frames (.csv) files in the Rstudio environment. Simultaneously, ignoring
+the first row for each of the files.
+
+```{r}
+files <- list.files("C:/Users/12542/Downloads/VFDB_VFanalyzer/Cps_VFDB/VFDB_tables/", pattern = '.csv', full.names = TRUE)
+mylist <- lapply(files, function(x) read_csv(x, skip=1))
+```
+
+Takes the data frames within the list object, and reserves the first
+three columns while the fourth column of each file gets added
+horizontally to the final table.
+
+```{r, eval=FALSE}
+mylist <- lapply(mylist, function(x) x[,1:4])
+final <- mylist %>% reduce(full_join, by = c("VFclass", "Virulence factors", "Related genes"))
+```
+
+Tried to do the same thing with the reference Corynes in their database.
+However, I limited to my own computer specs so this could not run. I was
+thinking about adding this data to the end of the final tables. ***(SKIP
+THIS: maybe in the future someone can figure out how to do this)***
+
+```{r, eval=FALSE}
+mylist <- lapply(mylist, function(x) x[,5:11])
+final <- mylist %>% reduce(full_join, by = c("C.diphtheriae NCTC 13129(biotype gravis)", "C.efficiens YS-314", "C.glutamicum ATCC 13032", "C.glutamicum ATCC 13032 (DSM 20300)(DSM 20300)", "C.glutamicum R", "C.jeikeium K411", "C.pseudotuberculosis FRC41"))
+```
+
+Code to save the final as a cvs in my local computer
+
+```{r, eval=FALSE}
+write.csv(final,"C:/Users/12542/Downloads/VFDB_VFanalyzer/AllCorynes_VFDB/AllCorynes_final.csv")
+```
+
+
+# Commands and Flags
+
+Flags that are **bolded** are the ones that we used or modified.
+
+## `./get_homologues.pl`
+
+| Flags  | Meanings                                                                           |
+|----------------------|-------------------------------------------------|
+| -h     | help message                                                                       |
+| -v     | print version, credits and checks installation                                     |
+| **-d** | **directory with input .gbk files**                                                |
+| -i     | input amino acid FASTA file with [taxon names] in headers                          |
+| -o     | only run BLAST/Pfam searches and exit                                              |
+| **-c** | **report genome composition analysis**                                             |
+| -R     | set random seed for genome composition analysis                                    |
+| -s     | save memory by using BerkeleyDB; default parsing stores, sequence hits in RAM      |
+| -m     | runmode [local\|cluster\|dryrun] (default local)                                   |
+| **-n** | **nb of threads for BLAST/HMMER/MCL in 'local' runmode, (default=2)**              |
+| -I     | file with .faa/.gbk files in -d to be included (takes all by default, requires -d) |
+
+Algorithms instead of default bidirectional best-hits (BDBH):
+
+|        |                                                                                    |
+|----------------------|-------------------------------------------------|
+| **-G** | **use COGtriangle algorithm (COGS, PubMed=20439257), (requires 3+ genomes\|taxa)** |
+| **-M** | **use orthoMCL algorithm (OMCL, PubMed=12952885)**                                 |
+
+Options that control sequence similarity searches:
+
+|        |                                                                                         |
+|----------------------|-------------------------------------------------|
+| -X     | use diamond instead of blastp                                                           |
+| **-C** | **min %coverage in BLAST pairwise alignments (range [1-100],default=75)**               |
+| -E     | max E-value (default=1e-05,max=0.01)                                                    |
+| -D     | require equal Pfam domain composition when defining similarity-based orthology          |
+| -S     | min %sequence identity in BLAST query/subj pairs (range [1-100],default=1 [BDBH\|OMCL]) |
+| -N     | min BLAST neighborhood correlation PubMed=18475320 (range [0,1],default=0 [BDBH\|OMCL]) |
+| -b     | compile core-genome with minimum BLAST searches (ignores -c [BDBH])                     |
+
+Options that control clustering:
+
+|        |                                                                                                                       |
+|----------------------|-------------------------------------------------|
+| **-t** | **report sequence clusters including at least t taxa (default t=numberOfTaxa,t=0 reports all clusters [OMCL\|COGS])** |
+| **-a** | **report clusters of sequence features in GenBank files instead of default 'CDS' GenBank features**                   |
+| -g     | report clusters of intergenic sequences flanked by ORFs in addition to default 'CDS' clusters                         |
+| -f     | filter by %length difference within clusters (range [1-100], by default sequence length is not checked)               |
+| -r     | reference proteome .faa/.gbk file                                                                                     |
+| -e     | exclude clusters with inparalogues                                                                                    |
+| -x     | allow sequences in multiple COG clusters                                                                              |
+| -F     | orthoMCL inflation value                                                                                              |
+| **-A** | **calculate average identity of clustered sequences, by default uses blastp results but can use blastn with -a**      |
+| -P     | calculate percentage of conserved proteins (POCP), by default uses blastp results but can use blastn with -a          |
+| -z     | add soft-core to genome composition analysis                                                                          |
+
+get_homologues will run the **default clustering algorithm Bidirectional Best Hits (BDBH)** when other clustering flags are not used.
+
+## `./compare_clusters.pl`
+
+| Flags  | Meanings                                                                                                      |
+|----------------------|-------------------------------------------------|
+| -h     | help message                                                                                                  |
+| **-d** | **comma-separated names of cluster directories**                                                              |
+| **-o** | **output directory**                                                                                          |
+| **-n** | **use nucleotide sequence .fna clusters**                                                                     |
+| **-r** | **take first cluster dir as reference set, which might contain a single representative sequence per cluster** |
+| -s     | use only clusters with syntenic genes                                                                         |
+| **-t** | **use only clusters with single-copy orthologues from taxa \>= t**                                            |
+| -l     | produce clusters with single-copy seqs from ALL taxa in file                                                  |
+| -m     | produce intersection pangenome matrices                                                                       |
+| -x     | produce cluster report in OrthoXML format                                                                     |
+| -T     | produce parsimony-based pangenomic tree                                                                       |
+
+## `./parse_pangenome_matrix.pl`
+
+| Flags  | Meanings                                                  |
+|--------|-----------------------------------------------------------|
+| -h     | help message                                              |
+| **-m** | **input pangenome matrix .tab**                           |
+| **-s** | **report cloud,shell,soft core and core clusters**        |
+| -l     | list taxa names present in clusters reported in -m matrix |
+| -x     | produce matrix of intersection pangenome clusters         |
+| -l     | use only taxon names included in file                     |
+| -A     | file with taxon names (.faa,.gbk,.nucl files) of group A  |
+| -B     | file with taxon names (.faa,.gbk,.nucl files) of group B  |
+| -a     | find genes/clusters which are absent in B                 |
+| -g     | find genes/clusters present in A which are absent in B    |
+| -e     | find gene family expansions in A with respect to B        |
+| -S     | skip clusters with occupancy \<S                          |
+| -P     | percentage of genomes that must comply presence/absence   |
+
+# Presence vs Absence of BWA and USA Genomes in *C. pseudodiphtheriticum*
+
+4.9,2 in GET_HOMOLOGUES manual: <http://eead-csic-compbio.github.io/get_homologues/manual/manual.html#SECTION00059000000000000000>
+
+Genes present is BWA group and absent in USA group:
+
+```{bash, eval=FALSE}
+./parse_pangenome_matrix.pl -m "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_pan_intersection/pangenome_matrix_t0.tab" -A "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_gbk_43/Cps_BWA_Group.txt" -B "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_gbk_43/Cps_USA_Group.txt" -g
+```
+
+genes present in set A and absent in B (1):
+
+4576_hypothetical_protein.faa
+
+Isolate gene:
+```{bash, eval=FALSE}
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_pan_intersection"
+echo 4576_hypothetical_protein.faa > Genes_pre_BWA_ab_USA_100.txt
+mkdir -p Genes_pre_BWA_ab_USA_100
+cat "Genes_pre_BWA_ab_USA_100.txt" | xargs -J % cp % "Genes_pre_BWA_ab_USA_100"
+```
+
+Genes present is USA group and absent in BWA group:
+
+```{bash, eval=FALSE}
+./parse_pangenome_matrix.pl -m "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_pan_intersection/pangenome_matrix_t0.tab" -A "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_gbk_43/Cps_USA_Group.txt" -B "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_gbk_43/Cps_BWA_Group.txt" -g
+```
+
+genes present in set A and absent in B (1):
+
+41765_hypothetical_protein.faa
+
+Isolate gene:
+```{bash, eval=FALSE}
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_pan_intersection"
+echo 41765_hypothetical_protein.faa > Genes_pre_USA_ab_BWA_100.txt
+mkdir -p Genes_pre_USA_ab_BWA_100
+cat "Genes_pre_USA_ab_BWA_100.txt" | xargs -J % cp % "Genes_pre_USA_ab_BWA_100"
+```
+
+Genes to be present only in 80% of BWA genomes and missing in 80% of USA genomes:
+
+```{bash, eval=FALSE}
+./parse_pangenome_matrix.pl -m "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_pan_intersection/pangenome_matrix_t0.tab" -A "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_gbk_43/Cps_BWA_Group.txt" -B "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_gbk_43/Cps_USA_Group.txt" -g -P 80
+```
+
+genes present in set A and absent in B (38):
+
+378_dhbA.faa 379_hypothetical_protein.faa
+
+380_yfiY_1.faa 383_hypothetical_protein.faa
+
+387_dhbB_1.faa 388_menF_2.faa
+
+389_dhbE.faa
+
+390_dhbB_2.faa
+
+1899_hutG_1.faa
+
+4452_hypothetical_protein.faa
+
+4576_hypothetical_protein.faa
+
+4623_hypothetical_protein.faa
+
+4652_hypothetical_protein.faa
+
+4653_hypothetical_protein.faa
+
+4669_hypothetical_protein.faa
+
+4849_sumT.faa
+
+4850_hypothetical_protein.faa
+
+4851_hypothetical_protein.faa
+
+4852_cysNC.faa
+
+4853_cysD.faa
+
+4854_cysH.faa
+
+4855_sir.faa
+
+4931_yidD.faa
+
+5011_hypothetical_protein.faa
+
+5012_hypothetical_protein.faa
+
+5013_mobA_2.faa
+
+5015_hypothetical_protein.faa
+
+5016_hypothetical_protein.faa
+
+5017_amnC.faa
+
+5018_bphC.faa
+
+5019_hpcG.faa 5020_hpcH.faa
+
+5677_hypothetical_protein.faa
+
+8051_dltA.faa
+
+8057_fepG_2.faa
+
+8058_fepD_3.faa
+
+8060_hypothetical_protein.faa
+
+8108_bceA_2.faa
+
+Isolate genes:
+```{bash, eval=FALSE}
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_pan_intersection"
+echo fill in genes > Genes_pre_BWA_ab_USA_80.txt
+mkdir -p Genes_pre_BWA_ab_USA_80
+cat "Genes_pre_BWA_ab_USA_80.txt" | xargs -J % cp % "Genes_pre_BWA_ab_USA_80"
+```
+
+Genes to be present only in 80% of USA genomes and missing in 80% of BWA genomes:
+
+```{bash, eval=FALSE}
+./parse_pangenome_matrix.pl -m "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_pan_intersection/pangenome_matrix_t0.tab" -A "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_gbk_43/Cps_USA_Group.txt" -B "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_gbk_43/Cps_BWA_Group.txt" -g -P 80
+```
+
+genes present in set A and absent in B (11):
+
+2120_hypothetical_protein.faa
+
+40784_hypothetical_protein.faa
+
+40884_hypothetical_protein.faa
+
+40930_hypothetical_protein.faa
+
+41298_hypothetical_protein.faa
+
+41329_yidD.faa
+
+41549_hypothetical_protein.faa
+
+41722_hypothetical_protein.faa
+
+41765_hypothetical_protein.faa
+
+42158_hypothetical_protein.faa
+
+42265_glnA_4.faa
+
+Isolate genes:
+```{bash, eval=FALSE}
+cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_pan_intersection"
+echo fill in genes > Genes_pre_USA_ab_BWA_80.txt
+mkdir -p Genes_pre_USA_ab_BWA_80
+cat "Genes_pre_USA_ab_BWA_80.txt" | xargs -J % cp % "Genes_pre_USA_ab_BWA_80"
+```
+
+## View Genes though Aliview to Check Alignments
+
+# CorPGA Figures and Tables Layout
+
+For CorPGA figures and tables, the order of species will be Cpr, Cps, Cac, Ctu and we will use these 3 letter abbv in figures and tables where needed. The order is driven by how we need to arrange the 4 single species trees to make Figure 1.
+
+Current figure and tables (5 main figures, 2 main tables, 10 supplemental files)
+
+-   Figure S1: 5-species phylogenetic tree :white_check_mark:
+
+-   Figure 1: 4 species-specific phylogenies (only bold the type strain genome) :white_check_mark:
+
+-   Figure S2: ANIb(nt) for all (8 panels)
+
+-   Figure 2: rarefaction core & pan :white_check_mark:
+
+-   Figure S3: G_H core and accessory :white_check_mark:
+
+-   Figure S4: Anvi'o
+
+-   Figure ??: Comparison of the BWA vs US clades of Cps vis GH and anvi'o - where to place?
+
+-   Figure 3: 4-species COG main figure (a la Isabel)
+
+-   Figure S5: COG detailed supp figure
+
+-   Figure 4: KEGG analysis
+
+Table 1: basic genome stats summary
+
+Table 2: Predicted shared KEGG modules in all 4 species
+
+Table S1: indepth genome information
+
+Table S2: (color code the cells) AMR details
+
+Table S3: virulence factors :white_check_mark:
+
+Table S4: KEGG
+
+File S1: supplemental text and methods
+
+```{bash, eval=FALSE}
+sed -n -e '1p' -e '/string/p' -e '/tmRNA/p' /Users/tommytran/Downloads/Prokka_out_107_CorPGA/*.txt > CorPGA_ALLtmRNA.txt
+```
+
+# Finding GC Content 
+
+You will need to know the collection to assign for the `-C` flag in the `anvi-summarize` command. This is an example of how to see the collections and bins you have for a pangenome db file from Anvi'o. 
+```{bash, eval=FALSE}
+anvi-show-collections-and-bins -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/PAN_Cpro-PAN.db" --debug 
+```
+
+Find GC Content for *C. propinquum*:
+```{bash, eval=FALSE}
+# conda activate Anvio
+anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db -C CorevsAccessory
+```
+
+Find GC Content for *C. pseudodiphtheriticum*:
+```{bash, eval=FALSE}
+# conda activate Anvio
+anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpse/PAN_Cpse-PAN.db -C CorevsAccessory
+```
+
+Find GC Content for *C. accolens*:
+```{bash, eval=FALSE}
+# conda activate Anvio
+anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db -C CorevsAccessory
+```
+
+Find GC Content for *C. tuberculostearicum*:
+```{bash, eval=FALSE}
+# conda activate Anvio
+anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db -C CorevsAccessory
+```
+
+
