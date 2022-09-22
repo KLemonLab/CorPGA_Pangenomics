@@ -77,3 +77,4 @@ for file in $path_f/*.f*; do
 done
 ```
 
+<img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>

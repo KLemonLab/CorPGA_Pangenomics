@@ -853,3 +853,5 @@ cd get_homologues
 ```{bash, eval=FALSE}
 ./parse_pangenome_matrix.pl -m "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_pan_intersection/pangenome_matrix_t0.tab" -s -x
 ```
+
+<img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>

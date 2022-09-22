@@ -11,112 +11,6 @@ output:
     toc_depth: 4
 ---
 
-# FILE ORGANIZATION
-
-All the information for this project is stored in 3 main places:
-
-1.  **The KLemon Lab NAS (Network Attached Storage):** This is the main place that contains all the files. Notebooks and some key files get transferred here via git. While most of the analysis data should be moved directly to the "ONLY_IN_NAS" folder without being committed to the remote repository.
-2.  **Remote GitHub:** The repository for this project contains the .Rmd notebooks with the code and methods for this project, as well as only some essential files and useful outputs. This repository is cloned into the KLemon Lab NAS (Network Attached Storage) and most of the analysis folders are archived into the "ONLY_IN_NAS" folder. The "ONLY_IN_NAS" folder is ignored by git and therefore the files contained on it are only available in the NAS.
-3.  **Local copies of the repository:** This is usually the main working space on individual user computers from where Notebooks are committed to the remote GitHub. Any new analysis folders might be temporally in local copies of the repository and should be moved directly to the "ONLY_IN_NAS" folder and only committed to the remote repository if is really necessary for follow-up analysis.
-
-## Moving data directly in and out of the NAS
-
-This code can be used to move or copy the files in this project from your computer to the ONLY_IN_NAS folder (or the other way around). You need to be connected to the VPN and have the NAS folder mounted into your computer to run this.
-
-```{bash, eval=FALSE}
-mv analysis_folder /Volumes/KLemonLab/Projects/Coryne_Pangenomics_2021/_ONLY_IN_NAS #move to the NAS
-cp -R analysis_folder /Volumes/KLemonLab/Projects/Coryne_Pangenomics_2021/_ONLY_IN_NAS #copy to the NAS
-mv /Volumes/KLemonLab/Projects/Coryne_Pangenomics_2021/_ONLY_IN_NAS/analysis_folder . #move from the NAS to current folder
-cp -R Volumes/KLemonLab/Projects/Coryne_Pangenomics_2021/_ONLY_IN_NAS/analysis_folder . #copy from the NAS to current folder
-```
-
-## Working with Git/GitHub
-
-### Making a new repository on GitHub
-
-You can create a repo on your own profile page, click on "Repositories", then click the green "New" button. If this is a LemonLab Project please create the repository on the [Lemon Lab Team](https://github.com/KLemonLab) page.
-
-When creating a new repository is a good idea to add a README file and a .gitignore (with the R template).
-
-### Making a local copy of your repository via RStudio
-
-In RStudio, start a new Project: \*\*File \> New Project \> Version Control \> Git.\*\*
-
-In "Repository URL", paste the SSH of the GitHub repository you are cloning (copy to your clipboard via the green "Clone or Download" button in the GitHub repository). If you have issues setting up keys for SHH visit this [website](https://happygitwithr.com/ssh-keys.html).
-
-Accept the default project directory name, e.g. Test, which coincides with the GitHub repository name and pay attention to where you save it! I recommend having a GitHub folder with all your repositories.
-
-### Useful Git commands
-
-You can interact with Git from the Rstudio interface, use the GitHub desktop app or the command line. You will need to use these commands if you want to update the repositories in the KLemonLab NAS. This [website](https://docs.gitlab.com/ee/gitlab-basics/start-using-git.html) can help you with the basics of Git on the command line.
-
-```{bash, eval = FALSE}
-cd /path/to/your/gitprojectfolder  # Takes you into your project directory
-git clone # To clone a repository
-git pull # Makes sure you are up to date
-git status # Will show you everything in your commit box, items will be red if they are not staged
-git add . # This will stage all of the changes in the commit box
-git status # All the changes should be a green color now
-git commit -m "your message" # This will commit all the staged changes after the -m is where you write your message about what the changes are
-git commit -a -m "your message" # if you want to skip the git add . staging step
-git push # This will push your changes to Github repository
-
-git reset --soft HEAD~1 #Undo 1 commit to GitHub but keeps the changes in yout local repo
-git reset --hard HEAD~1 #Undo 1 commit to GitHub and goes back to the GitHub version 
-```
-
-The command line is especially useful if you need to clear out your commit box when it is too full or too laggy to commit through Rstudio. This can happen if you put too many files that add up to a lot of data or one file that might be too big. You shouldn't be committing those files in the first place, since those should be moved directly from your computer to the "ONLY_IN_NAS" folder.
-
-### Ignoring temporary analysis folders
-
-If you have temporary analysis folders in your local repository you can add their path at the end of the .gitignore file:
-
-```{r, eval=FALSE}
-file.edit(".gitignore")
-```
-
-The .gitignore file's purpose is to prevent everyone who collaborates on the same project from accidentally committing some local files in a project, such as generated cache files. While you are actively working in a new analysis folder it makes sense to ignore that folder, this way the folder is only in your local machine and the generated files don't clutter your commit box. This means there is no backup or version control on those files, only on the ones committed via Git/GitHub. Once you are ready to archive your folder, or if you want to do backups during your analysis, just move it to the "ONLY_IN_NAS" folder.
-
-If you need to edit the .gitignore file directly from the NAS you can use:
-
-```{bash, eval=FALSE}
-open -e .gitignore
-```
-
-### Committing big files
-
-GitHub doesn't allow commits of files bigger than 100MB. In general it is not a good idea to include big files in the repository and those should be moved to the "ONLY_IN_NAS" folder as described before. However, if is really essential (like for publication purposes) this can be done installing [Git LFS](https://git-lfs.github.com). The storage space for LFS committed files is very limited, extra storage can be purchased, but this option should be used only if open access to these files is required.
-
-In the repository you create a .gitattributes file that works quite similar to the .gitignore one. You can add files to track (including file extensions) with this code:
-
-```{bash, eval=FALSE}
-git lfs track "BigFilePath"
-```
-
-```{r, eval=FALSE}
-file.edit(".gitattributes")
-```
-
-The files listed in this file are included as links in the repository in GitHub. Once added to .gitattributes you can commit and push as usual.
-
-## Working with .Rmd Notebooks
-
-Notebooks are written with [Markdown](https://rmarkdown.rstudio.com/lesson-1.html) as .Rmd documents. They include formatted text and chunks of code. Notebooks are render (knit) into .md (rmarkdown::github_document) to be easily visualized in GitHub. Please always edit the .Rmd version and then knit into a .md file. The knitted .md version shouldn't be directly edited, it is the final output, not the working file.
-
-The chunks of code can use different language engines. Some examples:
-
-```{r, eval=FALSE}
-R.Version()$version.string
-```
-
-```{bash, eval=FALSE}
-which python
-```
-
-```{python.reticulate = FALSE}
-print ("hello")
-```
-
 # INSTALLATIONS
 
 ## Installing Conda (MacOSX)
@@ -330,3 +224,5 @@ After you added your path exit nano and then close terminal. Start a new window 
 ```{bash, eval=FALSE}
 echo $PATH
 ```
+
+<img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
