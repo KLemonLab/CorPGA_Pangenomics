@@ -1,7 +1,8 @@
 ---
 date: 'KLemonLab'
 output:
-  rmdformats::robobook:
+  prettydoc::html_pretty:
+    theme: cayman
   github_document:
     toc: true
     toc_depth: 4
@@ -9,7 +10,7 @@ output:
 
 # "Metabolic capabilities are highly conserved among human nasal-associated *Corynebacterium* species" Supplemental Methods
 
-# This repository includes:
+## This repository includes:
 
 -   Supplemental methods for program [installations](SupplementalMethods_Installations.html). 
 
@@ -21,7 +22,7 @@ output:
 
 -   Supplemental methods and output files for the [anvi'o 7 pangenomic and metabolic analysis](SupplementalMethods_Anvio.html).
 
--   Supplemental methods and output files of COG anvi'o annotated gene clusters assignments to the persistent versus accessory genome with [PPanGGOLiN analysis](SupplementalMethods_PPanGGOLiN).
+-   Supplemental methods and output files of COG anvi'o annotated gene clusters assignments to the persistent versus accessory genome with [PPanGGOLiN analysis](SupplementalMethods_PPanGGOLiN.html).
 
 -   Supplemental methods and output files for [COG annotations and funtional enrichment analysis](SupplementalMethods_COGS.html).
 
