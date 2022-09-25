@@ -15,7 +15,35 @@ klippy::klippy(c('r', 'bash'))
 ```
 
 
+# Finding GC Content 
 
+You will need to know the collection to assign for the `-C` flag in the `anvi-summarize` command. This is an example of how to see the collections and bins you have for a pangenome db file from Anvi'o. 
+```{bash, eval=FALSE}
+anvi-show-collections-and-bins -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/PAN_Cpro-PAN.db" --debug 
+```
+
+Find GC Content for *C. propinquum*:
+```{bash, eval=FALSE}
+# conda activate Anvio
+anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db -C CorevsAccessory
+```
+
+Find GC Content for *C. pseudodiphtheriticum*:
+```{bash, eval=FALSE}
+# conda activate Anvio
+anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpse/PAN_Cpse-PAN.db -C CorevsAccessory
+```
+
+Find GC Content for *C. accolens*:
+```{bash, eval=FALSE}
+# conda activate Anvio
+anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db -C CorevsAccessory
+```
+
+Find GC Content for *C. tuberculostearicum*:
+```{bash, eval=FALSE}
+# conda activate Anvio
+anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db -C CorevsAccessor
 
 <img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
 

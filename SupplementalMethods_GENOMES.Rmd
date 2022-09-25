@@ -8,6 +8,7 @@ output:
   github_document:
     toc: true
     toc_depth: 4
+bibliography: referencesGENOMES.bib
 ---
 
 ```{r klippy, echo=FALSE, include=TRUE}
@@ -16,7 +17,7 @@ klippy::klippy(c('r', 'bash'))
 
 # Genome Sourcing
 
-Initially 212 *Corynebacterium* assemblies were collected and analyzed using PanACoTa [\@] in order to filter low quality assemblies (maximum value of L90 allowed = 100 & maximum number of contigs allowed to keep a genome = 999).
+Initially 212 *Corynebacterium* assemblies were collected and analyzed using PanACoTa [@Perrin2021a] in order to filter low quality assemblies (maximum value of L90 allowed = 100 & maximum number of contigs allowed to keep a genome = 999).
 
 1.  **93 JASHHK genomes:** 94 KPL isolates were sequenced at NIH in collaboration with Julia Segre & Heidi Kong. This is follow up work on Wei Gao work with the CSF isolates. Only 1 out of 94 genomes was discarded because of low quality of the assembly (bovis_3648.spades.pilon.fasta, gsize=2626186, nb_conts=776 & L90=368). Several assemblies were identified as redundant pairs, but kept for follow up analysis.
 
@@ -24,7 +25,7 @@ Initially 212 *Corynebacterium* assemblies were collected and analyzed using Pan
 
 3.  **32 RefSeq genomes:** We downloaded from NCBI reference assemblies using `PanACoTA prepare -s` subcommand. Default parameters were used, therefore genomes with mash distances that was not between 1e-4 and 0.06 were discarded to avoid redundant pairs or mislabeled assemblies.
 
-4.  **71 KELLY genomes:** 71 nasal isolates from Botswana were provided by Dr. Matthew Kelly at Duke. None of the genomes were discarded due to quality. However, 6 discarded due to redundancy. We choose the strain with higher quality to keep between the pairs.
+4.  **71 BWA genomes:** 71 nasal isolates from Botswana were provided by Dr. Matthew Kelly at Duke. None of the genomes were discarded due to quality. However, 6 discarded due to redundancy. We choose the strain with higher quality to keep between the pairs.
 
 Download NCBI reference assemblies with `PanACoTa prepare -s`:
 
@@ -40,7 +41,7 @@ Download NCBI reference assemblies with `PanACoTa prepare -s`:
 
 ## Quality Control and Mash Redundancy
 
-We used PanACoTa [\@] in order to filter low quality assemblies with the default setting of a maximum L90 allowed to be = 100 and maximum number of contigs allowed to keep a genome = 999.
+We used PanACoTa in order to filter low quality assemblies with the default setting of a maximum L90 allowed to be = 100 and maximum number of contigs allowed to keep a genome = 999.
 
 All *Corynebacterium* assemblies we have of these four species were batched into one folder.
 
@@ -50,7 +51,7 @@ I first use --max 1 and --min 0 in order to keep all strains from all species:
 PanACoTA prepare --norefseq -d "/Users/tommytran/Downloads/CorPGA_genomes_final" -o "/Users/tommytran/Downloads/MASH_CorPGA_Final" --max 1 --min 0 
 ```
 
-I run again the mash analysis with --max 1 and default --min 1e-4. With this step we can identify assemblies that are very similar and might be redundant:
+I run again the MASH [@Ondov2016]analysis with --max 1 and default --min 1e-4. With this step we can identify assemblies that are very similar and might be redundant:
 
 ```{bash, eval=FALSE}
 PanACoTA prepare --norefseq -d "/Users/tommytran/Downloads/CorPGA_genomes_final" -o "/Users/tommytran/Downloads/MASH_CorPGA_Final_MinMash" --max 1 -M --info "/Users/tommytran/Downloads/MASH_CorPGA_Final/LSTINFO-NA-filtered-0.0_1.0.txt"
@@ -58,9 +59,7 @@ PanACoTA prepare --norefseq -d "/Users/tommytran/Downloads/CorPGA_genomes_final"
 
 ## Eliminating Genomes with **\<** 95% Identity to the Type Strain
 
-We created ANI (Average Nucleotide Identity) matrices for each of the four *Corynebacterium* species. These ANIs were generated using blastn and which means they were generated at the nucleotide level. We decided to look at all shared CDS (CoDing Sequences) regions and eliminated strains that did not meet a threshold of 95% of higher to the type strain of the concerning species.
-
-ANIb(nt) of all shared CDS (CoDing Sequences) regions
+We created ANI (Average Nucleotide Identity) matrices with GET_HOMOLOGUES [@Contreras-Moreira2013] for each of the four *Corynebacterium* species. These ANIs were generated using blastn and which means they were generated at the nucleotide level. We decided to look at all shared CDS (CoDing Sequences) regions and eliminated strains that did not meet a threshold of 95% of higher to the type strain of the concerning species.
 
 <img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
 
@@ -71,3 +70,9 @@ ANIb(nt) of all shared CDS (CoDing Sequences) regions
 ------------------------------------------------------------------------
 
 ------------------------------------------------------------------------
+
+<center>
+
+<h3>REFERENCES</h3>
+
+</center>

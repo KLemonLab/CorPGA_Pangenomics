@@ -854,4 +854,95 @@ cd get_homologues
 ./parse_pangenome_matrix.pl -m "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_pan_intersection/pangenome_matrix_t0.tab" -s -x
 ```
 
+# Commands and Flags
+
+Flags that are **bolded** are the ones that we used or modified.
+
+## `./get_homologues.pl`
+
+| Flags  | Meanings                                                                           |
+|----------------------|-------------------------------------------------|
+| -h     | help message                                                                       |
+| -v     | print version, credits and checks installation                                     |
+| **-d** | **directory with input .gbk files**                                                |
+| -i     | input amino acid FASTA file with [taxon names] in headers                          |
+| -o     | only run BLAST/Pfam searches and exit                                              |
+| **-c** | **report genome composition analysis**                                             |
+| -R     | set random seed for genome composition analysis                                    |
+| -s     | save memory by using BerkeleyDB; default parsing stores, sequence hits in RAM      |
+| -m     | runmode [local\|cluster\|dryrun] (default local)                                   |
+| **-n** | **nb of threads for BLAST/HMMER/MCL in 'local' runmode, (default=2)**              |
+| -I     | file with .faa/.gbk files in -d to be included (takes all by default, requires -d) |
+
+Algorithms instead of default bidirectional best-hits (BDBH):
+
+|        |                                                                                    |
+|----------------------|-------------------------------------------------|
+| **-G** | **use COGtriangle algorithm (COGS, PubMed=20439257), (requires 3+ genomes\|taxa)** |
+| **-M** | **use orthoMCL algorithm (OMCL, PubMed=12952885)**                                 |
+
+Options that control sequence similarity searches:
+
+|        |                                                                                         |
+|----------------------|-------------------------------------------------|
+| -X     | use diamond instead of blastp                                                           |
+| **-C** | **min %coverage in BLAST pairwise alignments (range [1-100],default=75)**               |
+| -E     | max E-value (default=1e-05,max=0.01)                                                    |
+| -D     | require equal Pfam domain composition when defining similarity-based orthology          |
+| -S     | min %sequence identity in BLAST query/subj pairs (range [1-100],default=1 [BDBH\|OMCL]) |
+| -N     | min BLAST neighborhood correlation PubMed=18475320 (range [0,1],default=0 [BDBH\|OMCL]) |
+| -b     | compile core-genome with minimum BLAST searches (ignores -c [BDBH])                     |
+
+Options that control clustering:
+
+|        |                                                                                                                       |
+|----------------------|-------------------------------------------------|
+| **-t** | **report sequence clusters including at least t taxa (default t=numberOfTaxa,t=0 reports all clusters [OMCL\|COGS])** |
+| **-a** | **report clusters of sequence features in GenBank files instead of default 'CDS' GenBank features**                   |
+| -g     | report clusters of intergenic sequences flanked by ORFs in addition to default 'CDS' clusters                         |
+| -f     | filter by %length difference within clusters (range [1-100], by default sequence length is not checked)               |
+| -r     | reference proteome .faa/.gbk file                                                                                     |
+| -e     | exclude clusters with inparalogues                                                                                    |
+| -x     | allow sequences in multiple COG clusters                                                                              |
+| -F     | orthoMCL inflation value                                                                                              |
+| **-A** | **calculate average identity of clustered sequences, by default uses blastp results but can use blastn with -a**      |
+| -P     | calculate percentage of conserved proteins (POCP), by default uses blastp results but can use blastn with -a          |
+| -z     | add soft-core to genome composition analysis                                                                          |
+
+get_homologues will run the **default clustering algorithm Bidirectional Best Hits (BDBH)** when other clustering flags are not used.
+
+## `./compare_clusters.pl`
+
+| Flags  | Meanings                                                                                                      |
+|----------------------|-------------------------------------------------|
+| -h     | help message                                                                                                  |
+| **-d** | **comma-separated names of cluster directories**                                                              |
+| **-o** | **output directory**                                                                                          |
+| **-n** | **use nucleotide sequence .fna clusters**                                                                     |
+| **-r** | **take first cluster dir as reference set, which might contain a single representative sequence per cluster** |
+| -s     | use only clusters with syntenic genes                                                                         |
+| **-t** | **use only clusters with single-copy orthologues from taxa \>= t**                                            |
+| -l     | produce clusters with single-copy seqs from ALL taxa in file                                                  |
+| -m     | produce intersection pangenome matrices                                                                       |
+| -x     | produce cluster report in OrthoXML format                                                                     |
+| -T     | produce parsimony-based pangenomic tree                                                                       |
+
+## `./parse_pangenome_matrix.pl`
+
+| Flags  | Meanings                                                  |
+|--------|-----------------------------------------------------------|
+| -h     | help message                                              |
+| **-m** | **input pangenome matrix .tab**                           |
+| **-s** | **report cloud,shell,soft core and core clusters**        |
+| -l     | list taxa names present in clusters reported in -m matrix |
+| -x     | produce matrix of intersection pangenome clusters         |
+| -l     | use only taxon names included in file                     |
+| -A     | file with taxon names (.faa,.gbk,.nucl files) of group A  |
+| -B     | file with taxon names (.faa,.gbk,.nucl files) of group B  |
+| -a     | find genes/clusters which are absent in B                 |
+| -g     | find genes/clusters present in A which are absent in B    |
+| -e     | find gene family expansions in A with respect to B        |
+| -S     | skip clusters with occupancy \<S                          |
+| -P     | percentage of genomes that must comply presence/absence   |
+
 <img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
