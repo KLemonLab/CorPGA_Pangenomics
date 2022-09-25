@@ -33,7 +33,7 @@ done
 
 ## Prokka Annotation for anvi'o
 
-More information about importing prokka annotations into anvi'o can be found here: https://merenlab.org/2017/05/18/working-with-prokka/#note-for-the-pangenomics-workflow
+More information about importing prokka annotations into anvi'o can be found here: <https://merenlab.org/2017/05/18/working-with-prokka/#note-for-the-pangenomics-workflow>
 
 ### Fasta reformatting
 
@@ -66,6 +66,7 @@ done
 ```
 
 ### Parsing .gff Files
+
 ```{bash, eval = FALSE}
 conda activate anvio-7.1
 cd ./Documents/CorPGA_rerun_aqr
@@ -80,6 +81,7 @@ done
 ```
 
 ### Generating contigs databases
+
 ```{bash, eval = FALSE}
 conda activate anvio-7.1
 cd ./Documents/CorPGA_rerun_aqr
@@ -98,6 +100,21 @@ for file in $path_f/*.fna; do
 done
 ```
 
+### Importing prokka functional annotation
+
+```{bash, eval = FALSE}
+#conda activate anvio-7.1
+path_f="analysis_Anvio7_1/Contigs_db"
+path_e="analysis_Anvio7_1/Parsed_prokka"
+
+for file in $path_f/*.db; do
+    FILENAME=`basename ${file%.*}`
+    anvi-import-functions -c $file \
+                          -i $path_e/annot_$FILENAME.txt
+      
+done
+```
+
 <img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
 
 ------------------------------------------------------------------------
@@ -113,4 +130,3 @@ done
 <h3>[REFERENCES]{.underline}</h3>
 
 </center>
-

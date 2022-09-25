@@ -8,11 +8,275 @@ output:
   github_document:
     toc: true
     toc_depth: 4
+bibliography: referencesAnvio.bib
 ---
 
 ```{r klippy, echo=FALSE, include=TRUE}
 klippy::klippy(c('r', 'bash'))
 ```
+
+# anvi'o v7
+
+This notebook contains analyses using anvi'o version 7.1.2 [@Eren2021]. If you want to know more in-depth information about anvi'o you can go to their official online site here: <https://anvio.org/>
+
+# Import functional annotations
+
+## COG annotation
+
+First you need to download and set up the NCBI's Clusters of Orthologous Groups database using `anvi-setup-ncbi-cogs`: this is something you will do only once.
+
+Now the `anvi-run-ncbi-cogs` command can be used to annotate the .db genome files against the NCBI's COGs database [@Tatusov2001]: It uses DIAMOND [@Buchfink2015] "fast" as default, but it is recommended to use the "sensitive" option. This will take considerably much longer. Blastp can also be used instead of DIAMOND.
+
+```{bash, eval = FALSE}
+#conda activate anvio-7.1.2
+path_f="analysis_Anvio7_1/Contigs_db"
+
+for file in $path_f/*.db; do
+    anvi-run-ncbi-cogs -T 8 --sensitive -c $file;
+done
+```
+
+## KEGG annotation
+
+First you need to download and set up the KEGG KOfam database using `anvi-setup-kegg-kofams`: this is something you will do only once.
+
+The program `anvi-run-kegg-kofams` annotates genes in a given anvi'o contigs database with KEGG Orthology (KO) numbers via hits to the KEGG KOfam database [@Kanehisa2000].
+
+```{bash, eval = FALSE}
+#conda activate anvio-7.1.2
+path_f="analysis_Anvio7_1/Contigs_db"
+
+for file in $path_f/*.db; do
+    anvi-run-kegg-kofams -T 8 --log-bitscores -c $file;
+done
+```
+
+The option `--log-bitscores` records the bit scores values. They were saved to the main folder for the repo, so I move them to a folder:
+
+```{bash, eval = FALSE}
+mkdir "analysis_Anvio7_1/KEGGbitscores"
+mv *_bitscores.txt analysis_Anvio7_1/KEGGbitscores/
+```
+
+## PFAM annotation
+
+First you need to download and set up the PFAM database using `anvi-setup-pfams`: this is something you will do only once.
+
+The program `anvi-run-kegg-pfam` annotates genes in a given anvi'o contigs database with the PFAM database [@Mistry2021].
+
+```{bash, eval = FALSE}
+#conda activate anvio-7.1.2
+path_f="analysis_Anvio7_1/Contigs_db"
+
+for file in $path_f/*.db; do
+    anvi-run-pfams -T 8 -c $file;
+done
+```
+
+## Running HMMs
+
+When you run the following command the occurrence of bacterial single-copy genes across your contigs is all added to your contigs database [@Eddy2011].
+
+```{bash, eval = FALSE}
+#conda activate anvio-7.1.2
+path_f="analysis_Anvio7_1/Contigs_db"
+
+for file in $path_f/*.db; do
+    anvi-run-hmms -T 8 -c $file --just-do-it;
+done
+```
+
+## Annotation Summaries
+
+This generates basic stats on the annotations:
+
+```{bash, eval = FALSE}
+#conda activate anvio-7.1.2
+mkdir -p "analysis_Anvio7_1/Contigs_stats"
+
+path_f="analysis_Anvio7_1/Contigs_db"
+path_o="analysis_Anvio7_1/Contigs_stats"
+
+for file in $path_f/*.db; do
+    FILENAME=`basename ${file%.*}`
+    anvi-display-contigs-stats $file --report-as-text -o $path_o/stats_$FILENAME.txt;
+done
+```
+
+This provides basic info on the contigs databases:
+
+```{bash, eval = FALSE}
+#conda activate anvio-7.1.2
+path_f="analysis_Anvio7_1/Contigs_db"
+
+for file in $path_f/*.db; do
+    anvi-db-info $file;
+done
+```
+
+Terminal output saved to `analysis_Anvio7_1/anvi-db-info_log.txt`.
+
+# PANGENOME ANALYSIS
+
+## Generating an anvi'o genomes storage
+
+The program `anvi-gen-genomes-storage` requires you to provide names and locations of the genomes to be included in the genome storage database in a .txt file. We created the All_107_CorynesAnvio.txt file with the renamed file names and paths based on the info on `GENOMES/METADATA_107taxa.csv`. This file includes the name anvi'o will use internally to identify each genome. I added the prefix "RefSeq\_" to the reference genomes because some of them start with a digit and anvi'o only allow names that start with an ASCII letter.
+
+We create 1 database with the 107 genomes that can be used to run the pangenomic analysis with all the strains at once or by selecting subsets of strains (i.e. by species, or by grouping related species together).
+
+```{bash, eval = FALSE}
+#conda activate anvio-7.1
+mkdir -p "analysis_Anvio7_1/Pangenomic_Results"
+
+anvi-gen-genomes-storage -e "analysis_Anvio7_1/All_107_CorynesAnvio.txt" -o "analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db" --gene-caller Prodigal
+```
+
+This provides basic info on the generated genomes storage database:
+
+```{bash, eval = FALSE}
+anvi-db-info "analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db"
+```
+
+# Make Species Genome Lists
+
+We had to make new anvi'o environment with python 3.7 since the step below would not work unless we did that. This could be related to the updates with anvio 7.1 conda create -y --name anvio-7.1.2 python=3.7
+
+# Running the pangenomic analsyses
+
+```{bash, eval = FALSE}
+#conda activate anvio-7.1
+anvi-pan-genome -g analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -G Cacc.txt -o analysis_Anvio7_1/Pangenomic_Results/Cacc -n PAN_Cacc --use-ncbi-blast --mcl-inflation 10  --num-threads 8
+
+anvi-pan-genome -g analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -G Cpro.txt -o analysis_Anvio7_1/Pangenomic_Results/Cpro -n PAN_Cpro --use-ncbi-blast --mcl-inflation 10  --num-threads 8
+
+anvi-pan-genome -g analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -G Ctub.txt -o analysis_Anvio7_1/Pangenomic_Results/Ctub -n PAN_Ctub --use-ncbi-blast --mcl-inflation 10  --num-threads 8 
+
+anvi-pan-genome -g analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -G Cpsd.txt -o analysis_Anvio7_1/Pangenomic_Results/Cpsd -n PAN_Cpsd --use-ncbi-blast --mcl-inflation 10  --num-threads 8
+```
+
+## Displaying the pangenomes
+
+This will display the pangenome in your default internet browser. Anvi'o says google chrome is the most compatible with the anvi''o interactive interface. You need to pick one of the `-p` inputs for each PAN.db file:
+
+```{bash, eval = FALSE}
+#conda activate anvio-7
+anvi-display-pan -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db"
+
+anvi-display-pan -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db" -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db"
+
+anvi-display-pan -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db"
+
+anvi-display-pan -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db" -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db"
+```
+
+If you are using Windows and it cannot display the interactive page then try copy and pasting either 127.0.0.1:8080 or <http://localhost:8080/> into your browser. Do not use sudo in the front of the command either.
+
+Once it opens in the browser, you can adjust image settings and click the "DRAW" icon to view it. For help using the interactive interface see <http://merenlab.org/2016/02/27/the-anvio-interactive-interface/>
+
+## Summarizing the updated pangenome files by bin collection
+
+We can create tables with a summary of the pangenomes using the program `anvi-summarize`:
+
+```{bash, eval = FALSE}
+#conda activate anvio-7
+anvi-summarize -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" \
+               -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db" \
+               -o "/Users/klemonlab/Downloads/Cps_PAN_SUMMARY" \
+               -C CorevsAccessory
+               
+anvi-summarize -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db" \
+               -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db" \
+               -o "/Users/klemonlab/Downloads/Cpr_PAN_SUMMARY" \
+               -C CorevsAccessory
+               
+anvi-summarize -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db" \
+               -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db" \
+               -o "/Users/klemonlab/Downloads/Ctu_PAN_SUMMARY" \
+               -C CorevsAccessory
+               
+anvi-summarize -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" \
+               -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db" \
+               -o "/Users/klemonlab/Downloads/Cac_PAN_SUMMARY" \
+               -C CorevsAccessory
+```
+
+The resulting summary folders contain a `gene_clusters_summary.txt.gz` file that links each gene to gene clusters, genomes, functions, layers, and bins selected from the interface.
+
+For consistency with other parts of the analysis the colors used for each species are:
+
+-   "red" or "#FF0000" for Cpsd
+-   "darkorange" or "#FF8C00" for Cpro
+-   "darkblue" or "#0000ff" for Ctub
+-   "darkviolet" or "#9400D3" for Cacc
+-   "deeppink" or "#FF1493" for Cmac
+
+## Manually Reorder the Layers to Match Phylogenomic Trees per Species
+
+Click and drag the names. The order names is inverse to the layers in the concentric diagram. When all the layers were re-ordered to match the phylogenomic tree we clicked the draw button and saved the svg file.
+
+Darker Hex color assignments for PANGGOLiN
+
+persistant - 5e0000
+
+shell - 7400a6
+
+cloud - 054ca8
+
+Hex color assignments for GET_HOMOGOLOUES:
+
+Core - d18f24
+
+SC_Core - a30303
+
+Soft_Core - fc4635
+
+Shell - c64dfa
+
+Cloud - 358bfc
+
+### *C. pseudodiphtheriticum* pangenome
+
+| Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
+|-----------------|-----------------|-----------------|---------------------|
+| Core             | 1714/3590                     | `r round(100*(1714/3590),1)`% | 43                                   |
+| Single Copy Core | 1488/3590                     | `r round(100*(1488/3590),1)`% | 43                                   |
+| Multicopy Core   | 226/3590                      | `r round(100*(226/3590),1)`%  | 43                                   |
+| Soft Core        | 46/3590                       | `r round(100*(46/3590),1)`%   | 40-42                                |
+| Shell            | 972/3590                      | `r round(100*(972/3590),1)`%  | 3-39                                 |
+| Cloud            | 858/3590                      | `r round(100*(858/3590),1)`%  | 1-2                                  |
+
+### *C. propinquum* pangenome
+
+| Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
+|-----------------|-----------------|-----------------|---------------------|
+| Core             | 1824/3108                     | `r round(100*(1824/3108),1)`% | 19                                   |
+| Single Copy Core | 1715/3108                     | `r round(100*(1715/3108),1)`% | 19                                   |
+| Multicopy Core   | 109/3108                      | `r round(100*(109/3108),1)`%  | 19                                   |
+| Soft Core        | 39/3108                       | `r round(100*(39/3108),1)`%   | 18                                   |
+| Shell            | 689/3108                      | `r round(100*(689/3108),1)`%  | 3-17                                 |
+| Cloud            | 556/3108                      | `r round(100*(556/3108),1)`%  | 1-2                                  |
+
+### *C. tuberculostearicum* pangenome
+
+| Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
+|-----------------|-----------------|-----------------|---------------------|
+| Core             | 1915/2907                     | `r round(100*(1915/2907),1)`% | 8                                    |
+| Single Copy Core | 1860/2907                     | `r round(100*(1860/2907),1)`% | 8                                    |
+| Multicopy Core   | 55/2907                       | `r round(100*(55/2907),1)`%   | 8                                    |
+| Soft Core        | 47/2907                       | `r round(100*(47/2907),1)`%   | 7                                    |
+| Shell            | 270/2907                      | `r round(100*(270/2907),1)`%  | 3-6                                  |
+| Cloud            | 671/2907                      | `r round(100*(671/2907),1)`%  | 1-2                                  |
+
+### *C. accolens* pangenome
+
+| Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
+|-----------------|-----------------|-----------------|---------------------|
+| Core             | 1904/3427                     | `r round(100*(1904/3427),1)`% | 34                                   |
+| Single Copy Core | 1734/3427                     | `r round(100*(1734/3427),1)`% | 34                                   |
+| Multicopy Core   | 170/3427                      | `r round(100*(170/3427),1)`%  | 34                                   |
+| Soft Core        | 77/3427                       | `r round(100*(77/3427),1)`%   | 32-33                                |
+| Shell            | 676/3427                      | `r round(100*(676/3427),1)`%  | 3-31                                 |
+| Cloud            | 770/3427                      | `r round(100*(770/3427),1)`%  | 1-2                                  |
 
 # Finding GC Content
 
@@ -25,29 +289,29 @@ anvi-show-collections-and-bins -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/a
 Find GC Content for *C. propinquum*:
 
 ```{bash, eval=FALSE}
-# conda activate anvio
+# conda activate Anvio
 anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db -C CorevsAccessory
 ```
 
 Find GC Content for *C. pseudodiphtheriticum*:
 
 ```{bash, eval=FALSE}
-# conda activate anvio
+# conda activate Anvio
 anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpse/PAN_Cpse-PAN.db -C CorevsAccessory
 ```
 
 Find GC Content for *C. accolens*:
 
 ```{bash, eval=FALSE}
-# conda activate anvio
+# conda activate Anvio
 anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db -C CorevsAccessory
 ```
 
 Find GC Content for *C. tuberculostearicum*:
 
 ```{bash, eval=FALSE}
-# conda activate anvio
-anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db -C CorevsAccessor
+# conda activate Anvio
+anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db -C CorevsAccessory
 ```
 
 <img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>

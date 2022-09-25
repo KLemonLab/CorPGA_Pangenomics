@@ -77,7 +77,7 @@ anvi-gen-contigs-database -f Dpi_ASM719771v1.fna \
                               -n Dpi_ASM719771v1;
 ```
 
-## Importing functional annotation
+## Importing functional annotations
 
 ### Prokka annotation
 ```{bash, eval = FALSE}
@@ -431,7 +431,7 @@ knitr::opts_chunk$set(message = FALSE, eval=FALSE)
 
 ## Importing Prokka annotations and Anvi'o 7 clusters
 
-In order to import the Anvi'o clustering into PPanGGOLiN we need:
+In order to import the anvi'o clustering into PPanGGOLiN we need:
 
 1.  A .tsv file listing in the first column the gene family names, and in the second column the gene ID that is used in the annotation files.
 2.  The annotated genomes with gene IDs that match the ones listed in the previous .tsv file.
@@ -693,7 +693,6 @@ anvi-show-collections-and-bins -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/a
 anvi-show-collections-and-bins -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" --debug 
 ```
 
-<<<<<<< Updated upstream
 ## PPanGGOLiN Pangenome Compartments
 
 ### *C. pseudodiphtheriticum* pangenome
@@ -732,15 +731,6 @@ anvi-show-collections-and-bins -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/a
 | Cloud            | 1113/3427                     | `r round(100*(1113/3427),1)`% | 
 | None             | 2/3427                        | `r round(100*(2/3427),1)`%    | 
 
-=======
->>>>>>> Stashed changes
-# Gephi Parameters
-
-Edges (links) Color
-Hex code: BDBDBD
-
-Background Color
-Hex code: 34203B
 
 I ran into the issue of the graph or preview not viewing in Gephi. This link <https://github.com/gephi/gephi/issues/2051> helped me troubleshoot the issue.
 
