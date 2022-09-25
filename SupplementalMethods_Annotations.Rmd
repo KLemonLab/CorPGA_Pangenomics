@@ -8,6 +8,104 @@ output:
   github_document:
     toc: true
     toc_depth: 4
+bibliography: referencesAnnotations.bib
 ---
 
+# Annotating with Prokka
+
+We used prokka v1.14.6 to annotate 107 *Corynebacterium* strain genomes. In order to use annotated genomes with GET_HOMOLOGUES and anvi'o two seperate runs had to be made with prokka.
+
+More information about prokka can be found here: <https://github.com/tseemann/prokka>
+
+## Prokka Annotation for GET_HOMOLOGUES
+
+This loop annotates all the genomes and names then with --genus 'Corynebacterium' --species 'sp' and --strain based on the file name. The prokka annotation uses [Prokka v1.14.6](https://github.com/tseemann/prokka/releases/tag/v1.14.6) [@Seemann2014] with default parameters, including gene recognition and translation initiation site identification with Prodigal [@Hyatt2010].
+
+```{bash, eval=FALSE}
+path_f="/Users/klemonlab/Downloads/CorPGA_genomes_final"
+path_o="/Users/klemonlab/Downloads/CorPGA_prokka_out_GH"
+
+for file in $path_f/*.f*; do
+    FILENAME=`basename ${file%.*}`
+    prokka --prefix $FILENAME --outdir $path_o --genus 'Corynebacterium' --species 'sp' --strain $FILENAME --centre X --compliant --cpus 0 --force $file; 
+done
+```
+
+## Prokka Annotation for anvi'o
+
+More information about importing prokka annotations into anvi'o can be found here: https://merenlab.org/2017/05/18/working-with-prokka/#note-for-the-pangenomics-workflow
+
+### Fasta reformatting
+
+Before the annotation step with Prokka we need to reformat the fasta files using `anvi-script-reformat-fasta`. This script creates FASTA file with simplified deflines and also by using --seq-type NT prevents downstream errors with "characters that are not any of A, C, T, G, N, a, c, t, g, n."
+
+```{bash, eval=FALSE}
+#conda activate anvio-7
+mkdir -p "GENOMES/reformatted"
+path_f="GENOMES/renamed"
+path_o="GENOMES/reformatted"
+
+for file in $path_f/*.f*; do
+    FILENAME=`basename ${file%.*}`
+    anvi-script-reformat-fasta -o $path_o/$FILENAME.fa --min-len 0 --simplify-names $file --seq-type NT; 
+done
+```
+
+### Prokka annotation
+
+```{bash, eval=FALSE}
+#conda activate base
+mkdir -p "/Users/klemonlab/Downloads/CorPGA_reformat_prokka_out"
+path_f="/Users/klemonlab/Downloads/CorPGA_genomes_reformat"
+path_o="/Users/klemonlab/Downloads/CorPGA_reformat_prokka_out"
+
+for file in $path_f/*.f*; do
+    FILENAME=`basename ${file%.*}`
+    prokka --prefix $FILENAME --outdir $path_o --genus 'Corynebacterium' --species 'sp' --strain $FILENAME --cpus 0 --force $file;
+done
+```
+
+### Parsing .gff Files
+```{bash, eval = FALSE}
+conda activate anvio-7.1
+cd ./Documents/CorPGA_rerun_aqr
+mkdir -p "analysis_Anvio7_1/Parsed_prokka"
+path_f="107_gff_reformat_prokka"
+path_o="analysis_Anvio7_1/Parsed_prokka"
+
+for file in $path_f/*.gff; do
+    FILENAME=`basename ${file%.*}`
+    python analysis_Anvio7_1/gff_parser.py --gene-calls $path_o/calls_$FILENAME.txt --annotation $path_o/annot_$FILENAME.txt $file;
+done
+```
+
+### Generating contigs databases
+```{bash, eval = FALSE}
+conda activate anvio-7.1
+cd ./Documents/CorPGA_rerun_aqr
+mkdir -p "analysis_Anvio7_1/Contigs_db"
+path_f="CorPGA_reformat_prokka_out"
+path_o="analysis_Anvio7_1/Contigs_db"
+path_e="analysis_Anvio7_1/Parsed_prokka"
+
+for file in $path_f/*.fna; do
+    FILENAME=`basename ${file%.*}`
+    anvi-gen-contigs-database -f $file \
+                              -o $path_o/$FILENAME.db \
+                              --external-gene-calls $path_e/calls_$FILENAME.txt \
+                              --ignore-internal-stop-codons \
+                              -n $FILENAME;
+done
+```
+
 <img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+<center> <h3>REFERENCES </h3> </center>

@@ -1,7 +1,6 @@
 ---
 title: "SupplementalMethods_Anvio"
 author: "Tommy Tran (KLemonLab)"
-date: 'Last updated: 09/20/2022'
 output:
   rmdformats::robobook:
     use_bookdown: true
@@ -11,13 +10,14 @@ output:
     toc_depth: 4
 ---
 
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy(c('r', 'bash'))
+```
+
+
+
+
 <img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
-
-
-
-
-
-
 
 
 

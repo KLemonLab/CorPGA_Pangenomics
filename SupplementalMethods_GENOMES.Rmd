@@ -62,18 +62,12 @@ We created ANI (Average Nucleotide Identity) matrices for each of the four *Cory
 
 ANIb(nt) of all shared CDS (CoDing Sequences) regions
 
-# Prokka Annotation for GET_HOMOLOGUES
-
-This loop annotates all the genomes and names then with --genus 'Corynebacterium' --species 'sp' and --strain based on the file name. The Prokka annotation uses [Prokka v1.14.6](https://github.com/tseemann/prokka/releases/tag/v1.14.6) [\@Seemann2014] with default parameters, including gene recognition and translation initiation site identification with Prodigal [\@Hyatt2010].
-
-```{bash, eval=FALSE}
-path_f="/Users/klemonlab/Downloads/CorPGA_genomes_final"
-path_o="/Users/klemonlab/Downloads/CorPGA_prokka_out_GH"
-
-for file in $path_f/*.f*; do
-    FILENAME=`basename ${file%.*}`
-    prokka --prefix $FILENAME --outdir $path_o --genus 'Corynebacterium' --species 'sp' --strain $FILENAME --centre X --compliant --cpus 0 --force $file; 
-done
-```
-
 <img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------

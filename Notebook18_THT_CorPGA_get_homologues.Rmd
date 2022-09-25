@@ -1,7 +1,6 @@
 ---
 title: "SupplementalMethods_GET_HOMOLOGUES"
 author: "Tommy Tran (KLemonLab)"
-date: 'Last updated: 09/20/2022'
 output:
   rmdformats::robobook:
     use_bookdown: true
