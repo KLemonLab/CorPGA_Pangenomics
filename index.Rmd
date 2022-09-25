@@ -20,7 +20,7 @@ output:
 
 -   Supplemental methods and output files of pangenome analyses performed with [GET_HOMOLOGUES](SupplementalMethods_GET_HOMOLOGUES.html).
 
--   Supplemental methods and output files for the [anvi'o 7 pangenomic and metabolic analysis](SupplementalMethods_Anvio.html).
+-   Supplemental methods and output files for the [anvi'o v7 pangenomic and metabolic analysis](SupplementalMethods_Anvio.html).
 
 -   Supplemental methods and output files of COG anvi'o annotated gene clusters assignments to the persistent versus accessory genome with [PPanGGOLiN analysis](SupplementalMethods_PPanGGOLiN.html).
 
