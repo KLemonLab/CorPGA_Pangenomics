@@ -73,6 +73,6 @@ We created ANI (Average Nucleotide Identity) matrices with GET_HOMOLOGUES [@Cont
 
 <center>
 
-<h3>REFERENCES</h3>
+<h3>[REFERENCES]{.underline}</h3>
 
 </center>

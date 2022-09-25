@@ -108,4 +108,9 @@ done
 
 ------------------------------------------------------------------------
 
-<center> <h3>REFERENCES </h3> </center>
+<center>
+
+<h3>[REFERENCES]{.underline}</h3>
+
+</center>
+

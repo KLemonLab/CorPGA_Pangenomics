@@ -1,7 +1,6 @@
 ---
 title: "SupplementalMethods_GET_HOMOLOGUES"
 author: "Tommy Tran (KLemonLab)"
-date: 'Last updated: 09/20/2022'
 output:
   rmdformats::robobook:
     use_bookdown: true
@@ -9,19 +8,17 @@ output:
   github_document:
     toc: true
     toc_depth: 4
+bibliography: referencesGET_HOMOLOGUES.bib
 ---
 
 # GET_HOMOLOGUES
 
-This notebook contains analyses using the genomic software GET_HOMOLOGUES version xxx. If you want to know more in-depth information about GET_HOMOLOGUES you can go to their official online manual here: <http://eead-csic-compbio.github.io/get_homologues/manual/>
+This notebook contains analyses using the genomic software GET_HOMOLOGUES version 24082022 [@Contreras-Moreira2013]. If you want to know more in-depth information about GET_HOMOLOGUES you can go to their official online manual here: <http://eead-csic-compbio.github.io/get_homologues/manual/>
 
-We will want to use the gbk (genebank) file for each genome from the prokka output. We isolated the gbk files in new folders.
+We will want to use the gbk or gbf (genebank) file for each *Corynebacterium* strain genome from the prokka output. We copied and isolated the gbk files in new folders.
 
 ```{bash, eval=FALSE}
-cd /directory/holding/prokka/output
-mv *.gbk /new/directory/only/containing/gbk/files
-
-We will want to use the gbk file for each genome from the prokka output. We isolated the gbk files in new folders.
+# We will want to use the gbk file for each genome from the prokka output. We isolated the gbk files in new folders.
 
 cd /directory/holding/prokka/output
 mv *.gbk /new/directory/only/containing/gbk/files
@@ -29,7 +26,7 @@ mv *.gbk /new/directory/only/containing/gbk/files
 
 # ANI (Average Nucleotide Identity)
 
-There will be **two** ANI matrices at the nucleotide level for each of the four species using OMCL (OrthoMuscle). The first one is to calculate ANI percentages from the core CDS (coding sequences) and the second is to calculate ANI values from all shared CDS regions. You must use gbk files outputted from prokka annotation.
+There will be **two** ANI matrices at the nucleotide level for each of the four species using OMCL (OrthoMuscle) [@Li2003]. The first one is to calculate ANI percentages from the core CDS (coding sequences) and the second is to calculate ANI values from all shared CDS regions. You must use gbk provided from the prokka annotation.
 
 ## Generate ANI tab files
 
@@ -149,11 +146,11 @@ cd get_homologues
 
 ## Edit ANI svg files
 
-Once all eight svg files were created, they were each opened with adobe illustrator and edited to look like our figures.
+Once all eight svg files were created, they were each opened with adobe illustrator and edited and polished until final forms.
 
 # Conservative Core and Phylogeny of All 107 *Corynebacterium* Genomes
 
-The core has to be determined by three seperate clustering algorithms. These algorithms include BDBH (bidirectional best hits), COGS (Clusters of Orthologous Genes), and OMCL (OrthoMCL). Once the core has been determined for each algorithm we will generate a venn diagram of the shared conservative gene clusters between them. This will be the number in the middle of the venn diagram where all three algorithms intersect.
+The core has to be determined by three seperate clustering algorithms. These algorithms include BDBH (bidirectional best hits), COGS (Clusters of Orthologous Genes) [@Kristensen2010], and OMCL (OrthoMCL). Once the core has been determined for each algorithm we will generate a venn diagram of the shared conservative gene clusters between them. This will be the number in the middle of the venn diagram where all three algorithms intersect.
 
 ## Running BDBH, COGS, & OMCL with 107 *Corynebacterium* Genomes
 
@@ -180,7 +177,7 @@ cd get_homologues
 
 ## Creating a Conservative Core Venn Diagram
 
-From my experience you will run into less issues here if you move the three cluster folders and cluster list files into a new directory. Then use the paths to those cluster folders after the `-d` flag seperated by commas.
+From my experience you will run into less issues here if you move the three cluster folders and cluster list files into a new directory. Then use the paths to those cluster folders after the `-d` flag separated by commas.
 
 Create conservative core venn diagram intersection to output faa files:
 
@@ -200,8 +197,6 @@ cd get_homologues
 
 At this point we have created faa and faa files of the core gene clusters from 107 *Corynebacterium* genomes. To begin generating a phylogenomic tree we begin by isolating only the faa and fna files into one folder.
 
-1.  At this point we have created faa and faa files of the core gene clusters from 107 *Corynebacterium* genomes. To begin generating a phylogenomic tree we begin by isolating only the faa and fna files into one folder.
-
 Move all files with the extension .faa and fna to new destination folder:
 
 ```{bash, eval=FALSE}
@@ -210,9 +205,9 @@ mv *.faa /Users/klemonlab/Downloads/CorPGA_107_faa_fna_only
 mv *.fna /Users/klemonlab/Downloads/CorPGA_107_faa_fna_only
 ```
 
-Now we use GET_PHYLOMARKERS version xxx to generate concatenated alignment file for each single copy core gene cluster. Delete Lines
+Now we use GET_PHYLOMARKERS version 2.2.9.1 [@Vinuesa2018] to generate concatenated alignment file for each single copy core gene cluster.
 
-1.  Now we use GET_PHYLOMARKERS version xxx to generate concatenated alignment file for each single copy core gene cluster. Delete Lines
+Before running it we located the file "run_get_phylomarkers_pipeline.sh" and deleted lines 925-932 to remove a block that halts the process if all GCs do not contain the same number of concatenated taxa.
 
 Concatenate and align the faa and fna files to generate codon alignment files:
 
@@ -221,42 +216,40 @@ cd /new/path/where/only/faa/fna/files/are # go to directory holding all the .fna
 /Users/klemonlab/get_phylomarkers/run_get_phylomarkers_pipeline.sh -R 1 -t DNA -k 0.7 -m 0.7
 ```
 
-Create a folder in IQTree v2.1.3 directory and move the codon alignment files outputted from GET_PHYLOMARKERS into that folder.
-
-1.  Create a folder in IQTree v2.1.3 directory and move the codon alignment files outputted from GET_PHYLOMARKERS into that folder.
+Create a folder in IQ-Tree v2.1.3 [@Minh2020] directory and move the codon alignment files outputted from GET_PHYLOMARKERS into that folder.
 
 Make a directory to hold codon alignment files and move codon alignment files into that directory:
 
 ```{bash, eval=FALSE}
-cd IQTree2
+cd IQ-TREE2
 mkdir -p CorPGA_107_codon_alignment_files
 cd /path/to/where/codon/alignment/files/are
-mv *.fasta /Users/klemonlab/Documents/iqtree-2.1.3-MacOSX/CorPGA_107_codon_alignment_files
+mv *.fasta /Users/klemonlab/Documents/IQ-TREE-2.1.3-MacOSX/CorPGA_107_codon_alignment_files
 ```
 
-This will create a maximum likely hood tree and a consensus tree. **This tree is being generated from the gene clustering.** The .treefile was used because it is the best fit maximum likely hood tree. It was viewed through iTOL tree editor on google chrome browser.
+This will create a maximum likely hood tree and a consensus tree. **This tree is being generated from the gene clustering.** The treefile file was used because it is the best fit maximum likely hood tree. It was viewed through iTOL [@Letunic2021] tree editor on google chrome browser.
 
-The `-p` flag performs edge-linked proportional partition model for each of the individual clusters. Fast model selection for each cluster was determined by ModelFinder.
+The `-p` flag performs edge-linked proportional partition model [@Chernomor2016] for each of the individual clusters. Fast model selection for each cluster was determined by ModelFinder [@Kalyaanamoorthy2017].
 
-Run IQTree2.1.3 with the codon alignment files in the new folder:
+Run IQ-TREE v2.1.3 with the codon alignment files in the new folder:
 
 ```{bash, eval=FALSE}
-cd IQTree2
-bin/iqtree2 -p "CorPGA_107_codon_alignment_files" --prefix CorPGA_107_codon_alignment_files -alrt 1000 -B 1000 -T 8
+cd IQ-TREE2
+bin/IQ-TREE2 -p "CorPGA_107_codon_alignment_files" --prefix CorPGA_107_codon_alignment_files -alrt 1000 -B 1000 -T 8
 ```
 
-The treefile generated from IQTree2 was then opened in iTol to scale and assign strain names from the `tree_labels.list` file created from GET_PHYLOMARKERS. After scaling and assigning strain names the svg version was exported from iTol and further edited in Adobe Illustrator.
+The treefile generated from IQ-TREE v2.1.3 was then opened in iTol to scale and assign strain names from the `tree_labels.list` file created from GET_PHYLOMARKERS. After scaling and assigning strain names the svg version was exported from iTol and further edited in Adobe Illustrator.
 
 # Generate *Corynebacterium* species Specific Phylogenomic Trees with an Outgroup
 
 We are able to create phylogenies with an addition of an outgroup without losing the gene clusters not shared by the outgroup to the species of interest.
 
-## Setting Up Two Datasets for Each of the Four Species
+## Setting Up Two Data Sets for Each of the Four Species
 
 1.  First, we created a directory for each of the four species and only have the gbk (genebank) files for each of the four species in their corresponding directory.
 2.  Secondly, we created another directory with the same four folders with the addition of an outgroup we chose for each species.
 
-There was **eight** total directories. The first four only contain n (# of genomes of that specific species) in each of its directory. The latter four directories have n+1 genomes due to the addition of the outgroup we chose.
+There was **eight** total directories. The first four only contain n (\# of genomes of that specific species) in each of its directory. The latter four directories have n+1 genomes due to the addition of the outgroup we chose.
 
 ## Running BDBH, COGS, and OMCL on Each Directory
 
@@ -334,7 +327,7 @@ cd get_homologues
 
 ## Creating a Conservative Core of Only the Species of Interest and with the Additional Outgroup per Species
 
-From my experience you will run into less issues here if you move the three cluster folders and cluster list files into a new directory. Then use the paths to those cluster folders after the `-d` flag seperated by commas.
+From my experience you will run into less issues here if you move the three cluster folders and cluster list files into a new directory. Then use the paths to those cluster folders after the `-d` flag separated by commas.
 
 Create conservative core venn diagram intersection to output faa and fna files for *C. propinquum*:
 
@@ -426,7 +419,7 @@ mv *.faa "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_faa_fna_43" # Moves
 mv *.fna "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_faa_fna_43" # Moves all fna files into the new folder holding only faa and fna files
 ```
 
-Isolate the faa and fna files that make of the Conservative Core for *C. pseudodiptheriticum* with an Outgroup:
+Isolate the faa and fna files that make of the Conservative Core for *C. pseudodiphtheriticum* with an Outgroup:
 
 ```{bash, eval=FALSE}
 cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_intersection_outgroup_44" # Go to the directory holding the faa and fna files
@@ -468,7 +461,7 @@ mv *.fna "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_faa_fna_35" # Moves
 
 ## Comparing the Conservative Core of the Species of Interest to the Conservative Core with an Additional Outgroup
 
-This will compare the two conservative core of only the specis of interest to the conservative of the species of interest plus an outgroup. The addition of an outgroup causes the conservative core to decrase in value due to less gene clusters being shared with the outgroup. We are able to generate a list of which gene clusters are not shared with the outgroup from the strict conservative core. We can use this list to recover the lost gene clusters back into our analysis when making phylogenies.
+This will compare the two conservative core of only the species of interest to the conservative of the species of interest plus an outgroup. The addition of an outgroup causes the conservative core to decease in value due to less gene clusters being shared with the outgroup. We are able to generate a list of which gene clusters are not shared with the outgroup from the strict conservative core. We can use this list to recover the lost gene clusters back into our analysis when making phylogenies.
 
 *C. propinquum* Conservative Core vs *C. propinquum* Conservative Core + Outgroup:
 
@@ -562,11 +555,9 @@ cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_faa_fna_34/Recovered_GCs_
 mv *.f* "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_faa_fna_35" # Move all the recovered GCs into the conservative  core + outgroup faa and fna directory
 ```
 
-## Concatenate and Align Files using GET_PHYLOMARKERS vxxx for Each of the Four *Corynebacterium* species
+## Concatenate and Align Files using GET_PHYLOMARKERS for Each of the Four *Corynebacterium* species
 
-Find the file "run_get_phylomarkers_pipeline.sh" in the get_phylomarkers directory. Then delete lines 925-935.
-
-*C. propinquum* concatenate and align the faa and fna files to generate codon alignment files:
+Find the file "run_get_phylomarkers_pipeline.sh" in the get_phylomarkers directory
 
 ```{bash, eval=FALSE}
 cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_faa_fna_20" # go to directory holding all the .fna and .faa intersection of Corynebacterium
@@ -594,70 +585,70 @@ cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_faa_fna_35" # go to direc
 /Users/klemonlab/get_phylomarkers/run_get_phylomarkers_pipeline.sh -R 1 -t DNA -k 0.7 -m 0.7
 ```
 
-## Generate a Phylogeny treefile using IQTree v2.1.3 for Four *Corynebacterium* species with Their Corresponding Outgroups
+## Generate a Phylogeny treefile using IQ-TREE v2.1.3 for Four *Corynebacterium* species with Their Corresponding Outgroups
 
 *C.propinquum* make a directory to hold codon alignment files and move codon alignment files into that directory:
 
 ```{bash, eval=FALSE}
-cd "/Users/klemonlab/Documents/iqtree-2.1.3-MacOSX"
+cd "/Users/klemonlab/Documents/IQ-TREE-2.1.3-MacOSX"
 mkdir -p CorPGA_20_Cpr_outgroup
 cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_faa_fna_20/get_phylomarkers_run_AIR1tDNA_k0.7_m0.7_Tmedium_11Jun22/codon_alignments"
-mv *.fasta "/Users/klemonlab/Documents/iqtree-2.1.3-MacOSX/CorPGA_20_Cpr_outgroup"
+mv *.fasta "/Users/klemonlab/Documents/IQ-TREE-2.1.3-MacOSX/CorPGA_20_Cpr_outgroup"
 ```
 
-*C. propinquum* run IQTree v2.1.3 with the codon alignment files:
+*C. propinquum* run IQ-TREE v2.1.3 with the codon alignment files:
 
 ```{bash, eval=FALSE}
-cd "/Users/klemonlab/Documents/iqtree-2.1.3-MacOSX"
-bin/iqtree2 -p "CorPGA_20_Cpr_outgroup" --prefix CorPGA_20_Cpr_outgroup -alrt 1000 -B 1000 -T 8
+cd "/Users/klemonlab/Documents/IQ-TREE-2.1.3-MacOSX"
+bin/IQ-TREE2 -p "CorPGA_20_Cpr_outgroup" --prefix CorPGA_20_Cpr_outgroup -alrt 1000 -B 1000 -T 8
 ```
 
 *C. pseudodiphtheriticum* make a directory to hold codon alignment files and move codon alignment files into that directory:
 
 ```{bash, eval=FALSE}
-cd "/Users/klemonlab/Documents/iqtree-2.1.3-MacOSX"
+cd "/Users/klemonlab/Documents/IQ-TREE-2.1.3-MacOSX"
 mkdir -p CorPGA_44_Cps_outgroup
 cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps/Cps_faa_fna_44/get_phylomarkers_run_AIR1tDNA_k0.7_m0.7_Tmedium_11Jun22/codon_alignments"
-mv *.fasta "/Users/klemonlab/Documents/iqtree-2.1.3-MacOSX/CorPGA_44_Cps_outgroup"
+mv *.fasta "/Users/klemonlab/Documents/IQ-TREE-2.1.3-MacOSX/CorPGA_44_Cps_outgroup"
 ```
 
-*C. pseudodiphtheriticum* run IQTree v2.1.3 with the codon alignment files:
+*C. pseudodiphtheriticum* run IQ-TREE v2.1.3 with the codon alignment files:
 
 ```{bash, eval=FALSE}
-cd "/Users/klemonlab/Documents/iqtree-2.1.3-MacOSX"
-bin/iqtree2 -p "CorPGA_44_Cps_outgroup" --prefix CorPGA_44_Cps_outgroup -alrt 1000 -B 1000 -T 8
+cd "/Users/klemonlab/Documents/IQ-TREE-2.1.3-MacOSX"
+bin/IQ-TREE2 -p "CorPGA_44_Cps_outgroup" --prefix CorPGA_44_Cps_outgroup -alrt 1000 -B 1000 -T 8
 ```
 
 *C. tuberculostearicum* make a directory to hold codon alignment files and move codon alignment files into that directory:
 
 ```{bash, eval=FALSE}
-cd "/Users/klemonlab/Documents/iqtree-2.1.3-MacOSX"
+cd "/Users/klemonlab/Documents/IQ-TREE-2.1.3-MacOSX"
 mkdir -p CorPGA_9_Ctu_outgroup
 cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_faa_fna_9/get_phylomarkers_run_AIR1tDNA_k0.7_m0.7_Tmedium_11Jun22/codon_alignments"
-mv *.fasta "/Users/klemonlab/Documents/iqtree-2.1.3-MacOSX/CorPGA_9_Ctu_outgroup"
+mv *.fasta "/Users/klemonlab/Documents/IQ-TREE-2.1.3-MacOSX/CorPGA_9_Ctu_outgroup"
 ```
 
-*C. tuberculostearicum* run IQTree v2.1.3 with the codon alignment files:
+*C. tuberculostearicum* run IQ-TREE v2.1.3 with the codon alignment files:
 
 ```{bash, eval=FALSE}
-cd "/Users/klemonlab/Documents/iqtree-2.1.3-MacOSX"
-bin/iqtree2 -p "CorPGA_9_Ctu_outgroup" --prefix CorPGA_9_Ctu_outgroup -alrt 1000 -B 1000 -T 8
+cd "/Users/klemonlab/Documents/IQ-TREE-2.1.3-MacOSX"
+bin/IQ-TREE2 -p "CorPGA_9_Ctu_outgroup" --prefix CorPGA_9_Ctu_outgroup -alrt 1000 -B 1000 -T 8
 ```
 
 *C. accolens* make a directory to hold codon alignment files and move codon alignment files into that directory:
 
 ```{bash, eval=FALSE}
-cd "/Users/klemonlab/Documents/iqtree-2.1.3-MacOSX"
+cd "/Users/klemonlab/Documents/IQ-TREE-2.1.3-MacOSX"
 mkdir -p CorPGA_35_Cac_outgroup
 cd "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_faa_fna_35/get_phylomarkers_run_AIR1tDNA_k0.7_m0.7_Tmedium_11Jun22/codon_alignments"
-mv *.fasta "/Users/klemonlab/Documents/iqtree-2.1.3-MacOSX/CorPGA_35_Cac_outgroup"
+mv *.fasta "/Users/klemonlab/Documents/IQ-TREE-2.1.3-MacOSX/CorPGA_35_Cac_outgroup"
 ```
 
-*C. accolens* run IQTree v2.1.3 with the codon alignment files:
+*C. accolens* run IQ-TREE v2.1.3 with the codon alignment files:
 
 ```{bash, eval=FALSE}
-cd "/Users/klemonlab/Documents/iqtree-2.1.3-MacOSX"
-bin/iqtree2 -p "CorPGA_35_Cac_outgroup" --prefix CorPGA_35_Cac_outgroup -alrt 1000 -B 1000 -T 8
+cd "/Users/klemonlab/Documents/IQ-TREE-2.1.3-MacOSX"
+bin/IQ-TREE2 -p "CorPGA_35_Cac_outgroup" --prefix CorPGA_35_Cac_outgroup -alrt 1000 -B 1000 -T 8
 ```
 
 This will create a maximum likely hood tree and a consensus tree for each species. **The trees are generated from the gene clustering.** The .treefiles were used because they are the best fit maximum likely hood tree. They was viewed through iTOL tree editor on google chrome browser.
@@ -666,9 +657,9 @@ The `-p` flag performs edge-linked proportional partition model for each of the 
 
 # Rarefaction Curves of Four *Corynebacterium* species
 
-Here we will be using `./get_homologues.pl` with the flag `-c` to report genome composition analysis at the nucleotide level using OMCL.
+Here we will be using `./get_homologues.pl` with the flag `-c` to report genome composition analysis using OMCL.
 
-The file **lib/marfil_homology.pm**, lines 136-137, which control how a gene is compared to previously processed pangenome genes in order to call it novel were changed: (We keep it at the default value)
+The file **lib/marfil_homology.pm**, lines 136-137, which control how a gene is compared to previously processed pangenome genes in order to call it novel were changed:
 
 From:
 
@@ -861,7 +852,7 @@ Flags that are **bolded** are the ones that we used or modified.
 ## `./get_homologues.pl`
 
 | Flags  | Meanings                                                                           |
-|----------------------|-------------------------------------------------|
+|------------------------|------------------------------------------------|
 | -h     | help message                                                                       |
 | -v     | print version, credits and checks installation                                     |
 | **-d** | **directory with input .gbk files**                                                |
@@ -877,14 +868,14 @@ Flags that are **bolded** are the ones that we used or modified.
 Algorithms instead of default bidirectional best-hits (BDBH):
 
 |        |                                                                                    |
-|----------------------|-------------------------------------------------|
+|------------------------|------------------------------------------------|
 | **-G** | **use COGtriangle algorithm (COGS, PubMed=20439257), (requires 3+ genomes\|taxa)** |
 | **-M** | **use orthoMCL algorithm (OMCL, PubMed=12952885)**                                 |
 
 Options that control sequence similarity searches:
 
 |        |                                                                                         |
-|----------------------|-------------------------------------------------|
+|------------------------|------------------------------------------------|
 | -X     | use diamond instead of blastp                                                           |
 | **-C** | **min %coverage in BLAST pairwise alignments (range [1-100],default=75)**               |
 | -E     | max E-value (default=1e-05,max=0.01)                                                    |
@@ -896,7 +887,7 @@ Options that control sequence similarity searches:
 Options that control clustering:
 
 |        |                                                                                                                       |
-|----------------------|-------------------------------------------------|
+|------------------------|------------------------------------------------|
 | **-t** | **report sequence clusters including at least t taxa (default t=numberOfTaxa,t=0 reports all clusters [OMCL\|COGS])** |
 | **-a** | **report clusters of sequence features in GenBank files instead of default 'CDS' GenBank features**                   |
 | -g     | report clusters of intergenic sequences flanked by ORFs in addition to default 'CDS' clusters                         |
@@ -914,7 +905,7 @@ get_homologues will run the **default clustering algorithm Bidirectional Best Hi
 ## `./compare_clusters.pl`
 
 | Flags  | Meanings                                                                                                      |
-|----------------------|-------------------------------------------------|
+|------------------------|------------------------------------------------|
 | -h     | help message                                                                                                  |
 | **-d** | **comma-separated names of cluster directories**                                                              |
 | **-o** | **output directory**                                                                                          |
@@ -946,3 +937,17 @@ get_homologues will run the **default clustering algorithm Bidirectional Best Hi
 | -P     | percentage of genomes that must comply presence/absence   |
 
 <img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+<center>
+
+<h3>[REFERENCES]{.underline}</h3>
+
+</center>
