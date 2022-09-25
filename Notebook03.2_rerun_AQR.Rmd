@@ -1,0 +1,836 @@
+---
+title: "CorPGA Anvi'o Rerun"
+output:
+  rmdformats::robobook:
+    use_bookdown: true
+    code_folding: show
+  github_document:
+    toc: true
+    toc_depth: 4
+---
+
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy(c('r', 'bash'))
+```
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook.
+For re running Notebook3 for new CorPGA genomes 107 total
+for corynebcterium acc, true tub, psd, prop
+
+## Parsing .gff Files
+```{bash, eval = FALSE}
+conda activate anvio-7.1
+cd ./Documents/CorPGA_rerun_aqr
+mkdir -p "analysis_Anvio7_1/Parsed_prokka"
+path_f="107_gff_reformat_prokka"
+path_o="analysis_Anvio7_1/Parsed_prokka"
+
+for file in $path_f/*.gff; do
+    FILENAME=`basename ${file%.*}`
+    python analysis_Anvio7_1/gff_parser.py --gene-calls $path_o/calls_$FILENAME.txt --annotation $path_o/annot_$FILENAME.txt $file;
+done
+```
+
+# Single Genome Test for D. *pigrum* genome
+```{bash, eval=FALSE}
+python analysis_Anvio7_1/gff_parser.py --gene-calls calls_Dpi_ASM719771v1.txt --annotation annot_Dpi_ASM719771v1.txt Dpi_ASM719771v1.gff;
+```
+
+
+## Generating contigs databases
+```{bash, eval = FALSE}
+conda activate anvio-7.1
+cd ./Documents/CorPGA_rerun_aqr
+mkdir -p "analysis_Anvio7_1/Contigs_db"
+path_f="CorPGA_reformat_prokka_out"
+path_o="analysis_Anvio7_1/Contigs_db"
+path_e="analysis_Anvio7_1/Parsed_prokka"
+
+for file in $path_f/*.fna; do
+    FILENAME=`basename ${file%.*}`
+    anvi-gen-contigs-database -f $file \
+                              -o $path_o/$FILENAME.db \
+                              --external-gene-calls $path_e/calls_$FILENAME.txt \
+                              --ignore-internal-stop-codons \
+                              -n $FILENAME;
+done
+```
+
+# Single try on Cac_ATCC_49726
+
+```{bash, eval=FALSE}
+anvi-gen-contigs-database -f CorPGA_reformat_prokka_out/Cac_ATCC_49726.fna \
+                              -o $path_o/Cac_ATCC_49726.db \
+                              --external-gene-calls $path_e/calls_Cac_ATCC_49726.txt \
+                              --ignore-internal-stop-codons \
+                              -n Cac_ATCC_49726;
+```
+
+# Single one for dpi
+
+```{bash, eval=FALSE}
+cd ./dpi-drager
+anvi-gen-contigs-database -f Dpi_ASM719771v1.fna \
+                              -o Dpi_ASM719771v1.db \
+                              --external-gene-calls calls_Dpi_ASM719771v1.txt \
+                              --ignore-internal-stop-codons \
+                              -n Dpi_ASM719771v1;
+```
+
+## Importing functional annotation
+
+### Prokka annotation
+```{bash, eval = FALSE}
+#conda activate anvio-7.1
+path_f="analysis_Anvio7_1/Contigs_db"
+path_e="analysis_Anvio7_1/Parsed_prokka"
+
+for file in $path_f/*.db; do
+    FILENAME=`basename ${file%.*}`
+    anvi-import-functions -c $file \
+                          -i $path_e/annot_$FILENAME.txt
+      
+done
+```
+
+### COG annotation
+
+First you need to download and set up the NCBI's Clusters of Orthologous
+Groups database using `anvi-setup-ncbi-cogs`: this is something you will
+do only once.
+
+Now the `anvi-run-ncbi-cogs` command can be used to annotate the .db
+genome files against the NCBI's COGs database [\@Tatusov1997;
+\@galperin2021]: It uses DIAMOND [\@buchfink2015] "fast" as default, but
+it is recommended to use the "sensitive" option. This will take
+considerably much longer. Blastp can also be used instead of DIAMOND.
+
+```{bash, eval = FALSE}
+#conda activate anvio-7.1
+path_f="analysis_Anvio7_1/Contigs_db"
+
+for file in $path_f/*.db; do
+    anvi-run-ncbi-cogs -T 4 --sensitive -c $file;
+done
+# can change thread count on mac but forgot to do that
+```
+
+### KEGG annotation
+
+First you need to download and set up the KEGG KOfam database using
+`anvi-setup-kegg-kofams`: this is something you will do only once.
+
+The program `anvi-run-kegg-kofams` annotates genes in a given anvi'o
+contigs database with KEGG Orthology (KO) numbers via hits to the KEGG
+KOfam database [\@Kanehisa2000; \@Kanehisa2016].
+
+```{bash, eval = FALSE}
+#conda activate anvio-7.1
+path_f="analysis_Anvio7_1/Contigs_db"
+
+for file in $path_f/*.db; do
+    anvi-run-kegg-kofams -T 4 --log-bitscores -c $file;
+done
+# change to 8 threads for mac to go faster if githubs isnt also running
+```
+
+The option `--log-bitscores` records the bit scores values. They were
+saved to the main folder for the repo, so I move them to a folder:
+
+```{bash, eval = FALSE}
+mkdir "analysis_Anvio7_1/KEGGbitscores"
+mv *_bitscores.txt analysis_Anvio7_1/KEGGbitscores/
+```
+
+
+### PFAM annotation
+
+First you need to download and set up the PFAM database using
+`anvi-setup-pfams`: this is something you will do only once.
+
+The program `anvi-run-kegg-pfam` annotates genes in a given anvi'o
+contigs database with the PFAM database [\@mistry2020].
+
+```{bash, eval = FALSE}
+#conda activate anvio-7
+path_f="analysis_Anvio7_1/Contigs_db"
+
+for file in $path_f/*.db; do
+    anvi-run-pfams -T 8 -c $file;
+done
+```
+### Running HMMs
+
+When you run the following command the occurrence of bacterial
+single-copy genes across your contigs is all added to your contigs
+database [\@eddy2011].
+
+```{bash, eval = FALSE}
+#conda activate anvio-7.1
+path_f="analysis_Anvio7_1/Contigs_db"
+
+for file in $path_f/*.db; do
+    anvi-run-hmms -T 8 -c $file --just-do-it;
+done
+```
+
+### Annotation Summaries
+
+This generates basic stats on the annotations:
+
+```{bash, eval = FALSE}
+#conda activate anvio-7.1
+mkdir -p "analysis_Anvio7_1/Contigs_stats"
+
+path_f="analysis_Anvio7_1/Contigs_db"
+path_o="analysis_Anvio7_1/Contigs_stats"
+
+for file in $path_f/*.db; do
+    FILENAME=`basename ${file%.*}`
+    anvi-display-contigs-stats $file --report-as-text -o $path_o/stats_$FILENAME.txt;
+done
+```
+
+This provides basic info on the contigs databases:
+
+```{bash, eval = FALSE}
+#conda activate anvio-7.1
+path_f="analysis_Anvio7_1/Contigs_db"
+
+for file in $path_f/*.db; do
+    anvi-db-info $file;
+done
+```
+
+Terminal output saved to `analysis_Anvio7_1/anvi-db-info_log.txt`.
+
+# PANGENOME ANALYSIS
+
+## Generating an Anvi'o genomes storage
+
+The program `anvi-gen-genomes-storage` requires you to provide names and
+locations of the genomes to be included in the genome storage database
+in a .txt file. We create the All_107_CorynesAnvio.txt file with the renamed
+file names and paths based on the info on
+`GENOMES/METADATA_107taxa.csv`. This file includes the name Anvi'o will
+use internally to identify each genome. I added the prefix "RefSeq\_" to
+the reference genomes because some of them start with a digit and Anvi'o
+only allow names that start with an ASCII letter.
+
+We create 1 database with the 111 genomes that can be used to run the
+pangenomic analysis with all the strains at once or by selecting subsets
+of strains (i.e. by species, or by grouping related species together).
+
+```{bash, eval = FALSE}
+#conda activate anvio-7.1
+mkdir -p "analysis_Anvio7_1/Pangenomic_Results"
+
+anvi-gen-genomes-storage -e "analysis_Anvio7_1/All_107_CorynesAnvio.txt" -o "analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db" --gene-caller Prodigal
+```
+
+Anvi'o has good news and bad news for you (very balanced, as usual). The good
+news is that there are some functional annotation sources that are common to all
+of your genomes, and they will be used whenever it will be appropriate. Here
+they are: 'Pfam, Prokka:Prodigal'. The bad news is you had more function
+annotation sources, but they were not common to all genomes. Here they are so
+you can say your goodbyes to them (because they will not be used):
+'COG20_FUNCTION, KEGG_Module, KOfam, COG20_PATHWAY, COG20_CATEGORY, KEGG_Class'
+
+incomplete cog annotations:
+Cac_KPL_3921 - kegg
+anvi-run-kegg-kofams -T 8 --log-bitscores -c analysis_Anvio7_1/Contigs_db/Cac_KPL_3921.db;
+
+Cps_BWA141 - cog
+
+anvi-run-ncbi-cogs -T 8 --sensitive -c analysis_Anvio7_1/Contigs_db/Cps_BWA141.db;
+
+Cps_HSID17576 cog
+
+anvi-run-ncbi-cogs -T 8 --sensitive -c analysis_Anvio7_1/Contigs_db/Cps_HSID17576.db;
+
+went back to redo gen-genomoes-storage step:
+Good news! Anvi'o found all these functions that are common to all of your
+genomes and will use them for downstream analyses and is very proud of you:
+'COG20_CATEGORY, COG20_PATHWAY, Prokka:Prodigal, KEGG_Module, KEGG_Class, KOfam,
+Pfam, COG20_FUNCTION'.
+
+This provides basic info on the generated genomes storage database:
+
+```{bash, eval = FALSE}
+anvi-db-info "analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db"
+```
+
+# Make Species Genome Lists
+
+had to make new anvio environment with python 3.7 since the step below would not work unless we did that
+could be related to the updates with anvio 7.1
+conda create -y --name anvio-7.1.2 python=3.7
+
+# running the pngenomic analysis
+```{bash, eval = FALSE}
+#conda activate anvio-7.1
+anvi-pan-genome -g analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -G Cacc.txt -o analysis_Anvio7_1/Pangenomic_Results/Cacc -n PAN_Cacc --use-ncbi-blast --mcl-inflation 10  --num-threads 8
+anvi-pan-genome -g analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -G Cpro.txt -o analysis_Anvio7_1/Pangenomic_Results/Cpro -n PAN_Cpro --use-ncbi-blast --mcl-inflation 10  --num-threads 8
+anvi-pan-genome -g analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -G Ctub.txt -o analysis_Anvio7_1/Pangenomic_Results/Ctub -n PAN_Ctub --use-ncbi-blast --mcl-inflation 10  --num-threads 8 --debug
+anvi-pan-genome -g analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -G Cpsd.txt -o analysis_Anvio7_1/Pangenomic_Results/Cpsd -n PAN_Cpsd --use-ncbi-blast --mcl-inflation 10  --num-threads 8
+```
+
+## Displaying the pangenomes
+
+This will display the pangenome in your default internet browser. You
+need to pick one of the `-p` inputs for each PAN.db file:
+
+```{bash, eval = FALSE}
+#conda activate anvio-7
+anvi-display-pan -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db"
+
+anvi-display-pan -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db" -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db"
+
+anvi-display-pan -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db"
+
+anvi-display-pan -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db" -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db"
+```
+
+If you are using Windows and it cannot display the interactive page then
+try copy and pasting either 127.0.0.1:8080 or <http://localhost:8080/>
+into your browser. Do not use sudo in the front of the command either.
+
+Once it opens in the browser, you can adjust image settings and click
+the "DRAW" icon to view it. For help using the interactive interface see
+<http://merenlab.org/2016/02/27/the-anvio-interactive-interface/>
+
+## Summarizing the updated pangenome files by bin collection
+
+We can create tables with a summary of the pangenomes using the program
+`anvi-summarize`:
+
+```{bash, eval = FALSE}
+#conda activate anvio-7
+anvi-summarize -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" \
+               -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db" \
+               -o "/Users/klemonlab/Downloads/Cps_PAN_SUMMARY" \
+               -C CorevsAccessory
+               
+anvi-summarize -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db" \
+               -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db" \
+               -o "/Users/klemonlab/Downloads/Cpr_PAN_SUMMARY" \
+               -C CorevsAccessory
+               
+anvi-summarize -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db" \
+               -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db" \
+               -o "/Users/klemonlab/Downloads/Ctu_PAN_SUMMARY" \
+               -C CorevsAccessory
+               
+anvi-summarize -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" \
+               -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db" \
+               -o "/Users/klemonlab/Downloads/Cac_PAN_SUMMARY" \
+               -C CorevsAccessory
+```
+
+The resulting summary folders contain a `gene_clusters_summary.txt.gz`
+file that links each gene to gene clusters, genomes, functions, layers,
+and bins selected from the interface.
+
+
+For consistency with other parts of the analysis the colors used for
+each species are:
+
+-   "red" or "\#FF0000" for Cpsd
+-   "darkorange" or "\#FF8C00" for Cpro
+-   "darkblue" or "\#0000ff" for Ctub
+-   "darkviolet" or "\#9400D3" for Cacc
+-   "deeppink" or "\#FF1493" for Cmac
+
+<<<<<<< Updated upstream
+
+=======
+>>>>>>> Stashed changes
+## Manually Reorder the Layers to Match Phylogenomic Trees per Species
+
+Click and drag the names. The order is inversed to the top is the bottom in the concentric diagram. When all the layers were re-ordered to match the phylogenomic tree we clicked the draw button and saved the svg file. 
+
+
+Darker Hex color assignments for PANGGOLiN
+
+persistant - 5e0000
+
+shell - 7400a6
+
+cloud - 054ca8
+
+Hex color assignments for get_homologues:
+
+Core - d18f24
+
+SC_Core - a30303
+
+Soft_Core - fc4635
+
+Shell - c64dfa
+
+Cloud - 358bfc
+
+CorPGAA w/ BWA
+
+### *C. pseudodiphtheriticum* pangenome
+
+| Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
+|------------------|-------------------------------|-------------------------------|--------------------------------------|
+| Core             | 1714/3590                     | `r round(100*(1714/3590),1)`% | 43                                   |
+| Single Copy Core | 1488/3590                     | `r round(100*(1488/3590),1)`% | 43                                   |
+| Multicopy Core   | 226/3590                      | `r round(100*(226/3590),1)`%  | 43                                   |
+| Soft Core        | 46/3590                       | `r round(100*(46/3590),1)`%   | 40-42                                |
+| Shell            | 972/3590                      | `r round(100*(972/3590),1)`%  | 3-39                                 |
+| Cloud            | 858/3590                      | `r round(100*(858/3590),1)`%  | 1-2                                  |
+
+### *C. propinquum* pangenome
+
+| Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
+|------------------|-------------------------------|-------------------------------|--------------------------------------|
+| Core             | 1824/3108                     | `r round(100*(1824/3108),1)`% | 19                                   |
+| Single Copy Core | 1715/3108                     | `r round(100*(1715/3108),1)`% | 19                                   |
+| Multicopy Core   | 109/3108                      | `r round(100*(109/3108),1)`%  | 19                                   |
+| Soft Core        | 39/3108                       | `r round(100*(39/3108),1)`%   | 18                                   |
+| Shell            | 689/3108                      | `r round(100*(689/3108),1)`%  | 3-17                                 |
+| Cloud            | 556/3108                      | `r round(100*(556/3108),1)`%  | 1-2                                  |
+
+### *C. tuberculostearicum* pangenome
+
+| Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
+|------------------|-------------------------------|-------------------------------|--------------------------------------|
+| Core             | 1915/2907                     | `r round(100*(1915/2907),1)`% | 8                                    |
+| Single Copy Core | 1860/2907                     | `r round(100*(1860/2907),1)`% | 8                                    |
+| Multicopy Core   | 55/2907                       | `r round(100*(55/2907),1)`%   | 8                                    |
+| Soft Core        | 47/2907                       | `r round(100*(47/2907),1)`%   | 7                                    |
+| Shell            | 270/2907                      | `r round(100*(270/2907),1)`%  | 3-6                                  |
+| Cloud            | 671/2907                      | `r round(100*(671/2907),1)`%  | 1-2                                  |
+
+### *C. accolens* pangenome
+
+| Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
+|------------------|-------------------------------|-------------------------------|--------------------------------------|
+| Core             | 1904/3427                     | `r round(100*(1904/3427),1)`% | 34                                   |
+| Single Copy Core | 1734/3427                     | `r round(100*(1734/3427),1)`% | 34                                   |
+| Multicopy Core   | 170/3427                      | `r round(100*(170/3427),1)`%  | 34                                   |
+| Soft Core        | 77/3427                       | `r round(100*(77/3427),1)`%   | 32-33                                |
+| Shell            | 676/3427                      | `r round(100*(676/3427),1)`%  | 3-31                                 |
+| Cloud            | 770/3427                      | `r round(100*(770/3427),1)`%  | 1-2                                  |
+
+# PPanGGOLiN 
+
+[PPanGGOLiN v1.1.141](https://github.com/labgem/PPanGGOLiN/releases) [\@gautreau2020; \@bazin2020] was used for his analysis.
+
+# PANGENOME ANALYSIS
+
+```{r, message = FALSE, echo = FALSE}
+library(tidyverse)
+library(knitr)
+
+knitr::opts_chunk$set(message = FALSE, eval=FALSE)
+```
+
+## Importing Prokka annotations and Anvi'o 7 clusters
+
+In order to import the Anvi'o clustering into PPanGGOLiN we need:
+
+1.  A .tsv file listing in the first column the gene family names, and in the second column the gene ID that is used in the annotation files.
+2.  The annotated genomes with gene IDs that match the ones listed in the previous .tsv file.
+
+We read here the files generated using `anvi-summarize` that link each gene to gene clusters, genomes and functions:
+
+```{r}
+AnvioSummary_Cpse <- read.delim("/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpsd/Cps_PAN_SUMMARY/PAN_Cpsd_gene_clusters_summary.txt.gz")
+AnvioSummary_Cpro <- read.delim("/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/Cpr_PAN_SUMMARY/PAN_Cpro_gene_clusters_summary.txt.gz")
+AnvioSummary_Ctub <- read.delim("/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/Ctu_PAN_SUMMARY/PAN_Ctub_gene_clusters_summary.txt.gz")
+AnvioSummary_Cacc <- read.delim("/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/Cac_PAN_SUMMARY/PAN_Cacc_gene_clusters_summary.txt.gz")
+```
+
+Here we subset the info needed to generate the .tsv files. We clean up the "RefSeq\_" prefix that was added to the genome names to avoid Anvi'o complains about genome names starting with a number. We need to remove the prefix to match the info inside the new .gffs we are about to export:
+
+```{r}
+AnvioClusters_Cpse <- AnvioSummary_Cpse %>% unite(new_id, genome_name:gene_callers_id, sep = "___", remove = FALSE) %>% mutate(new_id = gsub("RefSeq_", "", new_id))
+AnvioClusters_Cpse <- select(AnvioClusters_Cpse, c(gene_cluster_id, new_id))
+
+AnvioClusters_Cpro <- AnvioSummary_Cpro %>% unite(new_id, genome_name:gene_callers_id, sep = "___", remove = FALSE) %>% mutate(new_id = gsub("RefSeq_", "", new_id))
+AnvioClusters_Cpro <- select(AnvioClusters_Cpro, c(gene_cluster_id, new_id))
+
+AnvioClusters_Ctub <- AnvioSummary_Ctub %>% unite(new_id, genome_name:gene_callers_id, sep = "___", remove = FALSE) %>% mutate(new_id = gsub("RefSeq_", "", new_id))
+AnvioClusters_Ctub <- select(AnvioClusters_Ctub, c(gene_cluster_id, new_id))
+
+AnvioClusters_Cacc <- AnvioSummary_Cacc %>% unite(new_id, genome_name:gene_callers_id, sep = "___", remove = FALSE) %>% mutate(new_id = gsub("RefSeq_", "", new_id))
+AnvioClusters_Cacc <- select(AnvioClusters_Cacc, c(gene_cluster_id, new_id))
+```
+
+Now we write those as .tsv files:
+
+```{r, eval=FALSE}
+write_delim(AnvioClusters_Cpse, "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpsd/Cps_PAN_SUMMARY.tsv", col_names=FALSE)
+write_delim(AnvioClusters_Cpro, "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/Cpr_PAN_SUMMARY.tsv", col_names=FALSE)
+write_delim(AnvioClusters_Ctub, "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/Ctu_PAN_SUMMARY.tsv", col_names=FALSE)
+write_delim(AnvioClusters_Cacc, "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/Cac_PAN_SUMMARY.tsv", col_names=FALSE)
+```
+
+**IMPORTANT:** The gene_callers_id provided by Anvi'o don't match the original ones in the Prokka annotation. The Prokka annotated genomes were parsed into two text files, one for gene calls and one for annotations, with the script `gff_parser.py`. By default Prokka annotates also tRNAs, rRNAs and CRISPR regions. However, `gff_parser.py` will only utilize open reading frames reported by Prodigal in the Prokka output in order to be compatible with the pangenomic Anvi'o pipeline. While parsing new gene_callers_id are generated only for the ORFs that will be imported into Anvi'o. Fortunately `anvi-get-sequences-for-gene-calls` can be used to export new .gff files with only the ORFs and these can be used for PPanGGOLiN, instead of the original Prokka ones:
+
+```{bash, eval=FALSE}
+#conda activate anvio-7
+mkdir -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Exported_gffs"
+
+path_f="/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Contigs_db"
+path_o="/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Exported_gffs"
+
+for file in $path_f/*.db; do
+    FILENAME=`basename ${file%.*}`
+    anvi-get-sequences-for-gene-calls -c $file --export-gff3 -o $path_o/$FILENAME.gff
+      
+done
+```
+
+We create two tab delimited text files per species. Both of the text files will have a two column structure. The first column is the name to be utilized by ppanggolin for each genome per line, and the second column contains the paths to the corresponding file. So, one text file is for the Anvi'o exported .gff and the other is for the reformatted .fasta files. The extension by default was .fa for the reformatted Anvi'o files, so we had to convert them all to .fasta for ppanggolin to accept them. We need to create the text files to run the `annotate` subcommand. 
+
+```{bash, eval=FALSE}
+#conda activate PPanGGOLiN
+ppanggolin annotate --anno "/Users/tommytran/Downloads/Cac_gff.txt" --fasta "/Users/tommytran/Downloads/Cac_fasta_gff.txt" -o "/Users/tommytran/Downloads/Cac_anno_output" --basename Cac -f 
+ppanggolin annotate --anno "/Users/tommytran/Downloads/Cpr_gff.txt" --fasta "/Users/tommytran/Downloads/Cpr_fasta_gff.txt" -o "/Users/tommytran/Downloads/Cpr_anno_output" --basename Cpr -f 
+ppanggolin annotate --anno "/Users/tommytran/Downloads/Cps_gff.txt" --fasta "/Users/tommytran/Downloads/Cps_fasta_gff.txt" -o "/Users/tommytran/Downloads/Cps_anno_output" --basename Cps -f 
+ppanggolin annotate --anno "/Users/tommytran/Downloads/Ctu_gff.txt" --fasta  -o "/Users/tommytran/Downloads/Ctu_anno_output" --basename Ctu -f 
+```
+
+For the `cluster` subcommand we use the .tsv files created before from the `anvi-summarize` output.
+
+```{bash, eval=FALSE}
+#conda activate PPanGGOLiN
+ppanggolin cluster -p "/Users/tommytran/Downloads/Cac_anno_output/Cac.h5" --clusters "/Users/tommytran/Downloads/Cac_PAN_SUMMARY.tsv" --infer_singletons
+ppanggolin cluster -p "/Users/tommytran/Downloads/Cps_anno_output/Cps.h5" --clusters "/Users/tommytran/Downloads/Cps_PAN_SUMMARY.tsv" --infer_singletons
+ppanggolin cluster -p "/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5" --clusters "/Users/tommytran/Downloads/Ctu_PAN_SUMMARY.tsv" --infer_singletons
+ppanggolin cluster -p "/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5" --clusters "/Users/tommytran/Downloads/Cpr_PAN_SUMMARY.tsv" --infer_singletons
+```
+
+## Graphing and Partitioning
+
+The `graph` subcommand has only a single other option, which is '-r' or '--remove_high_copy_number'. If used, it will remove the gene families that are too duplicated in your genomes. This is useful if you want to visualize your pangenome afterward and want to remove the biggest hubs to have a clearer view. It can also be used to limit the influence of very duplicated genes such as transposases or ABC transporters in the partition step.
+
+```{bash, eval=FALSE}
+#conda activate PPanGGOLiN
+ppanggolin graph -p "/Users/tommytran/Downloads/Cac_anno_output/Cac.h5"
+ppanggolin graph -p "/Users/tommytran/Downloads/Cps_anno_output/Cps.h5"
+ppanggolin graph -p "/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5"
+ppanggolin graph -p "/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5"
+```
+
+We let the `partition` subcommand statistical criterion find the optimal number of partitions.
+
+```{bash, eval=FALSE}
+#conda activate PPanGGOLiN
+ppanggolin partition -p "/Users/tommytran/Downloads/Cac_anno_output/Cac.h5"
+ppanggolin partition -p "/Users/tommytran/Downloads/Cps_anno_output/Cps.h5"
+ppanggolin partition -p "/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5"
+ppanggolin partition -p "/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5"
+```
+
+## Writing outputs
+
+For details on PPanGGOLiN outputs see: <https://github.com/labgem/PPanGGOLiN/wiki/Outputs>
+
+```{bash, eval=FALSE}
+#conda activate PPanGGOLiN
+ppanggolin write -p "/Users/tommytran/Downloads/Cac_anno_output/Cac.h5" -o "/Users/tommytran/Downloads/Output_Cac" --light_gexf --gexf  --csv --Rtab --stats --partitions --projection --families_tsv -f
+ppanggolin write -p "/Users/tommytran/Downloads/Cps_anno_output/Cps.h5" -o "/Users/tommytran/Downloads/Output_Cps" --light_gexf --gexf  --csv --Rtab --stats --partitions --projection --families_tsv -f
+ppanggolin write -p "/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5" -o "/Users/tommytran/Downloads/Output_Ctu" --light_gexf --gexf  --csv --Rtab --stats --partitions --projection --families_tsv -f
+ppanggolin write -p "/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5" -o "/Users/tommytran/Downloads/Output_Cpr" --light_gexf --gexf  --csv --Rtab --stats --partitions --projection --families_tsv -f
+```
+
+## Rarefaction curves
+
+```{bash, eval=FALSE}
+#conda activate PPanGGOLiN
+ppanggolin rarefaction -p "/Users/tommytran/Downloads/Cac_anno_output/Cac.h5" --force -o "/Users/tommytran/Downloads/Output_Cac_rarefaction"
+ppanggolin rarefaction -p "/Users/tommytran/Downloads/Cps_anno_output/Cps.h5" --force -o "/Users/tommytran/Downloads/Output_Cps_rarefaction"
+ppanggolin rarefaction -p "/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5" --force -o "/Users/tommytran/Downloads/Output_Ctu_rarefaction"
+ppanggolin rarefaction -p "/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5" --force -o "/Users/tommytran/Downloads/Output_Cpr_rarefaction"
+```
+
+## Finding Regions of Genome Plasticity
+
+For details on RGPs see: <https://github.com/labgem/PPanGGOLiN/wiki/Regions-of-Genome-Plasticity>
+
+The spots can be labeled by:
+
+```{bash, eval=FALSE}
+#conda activate PPanGGOLiN
+ppanggolin rgp -p "/Users/tommytran/Downloads/Cac_anno_output/Cac.h5" 
+ppanggolin rgp -p "/Users/tommytran/Downloads/Cps_anno_output/Cps.h5" 
+ppanggolin rgp -p "/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5" 
+ppanggolin rgp -p "/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5"
+
+ppanggolin spot -p "/Users/tommytran/Downloads/Cac_anno_output/Cac.h5" --draw_hotspots -o "/Users/tommytran/Downloads/Output_Cac_spots/spots_ID" -f
+ppanggolin spot -p "/Users/tommytran/Downloads/Cps_anno_output/Cps.h5" --draw_hotspots -o "/Users/tommytran/Downloads/Output_Cps_spots/spots_ID" -f
+ppanggolin spot -p "/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5" --draw_hotspots -o "/Users/tommytran/Downloads/Output_Ctu_spots/spots_ID" -f
+ppanggolin spot -p "/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5" --draw_hotspots -o "/Users/tommytran/Downloads/Output_Cpr_spots/spots_ID" -f
+
+ppanggolin write -p "/Users/tommytran/Downloads/Cac_anno_output/Cac.h5" -o "/Users/tommytran/Downloads/Output_Cac_spots" --regions --spots -f
+ppanggolin write -p "/Users/tommytran/Downloads/Cps_anno_output/Cps.h5" -o "/Users/tommytran/Downloads/Output_Cps_spots" --regions --spots -f
+ppanggolin write -p "/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5" -o "/Users/tommytran/Downloads/Output_Ctu_spots" --regions --spots -f
+ppanggolin write -p "/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5" -o "/Users/tommytran/Downloads/Output_Cpr_spots" --regions --spots -f
+```
+
+## Summary of used parameters
+
+The `info` subcommand indicates, for each steps of the analysis, the PPanGGOLiN parameters that were used and the source of the data if appropriate. This is useful for methods sections on manuscripts.
+
+```{bash, eval=FALSE}
+#conda activate PPanGGOLiN
+ppanggolin info -p "/Users/tommytran/Downloads/Cac_anno_output/Cac.h5" --parameters --content --status
+ppanggolin info -p "/Users/tommytran/Downloads/Cps_anno_output/Cps.h5" --parameters --content --status
+ppanggolin info -p "/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5" --parameters --content --status
+ppanggolin info -p "/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5" --parameters --content --status
+```
+
+# IMPORTING PARTITIONS INTO ANVIO
+
+The `pangenomeGraph.gexf` file can be opened with Gephi, and the Data Table exported as a `gephi_table.csv`. This can be used to easily explore the PPanGGOLiN output with the same gene IDs Anvi'o uses. The `matrix.csv` should be used with caution, since records PPanGGOLiN internal gene IDs, that are different from the Anvi'o ones.
+
+```{r, message=FALSE}
+Gephi <-  read.delim("analysis_PPanGGOLiN/Output_Cpse/Cpse_gephi_table.csv", ",", escape_double = FALSE, trim_ws = TRUE)
+Gephi <-  read.delim("analysis_PPanGGOLiN/Output_Cpro/Cpro_gephi_table.csv", ",", escape_double = FALSE, trim_ws = TRUE)
+Gephi <-  read.delim("analysis_PPanGGOLiN/Output_Ctub/Ctub_gephi_table.csv", ",", escape_double = FALSE, trim_ws = TRUE)
+Gephi <-  read.delim("analysis_PPanGGOLiN/Output_Cacc/Cacc_gephi_table.csv", ",", escape_double = FALSE, trim_ws = TRUE)
+```
+
+## Persistent vs. Accessory based on PPanGGOLiN
+
+PPanGGOLiN generates a "partitions" folder as part of its output. We
+read the persistent, cloud and shell files from this output and add a
+column labeling them. We combine the three in one `partitions.txt` file
+that can be imported into Anvi'o:
+
+```{r}
+Cpse_persistent <- read.delim("/Users/tommytran/Downloads/Output_Cps/partitions/persistent.txt", col.names = "GC")
+Cpse_persistent$PPanGGOLiN <- "persistent"
+Cpse_cloud <- read.delim("/Users/tommytran/Downloads/Output_Cps/partitions/cloud.txt", col.names = "GC")
+Cpse_cloud$PPanGGOLiN <- "cloud"
+Cpse_shell <- read.delim("/Users/tommytran/Downloads/Output_Cps/partitions/shell.txt", col.names = "GC")
+Cpse_shell$PPanGGOLiN <- "shell"
+Cpse_partitions <- rbind(Cpse_persistent, Cpse_cloud, Cpse_shell)
+Cpse_partitions <- Cpse_partitions[grep("GC_00", Cpse_partitions$GC),]
+write_delim(Cpse_partitions, "/Users/tommytran/Downloads/Output_Cps/partitions/partitions.txt", delim = "\t")
+
+Cpro_persistent <- read.delim("/Users/tommytran/Downloads/Output_Cpr/partitions/persistent.txt", col.names = "GC")
+Cpro_persistent$PPanGGOLiN <- "persistent"
+Cpro_cloud <- read.delim("/Users/tommytran/Downloads/Output_Cpr/partitions/cloud.txt", col.names = "GC")
+Cpro_cloud$PPanGGOLiN <- "cloud"
+Cpro_shell <- read.delim("/Users/tommytran/Downloads/Output_Cpr/partitions/shell.txt", col.names = "GC")
+Cpro_shell$PPanGGOLiN <- "shell"
+Cpro_partitions <- rbind(Cpro_persistent, Cpro_cloud, Cpro_shell)
+Cpro_partitions <- Cpro_partitions[grep("GC_", Cpro_partitions$GC),]
+write_delim(Cpro_partitions, "/Users/tommytran/Downloads/Output_Cpr/partitions/partitions.txt", delim = "\t")
+
+Ctub_persistent <- read.delim("/Users/tommytran/Downloads/Output_Ctu/partitions/persistent.txt", col.names = "GC")
+Ctub_persistent$PPanGGOLiN <- "persistent"
+Ctub_cloud <- read.delim("/Users/tommytran/Downloads/Output_Ctu/partitions/cloud.txt", col.names = "GC")
+Ctub_cloud$PPanGGOLiN <- "cloud"
+Ctub_shell <- read.delim("/Users/tommytran/Downloads/Output_Ctu/partitions/shell.txt", col.names = "GC")
+Ctub_shell$PPanGGOLiN <- "shell"
+Ctub_partitions <- rbind(Ctub_persistent, Ctub_cloud, Ctub_shell)
+Ctub_partitions <- Ctub_partitions[grep("GC_", Ctub_partitions$GC),]
+write_delim(Ctub_partitions, "/Users/tommytran/Downloads/Output_Ctu/partitions/partitions.txt", delim = "\t")
+
+Cacc_persistent <- read.delim("/Users/tommytran/Downloads/Output_Cac/partitions/persistent.txt", col.names = "GC")
+Cacc_persistent$PPanGGOLiN <- "persistent"
+Cacc_cloud <- read.delim("/Users/tommytran/Downloads/Output_Cac/partitions/cloud.txt", col.names = "GC")
+Cacc_cloud$PPanGGOLiN <- "cloud"
+Cacc_shell <- read.delim("/Users/tommytran/Downloads/Output_Cac/partitions/shell.txt", col.names = "GC")
+Cacc_shell$PPanGGOLiN <- "shell"
+Cacc_partitions <- rbind(Cacc_persistent, Cacc_cloud, Cacc_shell)
+Cacc_partitions <- Cacc_partitions[grep("GC_", Cacc_partitions$GC),]
+write_delim(Cacc_partitions, "/Users/tommytran/Downloads/Output_Cac/partitions/partitions.txt", delim = "\t")
+```
+
+This will import the PPanGGOLiN partitions (from `partitions.txt`) as a
+collection of bins named **PPanGGOLiNpartitions** in each profile-db:
+
+```{bash, eval = FALSE}
+#conda activate anvio-7
+anvi-import-collection "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpsd/partitions_Cps.txt" \
+                       -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" \
+                       -C "PPanGGOLiNpartitions" --bins-info "/Users/klemonlab/Documents/GitHub/Coryne_Pangenomics_2021/main_outputs/Anvio7/PPanGGOLiN_bin_colors.txt"
+anvi-import-collection "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/partitions_Cpr.txt" \
+                       -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db" \
+                       -C "PPanGGOLiNpartitions" --bins-info "/Users/klemonlab/Documents/GitHub/Coryne_Pangenomics_2021/main_outputs/Anvio7/PPanGGOLiN_bin_colors.txt"
+anvi-import-collection "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/partitions_Ctu.txt" \
+                       -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db" \
+                       -C "PPanGGOLiNpartitions" --bins-info "/Users/klemonlab/Documents/GitHub/Coryne_Pangenomics_2021/main_outputs/Anvio7/PPanGGOLiN_bin_colors.txt"
+anvi-import-collection "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/partitions_Cac.txt" \
+                       -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" \
+                       -C "PPanGGOLiNpartitions" --bins-info "/Users/klemonlab/Documents/GitHub/Coryne_Pangenomics_2021/main_outputs/Anvio7/PPanGGOLiN_bin_colors.txt"
+```
+
+We can also import this data (from `partitions.txt`) as a PPanGGOLiN
+layer into in each profile-db:
+
+```{bash, eval = FALSE}
+#conda activate anvio-7
+anvi-import-misc-data "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpsd/partitions_Cps.txt" \
+                       -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" -t items
+anvi-import-misc-data "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/partitions_Cpr.txt" \
+                       -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db" -t items
+anvi-import-misc-data "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/partitions_Ctu.txt" \
+                       -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db" -t items
+anvi-import-misc-data "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/partitions_Cac.txt" \
+                       -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" -t items                    
+```
+
+## Displaying the generated bin collections
+
+We can see the collections and bins created in a pangenomic database
+using the command `anvi-show-collections-and-bins`:
+
+```{bash, eval = FALSE}
+#conda activate anvio-7
+anvi-show-collections-and-bins -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" --debug 
+anvi-show-collections-and-bins -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db" --debug 
+anvi-show-collections-and-bins -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db" --debug 
+anvi-show-collections-and-bins -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" --debug 
+```
+
+<<<<<<< Updated upstream
+## PPanGGOLiN Pangenome Compartments
+
+### *C. pseudodiphtheriticum* pangenome
+
+| Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | 
+|------------------|-------------------------------|-------------------------------|
+| Persistent       | 1771/3590                     | `r round(100*(1771/3590),1)`% |                                    
+| Shell            | 392/3590                      | `r round(100*(392/3590),1)`%  |                                    
+| Cloud            | 1424/3590                     | `r round(100*(1424/3590),1)`% |              
+| None             | 3/3590                        | `r round(100*(3/3590),1)`%    |
+
+### *C. propinquum* pangenome
+
+| Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | 
+|------------------|-------------------------------|-------------------------------|
+| Persistent       | 1945/3108                     | `r round(100*(1945/3108),1)`% |                                    
+| Shell            | 323/3108                      | `r round(100*(323/3108),1)`%  | 
+| Cloud            | 837/3108                      | `r round(100*(837/3108),1)`%  | 
+| None             | 3/3108                        | `r round(100*(3/3108),1)`%    |                                    
+
+### *C. tuberculostearicum* pangenome
+
+| Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | 
+|------------------|-------------------------------|-------------------------------|
+| Persistent       | 1991/2907                     | `r round(100*(1991/2907),1)`% |                                     
+| Shell            | 301/2907                      | `r round(100*(301/2907),1)`%  | 
+| Cloud            | 766/2907                      | `r round(100*(766/2907),1)`%  | 
+| None             | 3/2907                        | `r round(100*(3/2907),1)`%    | 
+
+### *C. accolens* pangenome
+
+| Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | 
+|------------------|-------------------------------|-------------------------------|
+| Persistent       | 2011/3427                     | `r round(100*(2011/3427),1)`% | 
+| Shell            | 301/3427                      | `r round(100*(301/3427),1)`%  | 
+| Cloud            | 1113/3427                     | `r round(100*(1113/3427),1)`% | 
+| None             | 2/3427                        | `r round(100*(2/3427),1)`%    | 
+
+=======
+>>>>>>> Stashed changes
+# Gephi Parameters
+
+Edges (links) Color
+Hex code: BDBDBD
+
+Background Color
+Hex code: 34203B
+
+I ran into the issue of the graph or preview not viewing in Gephi. This link <https://github.com/gephi/gephi/issues/2051> helped me troubleshoot the issue.
+
+C. *pro*
+
+-   Force Atlas 2
+
+-   Scaling: 5000
+
+-   Stronger Gravity: On
+
+-   Edges: 1.5
+
+C. *pse*
+
+-   Force Atlas 2
+
+-   Scaling: 5000
+
+-   Stronger Gravity: On
+
+-   Edges: 1.5
+
+C. *tub*
+
+-   Force Atlas 2
+
+-   Scaling: 5000
+
+-   Stronger Gravity: On
+
+-   Edges: 1.5
+
+C. *acc*
+
+-   Force Atlas 2
+
+-   Scaling: 5000
+
+-   Stronger Gravity: On
+
+-   Edges: 1.5
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

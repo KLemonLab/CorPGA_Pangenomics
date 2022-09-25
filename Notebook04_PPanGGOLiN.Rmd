@@ -1,0 +1,257 @@
+---
+title: "*Corynebacterium* PPanGGOLiN ANALYSIS WITH Anvi'o 7 CLUSTERING"
+output:
+  rmdformats::robobook:
+    use_bookdown: true
+  github_document:
+    toc: true
+    toc_depth: 4
+bibliography: references/references.bib
+---
+
+# SETUP
+
+```{r, message = FALSE, echo = FALSE}
+library(tidyverse)
+library(knitr)
+
+knitr::opts_chunk$set(message = FALSE, eval=FALSE)
+```
+
+The code in this notebook includes file paths relative to the project's main folder **Coryne_Pangenomics_2021**. You need to `cd` to the corresponding path location in your computer, for example:
+
+```{bash, eval=FALSE}
+cd /Users/isabelfe/Desktop/GitHub/Coryne_Pangenomics_2021
+```
+
+Please see Notebook01 in order to set up your Python environments and any other installation requirements. The Python environments required in this notebook can be activated by using one of the following lines. The corresponding line has also being included at the beginning of each chunk of code that requires the activation of an specific environment.
+
+```{bash, eval=FALSE}
+conda activate anvio-7
+conda activate PPanGGOLiN
+```
+
+[PPanGGOLiN v1.1.141](https://github.com/labgem/PPanGGOLiN/releases) [\@gautreau2020; \@bazin2020] was used for his analysis.
+
+# PANGENOME ANALYSIS
+
+## Importing Prokka annotations and Anvi'o 7 clusters
+
+In order to import the Anvi'o clustering into PPanGGOLiN we need:
+
+1.  A .tsv file listing in the first column the gene family names, and in the second column the gene ID that is used in the annotation files.
+2.  The annotated genomes with gene IDs that match the ones listed in the previous .tsv file.
+
+We read here the files generated using `anvi-summarize` that link each gene to gene clusters, genomes and functions:
+
+```{r}
+AnvioSummary_Cpse <- read.delim("analysis_Anvio7/Pangenomic_Results/Cpse/Cpse-PAN-SUMMARY/PAN_Cpse_gene_clusters_summary.txt.gz")
+AnvioSummary_Cpro <- read.delim("analysis_Anvio7/Pangenomic_Results/Cpro/Cpro-PAN-SUMMARY/PAN_Cpro_gene_clusters_summary.txt.gz")
+AnvioSummary_Ctub <- read.delim("analysis_Anvio7/Pangenomic_Results/Ctub/Ctub-PAN-SUMMARY/PAN_Ctub_gene_clusters_summary.txt.gz")
+AnvioSummary_Cacc <- read.delim("analysis_Anvio7/Pangenomic_Results/Cacc/Cacc-PAN-SUMMARY/PAN_Cacc_gene_clusters_summary.txt.gz")
+```
+
+Here we subset the info needed to generate the .tsv files. We clean up the "RefSeq\_" prefix that was added to the genome names to avoid Anvi'o complains about genome names starting with a number. We need to remove the prefix to match the info inside the new .gffs we are about to export:
+
+```{r}
+AnvioClusters_Cpse <- AnvioSummary_Cpse %>% unite(new_id, genome_name:gene_callers_id, sep = "___", remove = FALSE) %>% mutate(new_id = gsub("RefSeq_", "", new_id))
+AnvioClusters_Cpse <- select(AnvioClusters_Cpse, c(gene_cluster_id, new_id))
+
+AnvioClusters_Cpro <- AnvioSummary_Cpro %>% unite(new_id, genome_name:gene_callers_id, sep = "___", remove = FALSE) %>% mutate(new_id = gsub("RefSeq_", "", new_id))
+AnvioClusters_Cpro <- select(AnvioClusters_Cpro, c(gene_cluster_id, new_id))
+
+AnvioClusters_Ctub <- AnvioSummary_Ctub %>% unite(new_id, genome_name:gene_callers_id, sep = "___", remove = FALSE) %>% mutate(new_id = gsub("RefSeq_", "", new_id))
+AnvioClusters_Ctub <- select(AnvioClusters_Ctub, c(gene_cluster_id, new_id))
+
+AnvioClusters_Cacc <- AnvioSummary_Cacc %>% unite(new_id, genome_name:gene_callers_id, sep = "___", remove = FALSE) %>% mutate(new_id = gsub("RefSeq_", "", new_id))
+AnvioClusters_Cacc <- select(AnvioClusters_Cacc, c(gene_cluster_id, new_id))
+```
+
+Now we write those as .tsv files:
+
+```{r, eval=FALSE}
+write_delim(AnvioClusters_Cpse, "analysis_PPanGGOLiN/AnvioClusters_Cpse.tsv", col_names=FALSE)
+write_delim(AnvioClusters_Cpro, "analysis_PPanGGOLiN/AnvioClusters_Cpro.tsv", col_names=FALSE)
+write_delim(AnvioClusters_Ctub, "analysis_PPanGGOLiN/AnvioClusters_Ctub.tsv", col_names=FALSE)
+write_delim(AnvioClusters_Cacc, "analysis_PPanGGOLiN/AnvioClusters_Cacc.tsv", col_names=FALSE)
+```
+
+**IMPORTANT:** The gene_callers_id provided by Anvi'o don't match the original ones in the Prokka annotation. The Prokka annotated genomes were parsed into two text files, one for gene calls and one for annotations, with the script `gff_parser.py`. By default Prokka annotates also tRNAs, rRNAs and CRISPR regions. However, `gff_parser.py` will only utilize open reading frames reported by Prodigal in the Prokka output in order to be compatible with the pangenomic Anvi'o pipeline. While parsing new gene_callers_id are generated only for the ORFs that will be imported into Anvi'o. Fortunately `anvi-get-sequences-for-gene-calls` can be used to export new .gff files with only the ORFs and these can be used for PPanGGOLiN, instead of the original Prokka ones:
+
+```{bash, eval=FALSE}
+#conda activate anvio-7
+mkdir -p "analysis_Anvio7/Exported_gffs"
+
+path_f="analysis_Anvio7/Contigs_db"
+path_o="analysis_Anvio7/Exported_gffs"
+
+for file in $path_f/*.db; do
+    FILENAME=`basename ${file%.*}`
+    anvi-get-sequences-for-gene-calls -c $file --export-gff3 \
+                                      -o $path_o/Anvio7_$FILENAME.gff
+      
+done
+```
+
+We create lists with the files names for both the Anvi'o exported .gff and the renamed .fasta files and use them to run the `annotate` subcommand. To create the lists we use the file "GENOMES/GenomeSpecies.txt" as a template and edit to the corresponding file paths and extensions.
+
+```{bash, eval=FALSE}
+#conda activate PPanGGOLiN
+ppanggolin annotate --anno analysis_PPanGGOLiN/AnvioExported_gff_Cpse.txt --fasta analysis_PPanGGOLiN/AnvioReformatted_fasta_Cpse.txt -o analysis_PPanGGOLiN/Output_Cpse --basename Cpse
+ppanggolin annotate --anno analysis_PPanGGOLiN/AnvioExported_gff_Cpro.txt --fasta analysis_PPanGGOLiN/AnvioReformatted_fasta_Cpro.txt -o analysis_PPanGGOLiN/Output_Cpro --basename Cpro
+ppanggolin annotate --anno analysis_PPanGGOLiN/AnvioExported_gff_Ctub.txt --fasta analysis_PPanGGOLiN/AnvioReformatted_fasta_Ctub.txt -o analysis_PPanGGOLiN/Output_Ctub --basename Ctub
+ppanggolin annotate --anno analysis_PPanGGOLiN/AnvioExported_gff_Cacc.txt --fasta analysis_PPanGGOLiN/AnvioReformatted_fasta_Cacc.txt -o analysis_PPanGGOLiN/Output_Cacc --basename Cacc
+```
+
+For the `cluster` subcommand we use the .tsv files created before from the `anvi-summarize` output.
+
+```{bash, eval=FALSE}
+#conda activate PPanGGOLiN
+ppanggolin cluster -p analysis_PPanGGOLiN/Output_Cpse/Cpse.h5 --clusters analysis_PPanGGOLiN/AnvioClusters_Cpse.tsv --infer_singletons
+ppanggolin cluster -p analysis_PPanGGOLiN/Output_Cpro/Cpro.h5 --clusters analysis_PPanGGOLiN/AnvioClusters_Cpro.tsv --infer_singletons
+ppanggolin cluster -p analysis_PPanGGOLiN/Output_Ctub/Ctub.h5 --clusters analysis_PPanGGOLiN/AnvioClusters_Ctub.tsv --infer_singletons
+ppanggolin cluster -p analysis_PPanGGOLiN/Output_Cacc/Cacc.h5 --clusters analysis_PPanGGOLiN/AnvioClusters_Cacc.tsv --infer_singletons
+```
+
+## Graphing and Partitioning
+
+The `graph` subcommand has only a single other option, which is '-r' or '--remove_high_copy_number'. If used, it will remove the gene families that are too duplicated in your genomes. This is useful if you want to visualize your pangenome afterward and want to remove the biggest hubs to have a clearer view. It can also be used to limit the influence of very duplicated genes such as transposases or ABC transporters in the partition step.
+
+```{bash, eval=FALSE}
+#conda activate PPanGGOLiN
+ppanggolin graph -p analysis_PPanGGOLiN/Output_Cpse/Cpse.h5
+ppanggolin graph -p analysis_PPanGGOLiN/Output_Cpro/Cpro.h5
+ppanggolin graph -p analysis_PPanGGOLiN/Output_Ctub/Ctub.h5
+ppanggolin graph -p analysis_PPanGGOLiN/Output_Cacc/Cacc.h5
+```
+
+We let the `partition` subcommand statistical criterion find the optimal number of partitions.
+
+```{bash, eval=FALSE}
+#conda activate PPanGGOLiN
+ppanggolin partition -p analysis_PPanGGOLiN/Output_Cpse/Cpse.h5
+ppanggolin partition -p analysis_PPanGGOLiN/Output_Cpro/Cpro.h5
+ppanggolin partition -p analysis_PPanGGOLiN/Output_Ctub/Ctub.h5
+ppanggolin partition -p analysis_PPanGGOLiN/Output_Cacc/Cacc.h5
+```
+
+## Writing outputs
+
+For details on PPanGGOLiN outputs see: <https://github.com/labgem/PPanGGOLiN/wiki/Outputs>
+
+```{bash, eval=FALSE}
+#conda activate PPanGGOLiN
+ppanggolin write -p analysis_PPanGGOLiN/Output_Cpse/Cpse.h5 -o analysis_PPanGGOLiN/Output_Cpse --light_gexf --gexf  --csv --Rtab --stats --partitions --projection --families_tsv -f
+ppanggolin write -p analysis_PPanGGOLiN/Output_Cpro/Cpro.h5 -o analysis_PPanGGOLiN/Output_Cpro --light_gexf --gexf  --csv --Rtab --stats --partitions --projection --families_tsv -f
+ppanggolin write -p analysis_PPanGGOLiN/Output_Ctub/Ctub.h5 -o analysis_PPanGGOLiN/Output_Ctub --light_gexf --gexf  --csv --Rtab --stats --partitions --projection --families_tsv -f
+ppanggolin write -p analysis_PPanGGOLiN/Output_Cacc/Cacc.h5 -o analysis_PPanGGOLiN/Output_Cacc --light_gexf --gexf  --csv --Rtab --stats --partitions --projection --families_tsv -f
+```
+
+## Rarefaction curves
+
+```{bash, eval=FALSE}
+#conda activate PPanGGOLiN
+ppanggolin rarefaction -p analysis_PPanGGOLiN/Output_Cpse/Cpse.h5 --force -o analysis_PPanGGOLiN/Output_Cpse/rarefaction
+ppanggolin rarefaction -p analysis_PPanGGOLiN/Output_Cpro/Cpro.h5 --force -o analysis_PPanGGOLiN/Output_Cpro/rarefaction
+ppanggolin rarefaction -p analysis_PPanGGOLiN/Output_Ctub/Ctub.h5 --force -o analysis_PPanGGOLiN/Output_Ctub/rarefaction
+ppanggolin rarefaction -p analysis_PPanGGOLiN/Output_Cacc/Cacc.h5 --force -o analysis_PPanGGOLiN/Output_Cacc/rarefaction
+```
+
+## Finding Regions of Genome Plasticity
+
+For details on RGPs see: <https://github.com/labgem/PPanGGOLiN/wiki/Regions-of-Genome-Plasticity>
+
+The spots can be labeled by:
+
+```{bash, eval=FALSE}
+#conda activate PPanGGOLiN
+ppanggolin rgp -p analysis_PPanGGOLiN/Output_Cpse/Cpse.h5 
+ppanggolin rgp -p analysis_PPanGGOLiN/Output_Cpro/Cpro.h5 
+ppanggolin rgp -p analysis_PPanGGOLiN/Output_Ctub/Ctub.h5 
+ppanggolin rgp -p analysis_PPanGGOLiN/Output_Cacc/Cacc.h5 
+
+ppanggolin spot -p analysis_PPanGGOLiN/Output_Cpse/Cpse.h5 --label_priority ID --draw_hotspots -o analysis_PPanGGOLiN/Output_Cpse/spots_ID -f
+ppanggolin spot -p analysis_PPanGGOLiN/Output_Cpro/Cpro.h5 --label_priority ID --draw_hotspots -o analysis_PPanGGOLiN/Output_Cpro/spots_ID -f
+ppanggolin spot -p analysis_PPanGGOLiN/Output_Ctub/Ctub.h5 --label_priority ID --draw_hotspots -o analysis_PPanGGOLiN/Output_Ctub/spots_ID -f
+ppanggolin spot -p analysis_PPanGGOLiN/Output_Cacc/Cacc.h5 --label_priority ID --draw_hotspots -o analysis_PPanGGOLiN/Output_Cacc/spots_ID -f
+
+ppanggolin write -p analysis_PPanGGOLiN/Output_Cpse/Cpse.h5 -o analysis_PPanGGOLiN/Output_Cpse --regions --spots -f
+ppanggolin write -p analysis_PPanGGOLiN/Output_Cpro/Cpro.h5 -o analysis_PPanGGOLiN/Output_Cpro --regions --spots -f
+ppanggolin write -p analysis_PPanGGOLiN/Output_Ctub/Ctub.h5 -o analysis_PPanGGOLiN/Output_Ctub --regions --spots -f
+ppanggolin write -p analysis_PPanGGOLiN/Output_Cacc/Cacc.h5 -o analysis_PPanGGOLiN/Output_Cacc --regions --spots -f
+```
+
+## Summary of used parameters
+
+The `info` subcommand indicates, for each steps of the analysis, the PPanGGOLiN parameters that were used and the source of the data if appropriate. This is useful for methods sections on manuscripts.
+
+```{bash, eval=FALSE}
+#conda activate PPanGGOLiN
+ppanggolin info -p analysis_PPanGGOLiN/Output_Cpse/Cpse.h5 --parameters --content --status
+ppanggolin info -p analysis_PPanGGOLiN/Output_Cpro/Cpro.h5 --parameters --content --status
+ppanggolin info -p analysis_PPanGGOLiN/Output_Ctub/Ctub.h5 --parameters --content --status
+ppanggolin info -p analysis_PPanGGOLiN/Output_Cacc/Cacc.h5 --parameters --content --status
+```
+
+# IMPORTING PARTITIONS INTO ANVIO
+
+The `pangenomeGraph.gexf` file can be opened with Gephi, and the Data Table exported as a `gephi_table.csv`. This can be used to easily explore the PPanGGOLiN output with the same gene IDs Anvi'o uses. The `matrix.csv` should be used with caution, since records PPanGGOLiN internal gene IDs, that are different from the Anvi'o ones.
+
+```{r, message=FALSE}
+Gephi <-  read.delim("analysis_PPanGGOLiN/Output_Cpse/Cpse_gephi_table.csv", ",", escape_double = FALSE, trim_ws = TRUE)
+Gephi <-  read.delim("analysis_PPanGGOLiN/Output_Cpro/Cpro_gephi_table.csv", ",", escape_double = FALSE, trim_ws = TRUE)
+Gephi <-  read.delim("analysis_PPanGGOLiN/Output_Ctub/Ctub_gephi_table.csv", ",", escape_double = FALSE, trim_ws = TRUE)
+Gephi <-  read.delim("analysis_PPanGGOLiN/Output_Cacc/Cacc_gephi_table.csv", ",", escape_double = FALSE, trim_ws = TRUE)
+```
+
+
+
+# Gephi Parameters
+
+Edges (links) Color Hex code: BDBDBD
+
+Background Color Hex code: 34203B
+
+I ran into the issue of the graph or preview not viewing in Gephi. This link <https://github.com/gephi/gephi/issues/2051> helped me troubleshoot the issue.
+
+C. *pro*
+
+-   Force Atlas 2
+
+-   Scaling: 5000
+
+-   Stronger Gravity: On
+
+-   Edges: 1.5
+
+C. *pse*
+
+-   Force Atlas 2
+
+-   Scaling: 5000
+
+-   Stronger Gravity: On
+
+-   Edges: 1.5
+
+C. *tub*
+
+-   Force Atlas 2
+
+-   Scaling: 5000
+
+-   Stronger Gravity: On
+
+-   Edges: 1.5
+
+C. *acc*
+
+-   Force Atlas 2
+
+-   Scaling: 5000
+
+-   Stronger Gravity: On
+
+-   Edges: 1.5
+
+# [REFERENCES]{.ul}
