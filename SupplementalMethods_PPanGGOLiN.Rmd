@@ -14,6 +14,14 @@ editor_options:
 bibliography: referencesPPanGGOLiN.bib
 ---
 
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy(c('r', 'bash'))
+```
+
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
 ```{r, message = FALSE, echo = FALSE}
 library(tidyverse)
 library(knitr)

@@ -11,6 +11,10 @@ output:
 bibliography: referencesGET_HOMOLOGUES.bib
 ---
 
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy(c('r', 'bash'))
+```
+
 # GET_HOMOLOGUES
 
 This notebook contains analyses using the genomic software GET_HOMOLOGUES version 24082022 [@Contreras-Moreira2013]. If you want to know more in-depth information about GET_HOMOLOGUES you can go to their official online manual here: <http://eead-csic-compbio.github.io/get_homologues/manual/>

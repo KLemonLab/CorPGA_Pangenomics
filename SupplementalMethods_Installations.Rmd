@@ -10,6 +10,10 @@ output:
     toc_depth: 4
 ---
 
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy(c('r', 'bash'))
+```
+
 # INSTALLATIONS
 
 ## Installing Conda (MacOSX)

@@ -11,6 +11,10 @@ output:
 bibliography: referencesAnnotations.bib
 ---
 
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy(c('r', 'bash'))
+```
+
 # Annotating with Prokka
 
 We used prokka v1.14.6 to annotate 107 *Corynebacterium* strain genomes. In order to use annotated genomes with GET_HOMOLOGUES and anvi'o two seperate runs had to be made with prokka.

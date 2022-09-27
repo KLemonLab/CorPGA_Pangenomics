@@ -20,6 +20,10 @@ params:
     choices: [Cpse, Cpro, Ctub, Cacc]
 ---
 
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy(c('r', 'bash'))
+```
+
 ```{r message=FALSE, include=FALSE}
 library(kableExtra)
 library(tidyverse)
@@ -33,6 +37,8 @@ library(RColorBrewer)
 knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(eval = FALSE)
 ```
+
+install.packages(vctrs)
 
 # COG ANALYSIS WITH PPanGGOLiN partitions BINS
 
