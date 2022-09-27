@@ -69,7 +69,7 @@ library(knitr)
 library(kableExtra)
 ```
 
-```{r}
+```{r, echo=FALSE}
 kbl(cbind(CorPGA_ALLxALL_Mash, CorPGA_ALLxALL_Mash)) %>%
   kable_styling(fixed_thead = T,  font_size = 12) %>%
   kable_paper() %>%
