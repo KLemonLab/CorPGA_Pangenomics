@@ -1,1 +1,19 @@
-# CorPGA_Pangenomics_Metabolomics
+# "Metabolic capabilities are highly conserved among human nasal-associated *Corynebacterium* species" Supplemental Methods
+
+## This repository includes:
+
+-   Supplemental methods for program [[installations]{.underline}](SupplementalMethods_Installations.html).
+
+-   Supplemental methods and output files for quality control and MASH analysis executed with [[PanACoTA]{.underline}](SupplementalMethods_GENOMES.html).
+
+-   Supplemental methods and output files for [[Prokka v1.14.6 annotation]{.underline}](SupplementalMethods_Annotations.html) of 107 *Corynebacterium* strain genomes.
+
+-   Supplemental methods and output files of pangenome analyses performed with [[GET_HOMOLOGUES]{.underline}](SupplementalMethods_GET_HOMOLOGUES.html).
+
+-   Supplemental methods and output files for the [[anvi'o v7 pangenomic and metabolic analysis]{.underline}](SupplementalMethods_Anvio.html).
+
+-   Supplemental methods and output files of COG anvi'o annotated gene clusters assignments to the persistent or accessory genome with [[PPanGGOLiN analysis]{.underline}](SupplementalMethods_PPanGGOLiN.html).
+
+-   Supplemental methods and output files for [[COG annotations and funtional enrichment analysis]{.underline}](SupplementalMethods_COGS.html).
+
+<img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
