@@ -57,9 +57,28 @@ I run again the MASH [@Ondov2016]analysis with --max 1 and default --min 1e-4. W
 PanACoTA prepare --norefseq -d "/Users/tommytran/Downloads/CorPGA_genomes_final" -o "/Users/tommytran/Downloads/MASH_CorPGA_Final_MinMash" --max 1 -M --info "/Users/tommytran/Downloads/MASH_CorPGA_Final/LSTINFO-NA-filtered-0.0_1.0.txt"
 ```
 
+## All by All MASH table
+
+```{r, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+library(readr)
+CorPGA_ALLxALL_Mash <- read_csv("CorPGA_ALLxALL_Mash.csv")
+```
+
+```{r, eval=TRUE, echo=FALSE, message = FALSE, warning=FALSE}
+library(knitr)
+library(kableExtra)
+```
+
+```{r}
+kbl(cbind(CorPGA_ALLxALL_Mash, CorPGA_ALLxALL_Mash)) %>%
+  kable_styling(fixed_thead = T,  font_size = 12) %>%
+  kable_paper() %>%
+  scroll_box(width = "100%", height = "500px")
+```
+
 ## Eliminating Genomes with **\<** 95% Identity to the Type Strain
 
-We created ANI (Average Nucleotide Identity) matrices with GET_HOMOLOGUES [@Contreras-Moreira2013] for each of the four *Corynebacterium* species. These ANIs were generated using blastn and which means they were generated at the nucleotide level. We decided to look at all shared CDS (CoDing Sequences) regions and eliminated strains that did not meet a threshold of 95% of higher to the type strain of the concerning species.
+We created ANI (Average Nucleotide Identity) matrices with GET_HOMOLOGUES [@Contreras-Moreira2013] for each of the four *Corynebacterium* species. These ANIs were generated using blastn and which means they were generated at the nucleotide level. We decided to look at all shared CDS (CoDing Sequences) regions and eliminated strains that did not meet a threshold of 95% of higher to the type strain of the concerning species. This left us with a total of 107 *Corynebacterium* strain genomes to proceed with.
 
 <img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
 
