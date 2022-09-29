@@ -160,7 +160,7 @@ GCsbyCOG_Genome <- GCsbyCOG_Genome %>%
   mutate(Assignment=ifelse(COGs!="Uninformative" & COGs!="Ambiguous" & COGs!="Unclassified", "Informative", as.character(COGs)))
 ```
 
-#### Summary of GOC annotated GCs in the Accessory vs. Persistent
+#### Summary of COG annotated GCs in the Accessory vs. Persistent
 
 ```{r message=FALSE, warning=TRUE}
 TableGC <- GCsbyCOG_Genome %>% 
@@ -172,7 +172,7 @@ TableGC$Percentages <- round(100*TableGC$corrected_genes/sum(TableGC$corrected_g
 kable(TableGC)
 ```
 
-#### Summary of GOC annotated GCs in the Accessory
+#### Summary of COG annotated GCs in the Accessory
 
 ```{r message=FALSE, warning=TRUE}
 TableGCAccessory <- GCsbyCOG_Genome %>% 
@@ -185,7 +185,7 @@ TableGCAccessory$Percentages <- round(100*TableGCAccessory$corrected_genes/sum(T
 kable(TableGCAccessory)
 ```
 
-#### Summary of GOC annotated GCs in the Persistent
+#### Summary of COG annotated GCs in the Persistent
 
 ```{r message=FALSE, warning=TRUE}
 TableGCPersistent <- GCsbyCOG_Genome %>% 
@@ -198,7 +198,7 @@ TableGCPersistent$Percentages <- round(100*TableGCPersistent$corrected_genes/sum
 kable(TableGCPersistent)
 ```
 
-#### Summary of GOC annotated GCs by Genome in the Accessory vs. Persistent
+#### Summary of COG annotated GCs by Genome in the Accessory vs. Persistent
 
 ```{r message=FALSE, warning=TRUE}
 TableGenomes <- GCsbyCOG_Genome %>% 
@@ -257,7 +257,7 @@ GCsbyCOG$COGs <- recode_factor(GCsbyCOG$COGs, "Q"="Secondary metabolites biosynt
                                "Unclassified"="Unclassified", .ordered = TRUE)
 ```
 
-#### Summary of GOC annotated GCs GCs by COG Category:
+#### Summary of COG annotated GCs GCs by COG Category:
 
 New table "GCsbyCOG_PervsAcc" in wide format. % of each category relative to the "Accessory" or "Persistent" was calculated (pTotal. variables). Total GCs for each COG category calculated, and % of GCs in the "Accessory" and "Persistent" relative to each category (p. values) were calculated as well. The ratio between the number of GC in the "Accessory" vs. the "Persistent" is calculated for each COG:
 
