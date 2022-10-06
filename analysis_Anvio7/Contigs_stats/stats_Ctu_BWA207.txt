@@ -1,0 +1,30 @@
+contigs_db	Ctu_BWA207
+Total Length	2335555
+Num Contigs	39
+Num Contigs > 100 kb	10
+Num Contigs > 50 kb	14
+Num Contigs > 20 kb	20
+Num Contigs > 10 kb	20
+Num Contigs > 5 kb	22
+Num Contigs > 2.5 kb	24
+Longest Contig	346606
+Shortest Contig	218
+Num Genes (prodigal)	0
+L50	6
+L75	10
+L90	15
+N50	137039
+N75	116876
+N90	49020
+Archaea_76	32
+Bacteria_71	72
+Protista_83	6
+Ribosomal_RNA_12S	0
+Ribosomal_RNA_16S	1
+Ribosomal_RNA_18S	0
+Ribosomal_RNA_23S	1
+Ribosomal_RNA_28S	0
+Ribosomal_RNA_5S	0
+eukarya (Protista_83)	0
+archaea (Archaea_76)	0
+bacteria (Bacteria_71)	1

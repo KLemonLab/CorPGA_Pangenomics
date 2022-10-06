@@ -1,0 +1,30 @@
+contigs_db	Cma_NML_080212
+Total Length	2417567
+Num Contigs	77
+Num Contigs > 100 kb	3
+Num Contigs > 50 kb	14
+Num Contigs > 20 kb	41
+Num Contigs > 10 kb	51
+Num Contigs > 5 kb	56
+Num Contigs > 2.5 kb	64
+Longest Contig	197475
+Shortest Contig	1047
+Num Genes (prodigal)	0
+L50	13
+L75	27
+L90	41
+N50	57952
+N75	34387
+N90	20532
+Archaea_76	32
+Bacteria_71	72
+Protista_83	6
+Ribosomal_RNA_12S	0
+Ribosomal_RNA_16S	1
+Ribosomal_RNA_18S	0
+Ribosomal_RNA_23S	1
+Ribosomal_RNA_28S	0
+Ribosomal_RNA_5S	0
+archaea (Archaea_76)	0
+bacteria (Bacteria_71)	1
+eukarya (Protista_83)	0

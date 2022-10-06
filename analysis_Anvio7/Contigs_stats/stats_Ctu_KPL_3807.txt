@@ -1,0 +1,30 @@
+contigs_db	Ctu_KPL_3807
+Total Length	2337782
+Num Contigs	135
+Num Contigs > 100 kb	11
+Num Contigs > 50 kb	14
+Num Contigs > 20 kb	23
+Num Contigs > 10 kb	27
+Num Contigs > 5 kb	29
+Num Contigs > 2.5 kb	30
+Longest Contig	277144
+Shortest Contig	78
+Num Genes (prodigal)	0
+L50	7
+L75	12
+L90	18
+N50	147217
+N75	80349
+N90	35832
+Archaea_76	32
+Bacteria_71	71
+Protista_83	6
+Ribosomal_RNA_12S	0
+Ribosomal_RNA_16S	1
+Ribosomal_RNA_18S	0
+Ribosomal_RNA_23S	1
+Ribosomal_RNA_28S	0
+Ribosomal_RNA_5S	0
+eukarya (Protista_83)	0
+bacteria (Bacteria_71)	1
+archaea (Archaea_76)	0

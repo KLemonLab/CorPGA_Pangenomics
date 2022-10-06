@@ -1,0 +1,30 @@
+contigs_db	Cac_KPL_3774
+Total Length	2527715
+Num Contigs	175
+Num Contigs > 100 kb	13
+Num Contigs > 50 kb	17
+Num Contigs > 20 kb	18
+Num Contigs > 10 kb	18
+Num Contigs > 5 kb	20
+Num Contigs > 2.5 kb	21
+Longest Contig	304837
+Shortest Contig	78
+Num Genes (prodigal)	0
+L50	6
+L75	11
+L90	15
+N50	144396
+N75	120864
+N90	62660
+Archaea_76	32
+Bacteria_71	72
+Protista_83	6
+Ribosomal_RNA_12S	0
+Ribosomal_RNA_16S	1
+Ribosomal_RNA_18S	0
+Ribosomal_RNA_23S	1
+Ribosomal_RNA_28S	0
+Ribosomal_RNA_5S	0
+bacteria (Bacteria_71)	1
+archaea (Archaea_76)	0
+eukarya (Protista_83)	0

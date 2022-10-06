@@ -1,0 +1,30 @@
+contigs_db	Cps_90104
+Total Length	2328061
+Num Contigs	48
+Num Contigs > 100 kb	8
+Num Contigs > 50 kb	18
+Num Contigs > 20 kb	28
+Num Contigs > 10 kb	35
+Num Contigs > 5 kb	39
+Num Contigs > 2.5 kb	46
+Longest Contig	204728
+Shortest Contig	1067
+Num Genes (prodigal)	0
+L50	8
+L75	17
+L90	26
+N50	121210
+N75	53983
+N90	21774
+Archaea_76	33
+Bacteria_71	72
+Protista_83	5
+Ribosomal_RNA_12S	0
+Ribosomal_RNA_16S	1
+Ribosomal_RNA_18S	0
+Ribosomal_RNA_23S	1
+Ribosomal_RNA_28S	0
+Ribosomal_RNA_5S	0
+bacteria (Bacteria_71)	1
+archaea (Archaea_76)	0
+eukarya (Protista_83)	0

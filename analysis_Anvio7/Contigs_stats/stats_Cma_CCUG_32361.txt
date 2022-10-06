@@ -1,0 +1,30 @@
+contigs_db	Cma_CCUG_32361
+Total Length	2419073
+Num Contigs	56
+Num Contigs > 100 kb	7
+Num Contigs > 50 kb	13
+Num Contigs > 20 kb	25
+Num Contigs > 10 kb	32
+Num Contigs > 5 kb	35
+Num Contigs > 2.5 kb	44
+Longest Contig	345378
+Shortest Contig	1049
+Num Genes (prodigal)	0
+L50	6
+L75	13
+L90	23
+N50	128157
+N75	53139
+N90	24185
+Archaea_76	32
+Bacteria_71	72
+Protista_83	6
+Ribosomal_RNA_12S	0
+Ribosomal_RNA_16S	1
+Ribosomal_RNA_18S	0
+Ribosomal_RNA_23S	1
+Ribosomal_RNA_28S	0
+Ribosomal_RNA_5S	0
+eukarya (Protista_83)	0
+bacteria (Bacteria_71)	1
+archaea (Archaea_76)	0

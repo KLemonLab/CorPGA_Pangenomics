@@ -1,0 +1,30 @@
+contigs_db	Cps_BWA300
+Total Length	2425046
+Num Contigs	22
+Num Contigs > 100 kb	6
+Num Contigs > 50 kb	7
+Num Contigs > 20 kb	9
+Num Contigs > 10 kb	9
+Num Contigs > 5 kb	14
+Num Contigs > 2.5 kb	15
+Longest Contig	1070994
+Shortest Contig	234
+Num Genes (prodigal)	0
+L50	2
+L75	4
+L90	6
+N50	410744
+N75	206158
+N90	157573
+Archaea_76	34
+Bacteria_71	72
+Protista_83	5
+Ribosomal_RNA_12S	0
+Ribosomal_RNA_16S	1
+Ribosomal_RNA_18S	0
+Ribosomal_RNA_23S	1
+Ribosomal_RNA_28S	0
+Ribosomal_RNA_5S	0
+bacteria (Bacteria_71)	1
+archaea (Archaea_76)	0
+eukarya (Protista_83)	0

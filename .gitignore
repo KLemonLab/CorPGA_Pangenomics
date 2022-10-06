@@ -41,9 +41,4 @@ vignettes/*.pdf
 
 **/.DS_Store
 /_ONLY_IN_NAS
-/GENOMES
-/analysis_Anvio7
 /analysis_PPanGGOLiN
-*GENOMES.db
-
-main_outputs/Anvio7/PAN_AllCoryne-PAN.db

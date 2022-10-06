@@ -1,0 +1,30 @@
+contigs_db	Cpr_1274_CJEI
+Total Length	2466773
+Num Contigs	68
+Num Contigs > 100 kb	7
+Num Contigs > 50 kb	19
+Num Contigs > 20 kb	26
+Num Contigs > 10 kb	30
+Num Contigs > 5 kb	36
+Num Contigs > 2.5 kb	43
+Longest Contig	231305
+Shortest Contig	203
+Num Genes (prodigal)	0
+L50	8
+L75	16
+L90	23
+N50	98991
+N75	64689
+N90	40363
+Archaea_76	32
+Bacteria_71	72
+Protista_83	5
+Ribosomal_RNA_12S	0
+Ribosomal_RNA_16S	1
+Ribosomal_RNA_18S	0
+Ribosomal_RNA_23S	1
+Ribosomal_RNA_28S	0
+Ribosomal_RNA_5S	0
+bacteria (Bacteria_71)	1
+archaea (Archaea_76)	0
+eukarya (Protista_83)	0

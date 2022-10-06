@@ -1,0 +1,30 @@
+contigs_db	Cac_BWA273
+Total Length	2479472
+Num Contigs	40
+Num Contigs > 100 kb	6
+Num Contigs > 50 kb	11
+Num Contigs > 20 kb	17
+Num Contigs > 10 kb	18
+Num Contigs > 5 kb	24
+Num Contigs > 2.5 kb	26
+Longest Contig	655841
+Shortest Contig	214
+Num Genes (prodigal)	0
+L50	3
+L75	7
+L90	12
+N50	305723
+N75	96266
+N90	47435
+Archaea_76	32
+Bacteria_71	72
+Protista_83	6
+Ribosomal_RNA_12S	0
+Ribosomal_RNA_16S	1
+Ribosomal_RNA_18S	0
+Ribosomal_RNA_23S	1
+Ribosomal_RNA_28S	0
+Ribosomal_RNA_5S	0
+bacteria (Bacteria_71)	1
+archaea (Archaea_76)	0
+eukarya (Protista_83)	0

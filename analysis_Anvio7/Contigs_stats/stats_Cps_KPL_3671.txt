@@ -1,0 +1,30 @@
+contigs_db	Cps_KPL_3671
+Total Length	2268541
+Num Contigs	54
+Num Contigs > 100 kb	7
+Num Contigs > 50 kb	15
+Num Contigs > 20 kb	20
+Num Contigs > 10 kb	21
+Num Contigs > 5 kb	22
+Num Contigs > 2.5 kb	24
+Longest Contig	288883
+Shortest Contig	78
+Num Genes (prodigal)	0
+L50	5
+L75	11
+L90	16
+N50	165230
+N75	71277
+N90	43736
+Archaea_76	32
+Bacteria_71	72
+Protista_83	5
+Ribosomal_RNA_12S	0
+Ribosomal_RNA_16S	1
+Ribosomal_RNA_18S	0
+Ribosomal_RNA_23S	1
+Ribosomal_RNA_28S	0
+Ribosomal_RNA_5S	0
+eukarya (Protista_83)	0
+bacteria (Bacteria_71)	1
+archaea (Archaea_76)	0

@@ -1,0 +1,30 @@
+contigs_db	Cac_ATCC_49726
+Total Length	2465636
+Num Contigs	35
+Num Contigs > 100 kb	1
+Num Contigs > 50 kb	1
+Num Contigs > 20 kb	1
+Num Contigs > 10 kb	1
+Num Contigs > 5 kb	1
+Num Contigs > 2.5 kb	4
+Longest Contig	2421309
+Shortest Contig	552
+Num Genes (prodigal)	0
+L50	1
+L75	1
+L90	1
+N50	2421309
+N75	2421309
+N90	2421309
+Archaea_76	32
+Bacteria_71	72
+Protista_83	6
+Ribosomal_RNA_12S	0
+Ribosomal_RNA_16S	1
+Ribosomal_RNA_18S	0
+Ribosomal_RNA_23S	1
+Ribosomal_RNA_28S	0
+Ribosomal_RNA_5S	0
+archaea (Archaea_76)	0
+eukarya (Protista_83)	0
+bacteria (Bacteria_71)	1
