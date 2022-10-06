@@ -18,4 +18,8 @@ https://klemonlab.github.io/CorPGA_Pangenomics_Metabolomics/
 
 -   Supplemental methods and output files for [COG annotations and functional enrichment analysis](https://klemonlab.github.io/CorPGA_Pangenomics_Metabolomics/SupplementalMethods_COGS.html).
 
+[Lemon Lab](https://www.bcm.edu/research/faculty-labs/katherine-lemon-lab)
+
+<img src="images/klemonlab_photo.jpg" align="left" width="200" height="90"/>
+
 <img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
