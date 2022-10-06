@@ -16,6 +16,6 @@ https://klemonlab.github.io/CorPGA_Pangenomics_Metabolomics/
 
 -   Supplemental methods and output files of COG anvi'o annotated gene clusters assignments to the persistent or accessory genome with [PPanGGOLiN analysis](https://klemonlab.github.io/CorPGA_Pangenomics_Metabolomics/SupplementalMethods_PPanGGOLiN.html).
 
--   Supplemental methods and output files for [COG annotations and funtional enrichment analysis](https://klemonlab.github.io/CorPGA_Pangenomics_Metabolomics/SupplementalMethods_COGS.html).
+-   Supplemental methods and output files for [COG annotations and functional enrichment analysis](https://klemonlab.github.io/CorPGA_Pangenomics_Metabolomics/SupplementalMethods_COGS.html).
 
 <img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
