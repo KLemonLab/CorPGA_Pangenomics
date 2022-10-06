@@ -26,4 +26,6 @@ output:
 
 -   Supplemental methods and output files for [[COG annotations and functional enrichment analysis]{.underline}](SupplementalMethods_COGS.html).
 
-<img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
+<img src="images/klemonlab_photo.jpg" align="left" width="200" height="90"/>
+
+<img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="right" width="200" height="90"/>
