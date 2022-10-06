@@ -1,6 +1,7 @@
 ---
 title: "SupplementalMethods_GET_HOMOLOGUES"
-author: "Tommy Tran (KLemonLab)"
+author: 
+- Tommy Tran, (KLemonLab) Tommy.Tran@bcm.edu
 output:
   rmdformats::robobook:
     use_bookdown: true
