@@ -52,6 +52,7 @@ Species <- params$species
 ```
 
 For editing the file you can run code for a specific pangenome with this:
+
 ```{r}
 #Pangenome <- read.delim("main_outputs/COGs/PAN_Cpse_gene_clusters_summary.txt.gz")
 #Species <- "Cpse"
@@ -439,58 +440,14 @@ saveRDS(pF, file = paste("main_outputs/COGs/rds/pF_", Species, ".rds", sep =""))
 saveRDS(pG, file = paste("main_outputs/COGs/rds/pG_", Species, ".rds", sep =""))
 ```
 
+**Click for:**
+
+[in-depth COGS information *C. propinquum*](analysis_COGS/COGS_Cpr.html)
+
+[in-depth COGS information *C. pseudodiphtheriticum*](analysis_COGS/COGS_Cps.html)
+
+[in-depth COGS information *C. accolens*](analysis_COGS/COGS_Cac.html)
+
+[in-depth COGS information *C. tuberculostearicum*](analysis_COGS/COGS_Ctu.html)
 
 <img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
