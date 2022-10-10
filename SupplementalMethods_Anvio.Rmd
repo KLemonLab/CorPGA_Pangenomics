@@ -13,10 +13,6 @@ output:
 bibliography: referencesAnvio.bib
 ---
 
-```{r}
-library(distill)
-```
-
 ```{r klippy, echo=FALSE, include=TRUE}
 klippy::klippy(c('r', 'bash'))
 ```
