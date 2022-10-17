@@ -1,4 +1,5 @@
 ---
+title: "*Corynebacterium* Pangenomics and Metabolomics"
 date: 'KLemonLab'
 output:
   prettydoc::html_pretty:
