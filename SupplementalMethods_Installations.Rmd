@@ -2,6 +2,7 @@
 title: "SupplementalMethods_Installations"
 author: 
 - Tommy Tran, (KLemonLab) Tommy.Tran@bcm.edu
+- Isabel Escapa, isabel.fernandez.escapa@gmail.com
 output:
   rmdformats::robobook:
     use_bookdown: true
