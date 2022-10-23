@@ -320,20 +320,24 @@ anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/
 # anvi'o KEGG Analysis Pipeline
 
 ```{bash, eval = FALSE}
-cd ./Documents/CorPGA_rerun_aqr/analysis_Anvio7_1
+cd ./Documents/CorPGA_rerun_aqr/analysis_Anvio7_1 # go to anvi'o environment
 conda activate anvio-7.1.2
+
 anvi-estimate-metabolism -e genome_list_Coryne_No_Mac.txt -O Coryne_No_Mac --matrix-format
 
 anvi-matrix-to-newick Coryne_No_Mac-completeness-MATRIX.txt
+```
 
-# dry run to get the profile db:
+Dry run to get the profile db:
+```{bash, eval = FALSE}
 anvi-interactive -d Coryne_No_Mac-completeness-MATRIX.txt -p Coryne_No_Mac_metabolism_PROFILE.db --manual-mode --dry-run
+```
 
-# run for reals:
+Run for reals:
+```{bash, eval = FALSE}
 anvi-interactive --manual-mode -d Coryne_No_Mac-completeness-MATRIX.txt -t Coryne_No_Mac-completeness-MATRIX.txt.newick -p Coryne_No_Mac_metabolism_PROFILE.db --title "Coryne_No_Mac Metabolism Heatmap"
 
 anvi-export-state -s default -p Coryne_No_Mac_metabolism_PROFILE.db -o Coryne_No_Mac_metabolism_state.json
-
 
 export ANVIO_MODULES_DB=`python -c "import anvio; import os; print(os.path.join(os.path.dirname(anvio.__file__), 'data/misc/KEGG/MODULES.db'))"`
 echo -e > dpig+Coryne-No_Mac_modules_info.txt
@@ -342,40 +346,48 @@ sqlite3 $ANVIO_MODULES_DB "select module,data_value from kegg_modules where data
 paste module_class.txt <(cut -f 2 module_names.txt ) >> Coryne_No_Mac_modules_info.txt
 rm module_names.txt module_class.txt
 
-
 anvi-import-misc-data Coryne_No_Mac_modules_info.txt -p Coryne_No_Mac_metabolism_PROFILE.db -t items
+```
 
-# To painlessly make your interactive visualizations look like the ones in the screenshots, you can import the following state file into your profile database:
+To painlessly make your interactive visualizations look like the ones in the screenshots, you can import the following state file into your profile database:
+```{bash, eval = FALSE}
 anvi-import-state -p Coryne_No_Mac_metabolism_PROFILE.db -n default -s Coryne_No_Mac_metabolism_state.json
+```
 
-# And then we can run the visualization command yet again to see the heatmap with labels.
+And then we can run the visualization command yet again to see the heatmap with labels:
+```{bash, eval = FALSE}
 anvi-interactive --manual-mode -d Coryne_No_Mac-completeness-MATRIX.txt -t Coryne_No_Mac-completeness-MATRIX.txt.newick -p Coryne_No_Mac_metabolism_PROFILE.db --title "Coryne_No_Mac Metabolism Heatmap"
 
 anvi-estimate-metabolism -e genome_list_Coryne_No_Mac.txt -O Coryne_No_Mac_metabolism --kegg-output-modes modules,kofam_hits
+```
 
-# need to usse compute-metabolic-enrichment in anvio 7.1
+Need to use compute-metabolic-enrichment in anvio 7.1:
+```{bash, eval = FALSE}
 anvi-compute-metabolic-enrichment -M Coryne_No_Mac_metabolism_modules.txt -G Coryne_No_Mac_species_groups.txt -o Coryne_No_Mac_enriched_modules.txt
 
 anvi-compute-metabolic-enrichment -M Coryne_No_Mac_metabolism_modules.txt -G Coryne_No_Mac_collection_groups.txt -o Coryne_No_Mac_enriched_coll_modules.txt
 ```
 
+# *Corynebacterium* species vs *Dolosigranulum pigrum*
 
-# corpga vs dpi
 ```{bash, eval = FALSE}
 cd ./Documents/aqr_metabol_comp
 conda activate anvio-7.1.2
 anvi-estimate-metabolism -e genome_list_Coryne_Dpi.txt -O Coryne_Dpi --matrix-format
 
 anvi-matrix-to-newick Coryne_Dpi-completeness-MATRIX.txt
+```
 
-# dry run to get the profile db:
+Dry run to get the profile db:
+```{bash, eval = FALSE}
 anvi-interactive -d Coryne_Dpi-completeness-MATRIX.txt -p Coryne_Dpi_metabolism_PROFILE.db --manual-mode --dry-run
+```
 
-# run for reals:
+Run for reals:
+```{bash, eval = FALSE}
 anvi-interactive --manual-mode -d Coryne_Dpi-completeness-MATRIX.txt -t Coryne_Dpi-completeness-MATRIX.txt.newick -p Coryne_Dpi_metabolism_PROFILE.db --title "Coryne_Dpi Metabolism Heatmap"
 
 anvi-export-state -s default -p Coryne_Dpi_metabolism_PROFILE.db -o Coryne_Dpi_metabolism_state.json
-
 
 export ANVIO_MODULES_DB=`python -c "import anvio; import os; print(os.path.join(os.path.dirname(anvio.__file__), 'data/misc/KEGG/MODULES.db'))"`
 echo -e > dpig+Coryne-No_Mac_modules_info.txt
@@ -384,71 +396,44 @@ sqlite3 $ANVIO_MODULES_DB "select module,data_value from kegg_modules where data
 paste module_class.txt <(cut -f 2 module_names.txt ) >> Coryne_Dpi_modules_info.txt
 rm module_names.txt module_class.txt
 
-
 anvi-import-misc-data Coryne_Dpi_modules_info.txt -p Coryne_Dpi_metabolism_PROFILE.db -t items
+```
 
-# To painlessly make your interactive visualizations look like the ones in the screenshots, you can import the following state file into your profile database:
+To painlessly make your interactive visualizations look like the ones in the screenshots, you can import the following state file into your profile database:
+```{bash, eval = FALSE}
 anvi-import-state -p Coryne_Dpi_metabolism_PROFILE.db -n default -s Coryne_Dpi_metabolism_state.json
+```
 
-# And then we can run the visualization command yet again to see the heatmap with labels.
+And then we can run the visualization command yet again to see the heatmap with labels:
+```{bash, eval = FALSE}
 anvi-interactive --manual-mode -d Coryne_Dpi-completeness-MATRIX.txt -t Coryne_Dpi-completeness-MATRIX.txt.newick -p Coryne_Dpi_metabolism_PROFILE.db --title "Coryne_Dpi Metabolism Heatmap"
 
 anvi-estimate-metabolism -e genome_list_Coryne_Dpi.txt -O Coryne_Dpi_metabolism --kegg-output-modes modules,kofam_hits
+```
 
-# need to usse compute-metabolic-enrichment in anvio 7.1
+Need to use compute-metabolic-enrichment in anvio 7.1:
+```{bash, eval = FALSE}
 anvi-compute-metabolic-enrichment -M Coryne_Dpi_metabolism_modules.txt -G Coryne_Dpi_species_groups.txt -o Coryne_Dpi_enriched_modules.txt
 ```
 
+# Intra-Species Geographic Comparison
 
-# within species geographic comparison
-## Cacc
-```{bash, eval = FALSE}
-cd ./Documents/aqr_metabol_comp
-conda activate anvio-7.1.2
-anvi-estimate-metabolism -e genome_list_Cacc.txt -O Cacc --matrix-format
-
-anvi-matrix-to-newick Cacc-completeness-MATRIX.txt
-
-# dry run to get the profile db:
-anvi-interactive -d Cacc-completeness-MATRIX.txt -p Cacc_metabolism_PROFILE.db --manual-mode --dry-run
-
-# run for reals:
-anvi-interactive --manual-mode -d Cacc-completeness-MATRIX.txt -t Cacc-completeness-MATRIX.txt.newick -p Cacc_metabolism_PROFILE.db --title "Cacc Metabolism Heatmap"
-
-anvi-export-state -s default -p Cacc_metabolism_PROFILE.db -o Cacc_metabolism_state.json
-
-export ANVIO_MODULES_DB=`python -c "import anvio; import os; print(os.path.join(os.path.dirname(anvio.__file__), 'data/misc/KEGG/MODULES.db'))"`
-echo -e > Cacc_modules_info.txt
-sqlite3 $ANVIO_MODULES_DB "select module, data_value from kegg_modules where data_name='CLASS'" | sed 's/; /|/g' | tr '|' '\t' >> module_class.txt
-sqlite3 $ANVIO_MODULES_DB "select module,data_value from kegg_modules where data_name='NAME'" | tr '|' '\t' > module_names.txt
-paste module_class.txt <(cut -f 2 module_names.txt ) >> Cacc_modules_info.txt
-rm module_names.txt module_class.txt
-
-anvi-import-misc-data Cacc_modules_info.txt -p Cacc_metabolism_PROFILE.db -t items
-
-# To painlessly make your interactive visualizations look like the ones in the screenshots, you can import the following state file into your profile database:
-anvi-import-state -p Cacc_metabolism_PROFILE.db -n default -s Cacc_metabolism_state.json
-
-# And then we can run the visualization command yet again to see the heatmap with labels.
-anvi-interactive --manual-mode -d Cacc-completeness-MATRIX.txt -t Cacc-completeness-MATRIX.txt.newick -p Cacc_metabolism_PROFILE.db --title "Cacc Metabolism Heatmap"
-
-anvi-estimate-metabolism -e genome_list_Cacc.txt -O Cacc_metabolism --kegg-output-modes modules,kofam_hits
-
-# need to usse compute-metabolic-enrichment in anvio 7.1
-anvi-compute-metabolic-enrichment -M Cacc_metabolism_modules.txt -G Cacc_geo_groups.txt -o Cacc_enriched_modules.txt
-```
-## Cprop
+## *C. propinquum*
 ```{bash, eval = FALSE}
 cd ./Documents/aqr_metabol_comp
 conda activate anvio-7.1.2
 anvi-estimate-metabolism -e genome_list_Cprop.txt -O Cprop --matrix-format
 
 anvi-matrix-to-newick Cprop-completeness-MATRIX.txt
+```
 
-# dry run to get the profile db:
+Dry run to get the profile db:
+```{bash, eval = FALSE}
 anvi-interactive -d Cprop-completeness-MATRIX.txt -p Cprop_metabolism_PROFILE.db --manual-mode --dry-run
+```
 
-# run for reals:
+Run for reals:
+```{bash, eval = FALSE}
 anvi-interactive --manual-mode -d Cprop-completeness-MATRIX.txt -t Cprop-completeness-MATRIX.txt.newick -p Cprop_metabolism_PROFILE.db --title "Cprop Metabolism Heatmap"
 
 anvi-export-state -s default -p Cprop_metabolism_PROFILE.db -o Cprop_metabolism_state.json
@@ -461,29 +446,40 @@ paste module_class.txt <(cut -f 2 module_names.txt ) >> Cprop_modules_info.txt
 rm module_names.txt module_class.txt
 
 anvi-import-misc-data Cprop_modules_info.txt -p Cprop_metabolism_PROFILE.db -t items
+```
 
-# To painlessly make your interactive visualizations look like the ones in the screenshots, you can import the following state file into your profile database:
+To painlessly make your interactive visualizations look like the ones in the screenshots, you can import the following state file into your profile database:
+```{bash, eval = FALSE}
 anvi-import-state -p Cprop_metabolism_PROFILE.db -n default -s Cprop_metabolism_state.json
+```
 
-# And then we can run the visualization command yet again to see the heatmap with labels.
+And then we can run the visualization command yet again to see the heatmap with labels:
+```{bash, eval = FALSE}
 anvi-interactive --manual-mode -d Cprop-completeness-MATRIX.txt -t Cprop-completeness-MATRIX.txt.newick -p Cprop_metabolism_PROFILE.db --title "Cprop Metabolism Heatmap"
 
 anvi-estimate-metabolism -e genome_list_Cprop.txt -O Cprop_metabolism --kegg-output-modes modules,kofam_hits
+```
 
-# need to usse compute-metabolic-enrichment in anvio 7.1
+Need to use compute-metabolic-enrichment in anvio 7.1:
+```{bash, eval = FALSE}
 anvi-compute-metabolic-enrichment -M Cprop_metabolism_modules.txt -G Cprop_geo_groups.txt -o Cprop_enriched_modules.txt
 ```
-## Cpsd
+
+## *C. pseudodiphtheriticum*
 ```{bash, eval = FALSE}
 cd ./Documents/aqr_metabol_comp
 conda activate anvio-7.1.2
 anvi-estimate-metabolism -e genome_list_Cpsd.txt -O Cpsd --matrix-format
 anvi-matrix-to-newick Cpsd-completeness-MATRIX.txt
+```
 
-# dry run to get the profile db:
+Dry run to get the profile db:
+```{bash, eval = FALSE}
 anvi-interactive -d Cpsd-completeness-MATRIX.txt -p Cpsd_metabolism_PROFILE.db --manual-mode --dry-run
+```
 
-# run for reals:
+Run for reals:
+```{bash, eval = FALSE}
 anvi-interactive --manual-mode -d Cpsd-completeness-MATRIX.txt -t Cpsd-completeness-MATRIX.txt.newick -p Cpsd_metabolism_PROFILE.db --title "Cpsd Metabolism Heatmap"
 
 anvi-export-state -s default -p Cpsd_metabolism_PROFILE.db -o Cpsd_metabolism_state.json
@@ -496,26 +492,82 @@ paste module_class.txt <(cut -f 2 module_names.txt ) >> Cpsd_modules_info.txt
 rm module_names.txt module_class.txt
 
 anvi-import-misc-data Cpsd_modules_info.txt -p Cpsd_metabolism_PROFILE.db -t items
+```
 
-# To painlessly make your interactive visualizations look like the ones in the screenshots, you can import the following state file into your profile database:
+To painlessly make your interactive visualizations look like the ones in the screenshots, you can import the following state file into your profile database:
+```{bash, eval = FALSE}
 anvi-import-state -p Cpsd_metabolism_PROFILE.db -n default -s Cpsd_metabolism_state.json
+```
 
-# And then we can run the visualization command yet again to see the heatmap with labels.
+And then we can run the visualization command yet again to see the heatmap with labels:
+```{bash, eval = FALSE}
 anvi-interactive --manual-mode -d Cpsd-completeness-MATRIX.txt -t Cpsd-completeness-MATRIX.txt.newick -p Cpsd_metabolism_PROFILE.db --title "Cpsd Metabolism Heatmap"
 
 anvi-estimate-metabolism -e genome_list_Cpsd.txt -O Cpsd_metabolism --kegg-output-modes modules,kofam_hits
+```
 
-# need to usse compute-metabolic-enrichment in anvio 7.1
+Need to use compute-metabolic-enrichment in anvio 7.1:
+```{bash, eval = FALSE}
 anvi-compute-metabolic-enrichment -M Cpsd_metabolism_modules.txt -G Cpsd_geo_groups.txt -o Cpsd_enriched_modules.txt
 ```
-## Ctub
+
+## *C. accolens*
+```{bash, eval = FALSE}
+cd ./Documents/aqr_metabol_comp
+conda activate anvio-7.1.2
+anvi-estimate-metabolism -e genome_list_Cacc.txt -O Cacc --matrix-format
+
+anvi-matrix-to-newick Cacc-completeness-MATRIX.txt
+```
+
+Dry run to get the profile db:
+```{bash, eval = FALSE}
+anvi-interactive -d Cacc-completeness-MATRIX.txt -p Cacc_metabolism_PROFILE.db --manual-mode --dry-run
+```
+
+Run for reals:
+```{bash, eval = FALSE}
+anvi-interactive --manual-mode -d Cacc-completeness-MATRIX.txt -t Cacc-completeness-MATRIX.txt.newick -p Cacc_metabolism_PROFILE.db --title "Cacc Metabolism Heatmap"
+
+anvi-export-state -s default -p Cacc_metabolism_PROFILE.db -o Cacc_metabolism_state.json
+
+export ANVIO_MODULES_DB=`python -c "import anvio; import os; print(os.path.join(os.path.dirname(anvio.__file__), 'data/misc/KEGG/MODULES.db'))"`
+echo -e > Cacc_modules_info.txt
+sqlite3 $ANVIO_MODULES_DB "select module, data_value from kegg_modules where data_name='CLASS'" | sed 's/; /|/g' | tr '|' '\t' >> module_class.txt
+sqlite3 $ANVIO_MODULES_DB "select module,data_value from kegg_modules where data_name='NAME'" | tr '|' '\t' > module_names.txt
+paste module_class.txt <(cut -f 2 module_names.txt ) >> Cacc_modules_info.txt
+rm module_names.txt module_class.txt
+
+anvi-import-misc-data Cacc_modules_info.txt -p Cacc_metabolism_PROFILE.db -t items
+```
+
+To painlessly make your interactive visualizations look like the ones in the screenshots, you can import the following state file into your profile database:
+```{bash, eval = FALSE}
+anvi-import-state -p Cacc_metabolism_PROFILE.db -n default -s Cacc_metabolism_state.json
+```
+
+And then we can run the visualization command yet again to see the heatmap with labels:
+```{bash, eval = FALSE}
+anvi-interactive --manual-mode -d Cacc-completeness-MATRIX.txt -t Cacc-completeness-MATRIX.txt.newick -p Cacc_metabolism_PROFILE.db --title "Cacc Metabolism Heatmap"
+
+anvi-estimate-metabolism -e genome_list_Cacc.txt -O Cacc_metabolism --kegg-output-modes modules,kofam_hits
+```
+
+Need to use compute-metabolic-enrichment in anvio 7.1:
+```{bash, eval = FALSE}
+anvi-compute-metabolic-enrichment -M Cacc_metabolism_modules.txt -G Cacc_geo_groups.txt -o Cacc_enriched_modules.txt
+```
+
+## *C. tuberculostearicum*
 ```{bash, eval = FALSE}
 cd ./Documents/aqr_metabol_comp
 conda activate anvio-7.1.2
 anvi-estimate-metabolism -e genome_list_Ctub.txt -O Ctub --matrix-format
 anvi-matrix-to-newick Ctub-completeness-MATRIX.txt
+```
 
-# dry run to get the profile db:
+Dry run to get the profile db:
+```{bash, eval = FALSE}
 anvi-interactive -d Ctub-completeness-MATRIX.txt -p Ctub_metabolism_PROFILE.db --manual-mode --dry-run
 anvi-interactive --manual-mode -d Ctub-completeness-MATRIX.txt -t Ctub-completeness-MATRIX.txt.newick -p Ctub_metabolism_PROFILE.db --title "Ctub Metabolism Heatmap"
 
@@ -529,19 +581,26 @@ paste module_class.txt <(cut -f 2 module_names.txt ) >> Ctub_modules_info.txt
 rm module_names.txt module_class.txt
 
 anvi-import-misc-data Ctub_modules_info.txt -p Ctub_metabolism_PROFILE.db -t items
+```
 
-# To painlessly make your interactive visualizations look like the ones in the screenshots, you can import the following state file into your profile database:
+To painlessly make your interactive visualizations look like the ones in the screenshots, you can import the following state file into your profile database:
+```{bash, eval = FALSE}
 anvi-import-state -p Ctub_metabolism_PROFILE.db -n default -s Ctub_metabolism_state.json
+```
 
-# And then we can run the visualization command yet again to see the heatmap with labels.
+And then we can run the visualization command yet again to see the heatmap with labels:
+```{bash, eval = FALSE}
 anvi-interactive --manual-mode -d Ctub-completeness-MATRIX.txt -t Ctub-completeness-MATRIX.txt.newick -p Ctub_metabolism_PROFILE.db --title "Ctub Metabolism Heatmap"
 
 anvi-estimate-metabolism -e genome_list_Ctub.txt -O Ctub_metabolism --kegg-output-modes modules,kofam_hits
+```
 
-# need to usse compute-metabolic-enrichment in anvio 7.1
+Need to use compute-metabolic-enrichment in anvio 7.1:
+```{bash, eval = FALSE}
 anvi-compute-metabolic-enrichment -M Ctub_metabolism_modules.txt -G Ctub_geo_groups.txt -o Ctub_enriched_modules.txt
 ```
-# Make the distribution plot:
+
+# Generate a Distribution Plot
 ```{R, eval = FALSE}
 # read in libraries
 library(readxl)
@@ -585,7 +644,9 @@ big_boi <- rbind(cacc_filt, cpro_filt, cpsd_filt, ctub_filt, dpig_filt)
 big_boi_kef <- rbind(cacc_filt, cpro_filt, cpsd_filt, ctub_filt, dpig_filt, ckef_filt)
 ```
 
-# make bar graph of distribution: x axis is species y axis is # categorical make up of compelte modules
+# Generate a bar graph of distribution 
+
+x axis is species and y axis is # of complete modules to make up a module category
 ```{R, eval = FALSE}
 # filter out repeated modules here
 cacc_filt2 <- unique(subset(cacc_filt, select = c(kegg_module, module_name, module_class, module_category, module_subcategory, species)))
