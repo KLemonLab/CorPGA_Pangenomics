@@ -20,7 +20,7 @@ klippy::klippy(c('r', 'bash'))
 
 ## Installing Conda (MacOSX)
 
-First you can check if you have conda on your system by opening terminal and typing `conda` then pressing enter. If the command was not found you need follow up with this installation. If you already have it installed then run the command `conda update conda`.
+First check if you have conda on your system by opening terminal and typing `conda` then pressing enter. If the command was not found you need follow up with this installation. If you already have it installed then run the command `conda update conda`.
 
 ```{bash, eval=FALSE}
 conda
@@ -34,7 +34,7 @@ Use this [link](https://docs.conda.io/en/latest/miniconda.html) to find the corr
 1.  Once you have downloaded it you will need to open terminal.
 2.  Now that terminal is open you will need to use this command: `miniconda-filename.sh`. The "miniconda-filename.sh" should be replaced with the actual name of the file you downloaded. Your file name will look something like Miniconda2-latest-MacOSX-x86_64.sh
 3.  Continue to press `enter`, and type `yes` when it is needed.
-4.  When it is all completed I recommend running `conda update conda`.
+4.  When it is all completed we recommend running `conda update conda`.
 5.  Then check which conda you have by running `conda --version`.
 
 Use this command if you do not prefer conda's base environment to be activated on startup in terminal.
@@ -47,7 +47,7 @@ Here is a [link](https://docs.conda.io/projects/conda/en/4.6.0/_downloads/52a956
 
 ## Installing PanACoTa
 
-We create a new Python environment on the Mac Terminal:
+We create a new Python environment (here it's version 3.6 of Python) on the Mac Terminal:
 
 ```{bash, eval=FALSE}
 conda create -y --name PanACoTa python=3.6
@@ -56,18 +56,18 @@ conda activate PanACoTa
 
 ### Dependencies
 
-I install all dependencies in the new PanACoTa environment on the Mac Terminal:
+We install all dependencies in the new PanACoTa environment on the Mac Terminal:
 
 ```{bash, eval=FALSE}
 conda install -c conda-forge -c bioconda -c defaults prokka
 conda install -c conda-forge -c bioconda mmseqs2
 ```
 
--   For prepare module: mash (to filter genomes) From <https://github.com/marbl/Mash/releases> I get mash-OSX64-v2.2.tar, unzip and move the 'mash' binary to /usr/local/bin
+-   For prepare module: mash (to filter genomes) From <https://github.com/marbl/Mash/releases> We get mash-OSX64-v2.2.tar, unzip and move the 'mash' binary to /usr/local/bin
 -   For annotate module: prokka and/or prodigal (to uniformly annotate your genomes)
 -   For pangenome module: mmseqs (to generate pangenomes)
--   For align module: mafft (to align persistent genome) From <https://mafft.cbrc.jp/alignment/software/macstandard.html>. I download and install mafft-7.453-signed.pkg
--   For tree module: IQ Tree, FastTreeMP, FastME or Quicktree (to infer a phylogenetic tree) From <http://www.iqtree.org> I get the Stable release 1.6.12 (August 15, 2019) and move the 'iqtree' binary to /usr/local/bin
+-   For align module: mafft (to align persistent genome) From <https://mafft.cbrc.jp/alignment/software/macstandard.html>. We download and install mafft-7.453-signed.pkg
+-   For tree module: IQ Tree, FastTreeMP, FastME or Quicktree (to infer a phylogenetic tree) From <http://www.iqtree.org> We get the Stable release 1.6.12 (August 15, 2019) and move the 'iqtree' binary to /usr/local/bin
 
 ### PanACoTA
 
@@ -130,7 +130,7 @@ Then check if you have prokka installed by running the command `prokka -v`
 
 ## Installing PPanGGOLiN
 
-We create a new Python environment on the Terminal:
+We create a new Python environment (here it's version 3.6 of Python) on the Terminal:
 
 ```{bash, eval=FALSE}
 conda create -y --name PPanGGOLiN python=3.6
@@ -148,7 +148,7 @@ conda activate PPanGGOLiN
 conda install --file other/requirements.txt
 ```
 
-Also on the Terminal we install PPanGGOLiN:
+Also on the terminal we install PPanGGOLiN:
 
 ```{bash, eval=FALSE}
 pip install git+https://github.com/labgem/PPanGGOLiN.git#egg=PPanGGOLiN
@@ -157,7 +157,7 @@ pip install git+https://github.com/labgem/PPanGGOLiN.git#egg=PPanGGOLiN
 
 ## Installing GET_HOMOLOGUES
 
-This should be done in your MacOSX terminal or in your Linux WSL2 subsystem if you are on a Windows machine operating machine.
+This should be done in your MacOSX terminal or in your Linux WSL2 subsystem if you are using Windows.
 
 For more info on get_homologues go here: <http://eead-csic-compbio.github.io/get_homologues/manual/>
 
@@ -191,7 +191,7 @@ The output of this will be the version and credits of get_homologues.
 
 ## Installing GET_PHYLOMARKERS
 
-This should be done in your MacOSX terminal or in your Linux WSL2 subsystem if you are on a Windows machine operating machine.
+This should be done in your MacOSX terminal or in your Linux WSL2 subsystem if you are using Windows.
 
 For more info on get_phylomarkers go here: <https://vinuesa.github.io/get_phylomarkers/>
 
@@ -202,7 +202,7 @@ cd # path of directory of where you want get_homologues to be
 git clone https://github.com/vinuesa/get_phylomarkers.git
 ```
 
-After get_phylomarkers has been installed and you are within it's directory use the command below. This will install Rpackages that get_phylomarkers needs. If you are getting errors then you may need to install xquartz and updated R cran packages manually. I had to do both on my MacOSX system. Go to [xquartz](https://www.xquartz.org "xquartz official website") or [cran-r](https://cran.r-project.org "cran.r project official website") websites by clinking on the hyperlinks and then download and install packages you need.
+After get_phylomarkers has been installed and you are within its directory use the command below. This will install the Rpackages that get_phylomarkers needs. If you are getting errors then you may need to install xquartz and updated R cran packages manually. We had to do both on our MacOSX system. Go to [xquartz](https://www.xquartz.org "xquartz official website") or [cran-r](https://cran.r-project.org "cran.r project official website") websites by clinking on the hyperlinks and then download and install packages you need.
 
 ```{bash, eval=FALSE}
 ./install_R\_deps.R
@@ -217,7 +217,7 @@ your/path/to/run_get_phylomarkers_pipeline.sh -R 1 -t DNA
 
 It should run smoothly and create an output folder that has get_phylomarkers and the date as the title.
 
-You may want to add get_phylomarkers to your \$PATH. I did this on MacOSX.
+You may want to add get_phylomarkers to your \$PATH. We did this on MacOSX.
 
 ```{bash, eval=FALSE}
 nano ~/.zshrc
