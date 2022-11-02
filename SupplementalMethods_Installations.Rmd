@@ -129,7 +129,7 @@ Then check if you have prokka installed by running the command `prokka -v`
 
 ## Installing PPanGGOLiN
 
-We create a new Python environment (here it's version 3.6 of Python) on the Terminal:
+We create a new Python environment (here it's version 3.6 of Python) on terminal:
 
 ```{bash, eval=FALSE}
 conda create -y --name PPanGGOLiN python=3.6
@@ -140,14 +140,14 @@ For basic info on PPanGGOLiN go here: <https://github.com/labgem/PPanGGOLiN/wiki
 
 The public release doesn't include the "Regions of Genome Plasticity" analysis, so we want the version from GitHub.
 
-First we install on the Terminal the required dependencies:
+First we install on terminal the required dependencies:
 
 ```{bash, eval=FALSE}
 conda activate PPanGGOLiN
 conda install --file other/requirements.txt
 ```
 
-Also on the terminal we install PPanGGOLiN:
+Also on terminal we install PPanGGOLiN:
 
 ```{bash, eval=FALSE}
 pip install git+https://github.com/labgem/PPanGGOLiN.git#egg=PPanGGOLiN
