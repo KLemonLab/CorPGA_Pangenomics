@@ -102,8 +102,7 @@ Follow instructions here: <https://merenlab.org/2016/06/26/installation-v2/#3-in
 
 ```{bash, eval=FALSE}
 conda activate anvio-7
-pip install git+https://github.com/merenlab/anvio.git
-#pip install --upgrade git+git://github.com/merenlab/anvio.git
+pip install --upgrade git+git://github.com/merenlab/anvio.git
 ```
 
 ### anvi'o Help
@@ -123,7 +122,7 @@ Install using conda through terminal. You can try installing it into your specif
 Run the command:
 
 ```{bash, eval=FALSE}
-`conda install -c conda-forge -c bioconda -c defaults prokka`
+conda install -c conda-forge -c bioconda -c defaults prokka
 ```
 
 Then check if you have prokka installed by running the command `prokka -v`
