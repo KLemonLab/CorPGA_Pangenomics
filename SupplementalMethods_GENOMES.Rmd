@@ -47,13 +47,13 @@ We used PanACoTa in order to filter low quality assemblies with the default sett
 
 All *Corynebacterium* assemblies we have of these four species were batched into one folder.
 
-I first use --max 1 and --min 0 in order to keep all strains from all species:
+We first use --max 1 and --min 0 in order to keep all strains from all species:
 
 ```{bash, eval=FALSE}
 PanACoTA prepare --norefseq -d "/Users/tommytran/Downloads/CorPGA_genomes_final" -o "/Users/tommytran/Downloads/MASH_CorPGA_Final" --max 1 --min 0 
 ```
 
-I run again the MASH [@Ondov2016]analysis with --max 1 and default --min 1e-4. With this step we can identify assemblies that are very similar and might be redundant:
+We run again the MASH [@Ondov2016]analysis with --max 1 and default --min 1e-4. With this step we can identify assemblies that are very similar and might be redundant:
 
 ```{bash, eval=FALSE}
 PanACoTA prepare --norefseq -d "/Users/tommytran/Downloads/CorPGA_genomes_final" -o "/Users/tommytran/Downloads/MASH_CorPGA_Final_MinMash" --max 1 -M --info "/Users/tommytran/Downloads/MASH_CorPGA_Final/LSTINFO-NA-filtered-0.0_1.0.txt"
