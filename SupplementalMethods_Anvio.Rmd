@@ -54,7 +54,7 @@ for file in $path_f/*.db; do
 done
 ```
 
-The option `--log-bitscores` records the bit scores values. They were saved to the main folder for the repo, so I move them to a folder:
+The option `--log-bitscores` records the bit scores values. They were saved to the main folder for the repo, so we move them to a folder:
 
 ```{bash, eval = FALSE}
 mkdir "analysis_Anvio7_1/KEGGbitscores"
@@ -123,7 +123,7 @@ Terminal output saved to `analysis_Anvio7_1/anvi-db-info_log.txt`.
 
 ## Generating an anvi'o genomes storage
 
-The program `anvi-gen-genomes-storage` requires you to provide names and locations of the genomes to be included in the genome storage database in a .txt file. We created the All_107_CorynesAnvio.txt file with the renamed file names and paths based on the info on `GENOMES/METADATA_107taxa.csv`. This file includes the name anvi'o will use internally to identify each genome. I added the prefix "RefSeq\_" to the reference genomes because some of them start with a digit and anvi'o only allow names that start with an ASCII letter.
+The program `anvi-gen-genomes-storage` requires you to provide names and locations of the genomes to be included in the genome storage database in a .txt file. We created the All_107_CorynesAnvio.txt file with the renamed file names and paths based on the info on `GENOMES/METADATA_107taxa.csv`. This file includes the name anvi'o will use internally to identify each genome. We added the prefix "RefSeq\_" to the reference genomes because some of them start with a digit and anvi'o only allow names that start with an ASCII letter.
 
 We create 1 database with the 107 genomes that can be used to run the pangenomic analysis with all the strains at once or by selecting subsets of strains (i.e. by species, or by grouping related species together).
 
@@ -142,7 +142,10 @@ anvi-db-info "analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db"
 
 # Make Species Genome Lists
 
-We had to make new anvi'o environment with python 3.7 since the step below would not work unless we did that. This could be related to the updates with anvio 7.1 conda create -y --name anvio-7.1.2 python=3.7
+We had to make new anvi'o environment with python 3.7 since the step below would not work unless we did that. This could be related to the updates with anvio 7.1 
+```{bash, eval = FALSE}
+conda create -y --name anvio-7.1.2 python=3.7
+```
 
 # Running the pangenomic analsyses
 
@@ -611,7 +614,6 @@ cacc <- read_excel("/Users/klemonlab/Documents/aqr_metabol_comp/Cacc_metabolism_
 cpro <- read_excel("/Users/klemonlab/Documents/aqr_metabol_comp/Cprop_metabolism_modules.xlsx")
 cpsd <- read_excel("/Users/klemonlab/Documents/aqr_metabol_comp/Cpsd_metabolism_modules.xlsx")
 ctub <- read_excel("/Users/klemonlab/Documents/aqr_metabol_comp/Ctub_metabolism_modules.xlsx")
-ckef <- read_excel("/Users/klemonlab/Documents/aqr_metabol_comp/Ckef_metabolism_modules.xlsx")
 dpig <- read_excel("/Users/klemonlab/Documents/aqr_metabol_comp/Pigrum_metabolism_modules.xlsx")
 
 # remove warning column
@@ -619,7 +621,6 @@ cacc_2 <- subset(cacc, select = -c(db_name, warnings))
 cpro_2 <- subset(cpro, select = -c(db_name, warnings))
 cpsd_2 <- subset(cpsd, select = -c(db_name, warnings))
 ctub_2 <- subset(ctub, select = -c(db_name, warnings))
-ckef_2 <- subset(ckef, select = -c(db_name, warnings))
 dpig_2 <- subset(dpig, select = -c(db_name))
 
 # filter out to complete module completion > 0.75
@@ -627,7 +628,6 @@ cacc_filt <- subset(cacc_2, module_completeness >= 0.75)
 cpro_filt <- subset(cpro_2, module_completeness >= 0.75)
 cpsd_filt <- subset(cpsd_2, module_completeness >= 0.75)
 ctub_filt <- subset(ctub_2, module_completeness >= 0.75)
-ckef_filt <- subset(ckef_2, module_completeness >= 0.75)
 dpig_filt <- subset(dpig_2, module_completeness >= 0.75)
 
 # add factor for speices
@@ -635,14 +635,11 @@ cacc_filt$species <- "C. accolens"
 cpro_filt$species <- "C. propinquum"
 cpsd_filt$species <- "C. pseudodiphtheriticum"
 ctub_filt$species <- "C. tuberculostearicum"
-ckef_filt$species <- "C. kefirresidentii"
 dpig_filt$species <- "D. pigrum"
 
-
 # combine into 1 data array
-big_boi <- rbind(cacc_filt, cpro_filt, cpsd_filt, ctub_filt, dpig_filt)
-big_boi_kef <- rbind(cacc_filt, cpro_filt, cpsd_filt, ctub_filt, dpig_filt, ckef_filt)
-```
+combo <- rbind(cacc_filt, cpro_filt, cpsd_filt, ctub_filt, dpig_filt)
+``
 
 # Generate a bar graph of distribution 
 
@@ -655,11 +652,11 @@ cpsd_filt2 <- unique(subset(cpsd_filt, select = c(kegg_module, module_name, modu
 ctub_filt2 <- unique(subset(ctub_filt, select = c(kegg_module, module_name, module_class, module_category, module_subcategory, species)))
 dpig_filt2 <- unique(subset(dpig_filt, select = c(kegg_module, module_name, module_class, module_category, module_subcategory, species)))
 
-big_boi2 <- rbind(cpro_filt2, cpsd_filt2, cacc_filt2, ctub_filt2, dpig_filt2)
+combo2 <- rbind(cpro_filt2, cpsd_filt2, cacc_filt2, ctub_filt2, dpig_filt2)
 library("writexl")
-write_xlsx(big_boi2, "big_boi2.xlsx")
+write_xlsx(combo2, "combo2.xlsx")
 
-plot3 = ggplot(big_boi2) + geom_bar(aes(fill = module_category, x = factor(species, level = c("C. propinquum", "C. pseudodiphtheriticum", "C. accolens", "C. tuberculostearicum", "D. pigrum"))))+ scale_fill_brewer(palette = "Set2") + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black")) + theme(legend.position = "bottom") + theme(aspect.ratio = 1) 
+plot3 = ggplot(combo2) + geom_bar(aes(fill = module_category, x = factor(species, level = c("C. propinquum", "C. pseudodiphtheriticum", "C. accolens", "C. tuberculostearicum", "D. pigrum"))))+ scale_fill_brewer(palette = "Set2") + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black")) + theme(legend.position = "bottom") + theme(aspect.ratio = 1) 
 ```
 <img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
 

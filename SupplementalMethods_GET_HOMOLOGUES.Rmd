@@ -23,7 +23,6 @@ This notebook contains analyses using the genomic software GET_HOMOLOGUES versio
 We will want to use the gbk or gbf (genebank) file for each *Corynebacterium* strain genome from the prokka output. We copied and isolated the gbk files in new folders.
 
 ```{bash, eval=FALSE}
-# We will want to use the gbk file for each genome from the prokka output. We isolated the gbk files in new folders.
 
 cd /directory/holding/prokka/output
 mv *.gbk /new/directory/only/containing/gbk/files
@@ -182,7 +181,7 @@ cd get_homologues
 
 ## Creating a Conservative Core Venn Diagram
 
-From my experience you will run into less issues here if you move the three cluster folders and cluster list files into a new directory. Then use the paths to those cluster folders after the `-d` flag separated by commas.
+From our experience you will run into less issues here if you move the three cluster folders and cluster list files into a new directory. Then use the paths to those cluster folders after the `-d` flag separated by commas.
 
 Create conservative core venn diagram intersection to output faa files:
 
@@ -332,7 +331,7 @@ cd get_homologues
 
 ## Creating a Conservative Core of Only the Species of Interest and with the Additional Outgroup per Species
 
-From my experience you will run into less issues here if you move the three cluster folders and cluster list files into a new directory. Then use the paths to those cluster folders after the `-d` flag separated by commas.
+From our experience you will run into less issues here if you move the three cluster folders and cluster list files into a new directory. Then use the paths to those cluster folders after the `-d` flag separated by commas.
 
 Create conservative core venn diagram intersection to output faa and fna files for *C. propinquum*:
 
