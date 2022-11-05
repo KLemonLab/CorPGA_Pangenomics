@@ -231,7 +231,7 @@ cd /path/to/where/codon/alignment/files/are
 mv *.fasta /Users/klemonlab/Documents/IQ-TREE-2.1.3-MacOSX/CorPGA_107_codon_alignment_files
 ```
 
-This will create a maximum likely hood tree and a consensus tree. **This tree is being generated from the gene clustering.** The treefile file was used because it is the best fit maximum likely hood tree. It was viewed through iTOL [@Letunic2021] tree editor on google chrome browser.
+This will create a maximum likely hood tree and a consensus tree. **This tree is being generated from the gene clustering.** The treefile file was used because it is the best fit maximum likely hood tree. It was viewed through iTOL [@Letunic2021] tree editor on Google Chrome browser.
 
 The `-p` flag performs edge-linked proportional partition model [@Chernomor2016] for each of the individual clusters. Fast model selection for each cluster was determined by ModelFinder [@Kalyaanamoorthy2017].
 
@@ -465,7 +465,7 @@ mv *.fna "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cac/Cac_faa_fna_35" # Moves
 
 ## Comparing the Conservative Core of the Species of Interest to the Conservative Core with an Additional Outgroup
 
-This will compare the two conservative core of only the species of interest to the conservative of the species of interest plus an outgroup. The addition of an outgroup causes the conservative core to decease in value due to less gene clusters being shared with the outgroup. We are able to generate a list of which gene clusters are not shared with the outgroup from the strict conservative core. We can use this list to recover the lost gene clusters back into our analysis when making phylogenies.
+This will compare the two conservative core of only the species of interest to the conservative of the species of interest plus an outgroup. The addition of an outgroup causes the conservative core to decrease in value due to less gene clusters being shared with the outgroup. We are able to generate a list of which gene clusters are not shared with the outgroup from the strict conservative core. We can use this list to recover the lost gene clusters back into our analysis when making phylogenies.
 
 *C. propinquum* Conservative Core vs *C. propinquum* Conservative Core + Outgroup:
 
