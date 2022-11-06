@@ -1818,10 +1818,9 @@ margin-left: 0 !important;
 <h1><span class="header-section-number">1</span> GET_HOMOLOGUES</h1>
 <p>This notebook contains analyses using the genomic software GET_HOMOLOGUES version 24082022 <span class="citation">(Contreras-Moreira and Vinuesa 2013)</span>. If you want to know more in-depth information about GET_HOMOLOGUES you can go to their official online manual here: <a href="http://eead-csic-compbio.github.io/get_homologues/manual/" class="uri">http://eead-csic-compbio.github.io/get_homologues/manual/</a></p>
 <p>We will want to use the gbk or gbf (genebank) file for each <em>Corynebacterium</em> strain genome from the prokka output. We copied and isolated the gbk files in new folders.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># We will want to use the gbk file for each genome from the prokka output. We isolated the gbk files in new folders.</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /directory/holding/prokka/output</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mv</span> <span class="pp">*</span>.gbk /new/directory/only/containing/gbk/files</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /directory/holding/prokka/output</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mv</span> <span class="pp">*</span>.gbk /new/directory/only/containing/gbk/files</span></code></pre></div>
 </div>
 <div id="ani-average-nucleotide-identity" class="section level1" number="2">
 <h1><span class="header-section-number">2</span> ANI (Average Nucleotide Identity)</h1>
@@ -1902,7 +1901,7 @@ margin-left: 0 !important;
 </div>
 <div id="creating-a-conservative-core-venn-diagram" class="section level2" number="3.2">
 <h2><span class="header-section-number">3.2</span> Creating a Conservative Core Venn Diagram</h2>
-<p>From my experience you will run into less issues here if you move the three cluster folders and cluster list files into a new directory. Then use the paths to those cluster folders after the <code>-d</code> flag separated by commas.</p>
+<p>From our experience you will run into less issues here if you move the three cluster folders and cluster list files into a new directory. Then use the paths to those cluster folders after the <code>-d</code> flag separated by commas.</p>
 <p>Create conservative core venn diagram intersection to output faa files:</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> get_homologues</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./compare_clusters.pl</span> <span class="at">-o</span> <span class="st">&quot;/Users/klemonlab/Downloads/CorPGA_107_intersect&quot;</span> <span class="at">-d</span> <span class="st">&quot;/Users/klemonlab/Downloads/CorPGA_107_cluster_files/CpsDU080_f0_107taxa_algBDBH_e0_C90_&quot;</span>,<span class="st">&quot;/Users/klemonlab/Downloads/CorPGA_107_cluster_files/CpsDU080_f0_0taxa_algOMCL_e0_C90_&quot;</span>,<span class="st">&quot;/Users/klemonlab/Downloads/CorPGA_107_cluster_files/CpsDU080_f0_0taxa_algCOG_e0_C90_&quot;</span> <span class="at">-t</span> 107</span></code></pre></div>
@@ -1928,7 +1927,7 @@ margin-left: 0 !important;
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> CorPGA_107_codon_alignment_files</span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /path/to/where/codon/alignment/files/are</span>
 <span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mv</span> <span class="pp">*</span>.fasta /Users/klemonlab/Documents/IQ-TREE-2.1.3-MacOSX/CorPGA_107_codon_alignment_files</span></code></pre></div>
-<p>This will create a maximum likely hood tree and a consensus tree. <strong>This tree is being generated from the gene clustering.</strong> The treefile file was used because it is the best fit maximum likely hood tree. It was viewed through iTOL <span class="citation">(Letunic and Bork 2021)</span> tree editor on google chrome browser.</p>
+<p>This will create a maximum likely hood tree and a consensus tree. <strong>This tree is being generated from the gene clustering.</strong> The treefile file was used because it is the best fit maximum likely hood tree. It was viewed through iTOL <span class="citation">(Letunic and Bork 2021)</span> tree editor on Google Chrome browser.</p>
 <p>The <code>-p</code> flag performs edge-linked proportional partition model <span class="citation">(Chernomor, Haeseler, and Minh 2016)</span> for each of the individual clusters. Fast model selection for each cluster was determined by ModelFinder <span class="citation">(Kalyaanamoorthy et al. 2017)</span>.</p>
 <p>Run IQ-TREE v2.1.3 with the codon alignment files in the new folder:</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> IQ-TREE2</span>
@@ -1992,7 +1991,7 @@ margin-left: 0 !important;
 </div>
 <div id="creating-a-conservative-core-of-only-the-species-of-interest-and-with-the-additional-outgroup-per-species" class="section level2" number="4.3">
 <h2><span class="header-section-number">4.3</span> Creating a Conservative Core of Only the Species of Interest and with the Additional Outgroup per Species</h2>
-<p>From my experience you will run into less issues here if you move the three cluster folders and cluster list files into a new directory. Then use the paths to those cluster folders after the <code>-d</code> flag separated by commas.</p>
+<p>From our experience you will run into less issues here if you move the three cluster folders and cluster list files into a new directory. Then use the paths to those cluster folders after the <code>-d</code> flag separated by commas.</p>
 <p>Create conservative core venn diagram intersection to output faa and fna files for <em>C. propinquum</em>:</p>
 <div class="sourceCode" id="cb35"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> get_homologues</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./compare_clusters.pl</span> <span class="at">-o</span> <span class="st">&quot;/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_intersection_19&quot;</span> <span class="at">-d</span> <span class="st">&quot;/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_19/CprBWA290_f0_0taxa_algCOG_e0_C90_&quot;</span>,<span class="st">&quot;/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_19/CprBWA290_f0_0taxa_algOMCL_e0_C90_&quot;</span>,<span class="st">&quot;/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_19/CprBWA290_f0_19taxa_algBDBH_e0_C90_&quot;</span> <span class="at">-t</span> 19 <span class="co"># Creates a conservative core with the output of faa files</span></span>
@@ -2063,7 +2062,7 @@ margin-left: 0 !important;
 </div>
 <div id="comparing-the-conservative-core-of-the-species-of-interest-to-the-conservative-core-with-an-additional-outgroup" class="section level2" number="4.5">
 <h2><span class="header-section-number">4.5</span> Comparing the Conservative Core of the Species of Interest to the Conservative Core with an Additional Outgroup</h2>
-<p>This will compare the two conservative core of only the species of interest to the conservative of the species of interest plus an outgroup. The addition of an outgroup causes the conservative core to decease in value due to less gene clusters being shared with the outgroup. We are able to generate a list of which gene clusters are not shared with the outgroup from the strict conservative core. We can use this list to recover the lost gene clusters back into our analysis when making phylogenies.</p>
+<p>This will compare the two conservative core of only the species of interest to the conservative of the species of interest plus an outgroup. The addition of an outgroup causes the conservative core to decrease in value due to less gene clusters being shared with the outgroup. We are able to generate a list of which gene clusters are not shared with the outgroup from the strict conservative core. We can use this list to recover the lost gene clusters back into our analysis when making phylogenies.</p>
 <p><em>C. propinquum</em> Conservative Core vs <em>C. propinquum</em> Conservative Core + Outgroup:</p>
 <div class="sourceCode" id="cb51"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> get_homologues</span>
 <span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./compare_clusters.pl</span> <span class="at">-o</span> <span class="st">&quot;/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_compare_clusters_19_20&quot;</span> <span class="at">-d</span> <span class="st">&quot;/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_faa_fna_19&quot;</span>,<span class="st">&quot;/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_faa_fna_20&quot;</span> <span class="at">-r</span> </span></code></pre></div>
