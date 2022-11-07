@@ -1,5 +1,5 @@
 ---
-title: "*Corynebacterium* Pangenomics and Metabolomics"
+title: "*Corynebacterium* species Pangenomics and Metabolomics"
 date: 'KLemonLab'
 output:
   prettydoc::html_pretty:
