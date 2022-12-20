@@ -78,6 +78,25 @@ kbl(cbind(CorPGA_ALLxALL_Mash, CorPGA_ALLxALL_Mash)) %>%
   scroll_box(width = "100%", height = "500px")
 ```
 
+## Strain Genomes that were marked as redundant to each other
+
+```{r, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+library(readr)
+CorPGA_redundant <- read_csv("CorPGA_redundant.csv")
+```
+
+```{r, eval=TRUE, echo=FALSE, message = FALSE, warning=FALSE}
+library(knitr)
+library(kableExtra)
+```
+
+```{r, echo=FALSE}
+kbl(cbind(CorPGA_redundant, CorPGA_redundant)) %>%
+  kable_styling(fixed_thead = T,  font_size = 12) %>%
+  kable_paper() %>%
+  scroll_box(width = "100%", height = "500px")
+```
+
 ## Eliminating Genomes with **\<** 95% Identity to the Type Strain
 
 We created ANI (Average Nucleotide Identity) matrices with GET_HOMOLOGUES [@Contreras-Moreira2013] for each of the four *Corynebacterium* species. These ANIs were generated using blastn and which means they were generated at the nucleotide level. We decided to look at all shared CDS (CoDing Sequences) regions and eliminated strains that did not meet a threshold of 95% of higher to the type strain of the concerning species. This left us with a total of 107 *Corynebacterium* strain genomes to proceed with.
