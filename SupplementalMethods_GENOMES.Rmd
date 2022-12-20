@@ -72,8 +72,8 @@ library(kableExtra)
 ```
 
 ```{r, echo=FALSE}
-kbl(cbind(CorPGA_ALLxALL_Mash, CorPGA_ALLxALL_Mash)) %>%
-  kable_styling(fixed_thead = T,  font_size = 12) %>%
+kbl(CorPGA_ALLxALL_Mash, col.names = c("Query-ID","Reference-ID","mash distance","P-value","Matching-hashes"), align = "c") %>%
+  kable_styling(fixed_thead = T,  font_size = 16) %>%
   kable_paper() %>%
   scroll_box(width = "100%", height = "500px")
 ```
@@ -91,10 +91,9 @@ library(kableExtra)
 ```
 
 ```{r, echo=FALSE}
-kbl(cbind(CorPGA_redundant, CorPGA_redundant)) %>%
-  kable_styling(fixed_thead = T,  font_size = 12) %>%
-  kable_paper() %>%
-  scroll_box(width = "100%", height = "500px")
+kbl(CorPGA_redundant, col.names = c("genome_name","problem_compared_with","mash distance","contigs","L90","contigs","L90"), align = "c") %>%
+  kable_styling(fixed_thead = T,  font_size = 15) %>%
+  kable_paper()
 ```
 
 ## Eliminating Genomes with **\<** 95% Identity to the Type Strain
