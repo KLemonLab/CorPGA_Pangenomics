@@ -31,7 +31,7 @@ ggsave("myplot.png")
 ```{r}
 library("ggplotgui")
 
-ggplot_shiny(Cac_size)
+ggplot_shiny(Cac_size_order)
 ```
 
 
@@ -73,5 +73,61 @@ ggplot(Cac_Size_order) +
   aes(x = Genome, y = Size) +
   geom_jitter() +
   scale_x_discrete(guide = guide_axis(angle = 45)) 
-
 ```
+
+```{r}
+print(Cac_Size_order)
+```
+
+```{r}
+write.csv(Cac_Size_order, "Cac_size.csv", row.names=FALSE)
+```
+
+
+```{r}
+library(readr)
+Cac_size_order <- read_csv("Cac_size_order.csv")
+View(Cac_size_order)
+```
+
+```{r}
+graph <- ggplot(Cac_size_order) +
+  aes(x = reorder(Genome, Size), y = Size) +
+  geom_jitter() +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  scale_y_continuous(name="Size (bp)", limits=c(2300000, 2650000))
+```
+
+```{r}
+ggsave('Cac_size_order_scatter.png', graph, width = 14, height = 14, units = 'cm')
+```
+
+```{r}
+ggsave('Cac_size_order_scatter.png', graph)
+```
+
+ggplot(tips2, aes(x = reorder(day, -perc), y = perc)) + geom_bar(stat = "identity")
+
+```{r}
+library("plotly")
+ggplotly(graph)
+```
+
+
+```{r}
+htmlwidgets::saveWidget(graph, file = "image.html")
+```
+
+```{r}
+library(htmlwidgets)
+
+htmlwidgets::saveWidget(graph, file = "Cac_size_order.html", selfcontained = TRUE)
+```
+
+
+```{r}
+l <- plotly::ggplotly(graph)
+
+htmlwidgets::saveWidget(l, "Cac_size_order.html")
+```
+
