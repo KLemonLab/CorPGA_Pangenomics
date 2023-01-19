@@ -25,13 +25,15 @@ Initially 212 *Corynebacterium* assemblies were collected and analyzed using Pan
 
 Several assemblies were identified as redundant pairs:
 
-| Genome                    | Problem to Geome          | MASH distance |
-|---------------------------|---------------------------|---------------|
-| propinquum_2657           | pseudodiphtheriticum_3864 | 6.6807e-05    |
-| pseudodiphtheriticum_2661 | propinquum_2667           | 5.72459e-05   |
-| propinquum_2662           | propinquum_2667           | 7.39815e-05   |
-| tuberculostearicum_4083   | propinquum_4084           | 5.00789e-05   |
-| macginleyi_2830           | propinquum_2829           | 9.79202e-05   |
+Add KPL to these names
+
+| Genome                        | Problem to Genome             | MASH distance |
+|----------------------------|----------------------------|-----------------|
+| propinquum_KPL_2657           | pseudodiphtheriticum_KPL_3864 | 6.6807e-05    |
+| pseudodiphtheriticum_KPL_2661 | propinquum_KPL_2667           | 5.72459e-05   |
+| propinquum_KPL_2662           | propinquum_KPL_2667           | 7.39815e-05   |
+| tuberculostearicum_KPL_4083   | propinquum_KPL_4084           | 5.00789e-05   |
+| macginleyi_KPL_2830           | propinquum_KPL_2829           | 9.79202e-05   |
 
 2.  **16 BROAD genomes:** 16 KPL isolates were deposited at NCBI by the Broad as *Corynebacterium* sp. KPL#. None of the genomes were discarded because of low quality of the assembly. Several assemblies were identified as redundant pairs, but kept for follow up analysis. Bold names are genomes we kept that were in a redundant pair.
 
@@ -46,7 +48,7 @@ Several assemblies were identified as redundant pairs:
 | GCF_000478155.1_Cory_sp_KPL1817_V1     | GCF_000478055.1_Cory_sp_KPL1856_V1 | 1.90591e-05   |
 | GCF_000478075.1_Cory_sp_KPL1855_V1     | GCF_000478175.1_Cory_sp_KPL1814_V1 | 7.15897e-05   |
 
-3.  **32 RefSeq genomes:** We downloaded from NCBI reference assemblies using `PanACoTA prepare -s` subcommand. Default parameters were used, therefore genomes with mash distances that was not between 1e-4 and 0.06 were discarded to avoid redundant pairs or mislabeled assemblies.
+3.   reference assemblies using `PanACoTA prepare -s` subcommand. Default parameters were used, therefore genomes with mash distances that was not between 1e-4 and 0.06 were discarded to avoid redundant pairs or mislabeled assemblies.
 
 4.  **71 BWA genomes:** 71 nasal isolates from Botswana were provided by Dr. Matthew Kelly at Duke. None of the genomes were discarded due to quality. However, 6 discarded due to redundancy. We choose the strain with higher quality to keep between the pairs.
 

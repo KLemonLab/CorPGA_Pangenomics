@@ -1,0 +1,38 @@
+---
+title: "Untitled"
+output: html_document
+date: "2023-01-19"
+---
+
+```{r}
+library(ggplot2)
+library(ggExtra)
+```
+```{r}
+getwd( )
+```
+
+
+```{r}
+library(readr)
+Cac_size <- read_csv("Cac_size.csv")
+View(Cac_size)
+```
+
+```{r}
+p <- ggplot(Cac_size, aes(x = Genome, y = Size (bp))) +
+  geom_point()
+```
+
+```{r}
+ggsave("myplot.png")
+```
+
+```{r}
+install.packages("devtools")
+devtools::install_github("gertstulp/ggplotgui")
+
+library("ggplotgui")
+```
+
+
