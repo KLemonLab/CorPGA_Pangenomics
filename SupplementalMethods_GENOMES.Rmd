@@ -21,19 +21,16 @@ klippy::klippy(c('r', 'bash'))
 
 Initially 212 *Corynebacterium* assemblies were collected and analyzed using PanACoTa [@Perrin2021a] in order to filter low quality assemblies (maximum value of L90 allowed = 100 & maximum number of contigs allowed to keep a genome = 999).
 
-1.  **93 JASHHK genomes:** 94 KPL isolates were sequenced at NIH in collaboration with Julia Segre & Heidi Kong. This is follow up work on Wei Gao work with the CSF isolates. Only 1 out of 94 genomes was discarded because of low quality of the assembly (bovis_3648.spades.pilon.fasta, gsize=2626186, nb_conts=776 & L90=368). Several assemblies were identified as redundant pairs, but kept for follow up analysis.
+1.  **93 JASHHK genomes:** 94 KPL isolates were sequenced at NIH in collaboration with Julia Segre & Heidi Kong. This is follow up work on Wei Gao work with the CSF isolates. Only 1 out of 94 genomes was discarded because of low quality of the assembly (bovis_3648.spades.pilon.fasta, gsize=2626186, nb_conts=776 & L90=368). Several assemblies were identified as redundant pairs, but kept for follow up analysis. Bold names are genomes we kept that were in a redundant pair.
 
 Several assemblies were identified as redundant pairs:
 
-Add KPL to these names
-
 | Genome                        | Problem to Genome             | MASH distance |
-|----------------------------|----------------------------|-----------------|
-| propinquum_KPL_2657           | pseudodiphtheriticum_KPL_3864 | 6.6807e-05    |
-| pseudodiphtheriticum_KPL_2661 | propinquum_KPL_2667           | 5.72459e-05   |
-| propinquum_KPL_2662           | propinquum_KPL_2667           | 7.39815e-05   |
-| tuberculostearicum_KPL_4083   | propinquum_KPL_4084           | 5.00789e-05   |
-| macginleyi_KPL_2830           | propinquum_KPL_2829           | 9.79202e-05   |
+|-------------------------------|-------------------------------|---------------|
+| **propinquum_KPL_2657**       | pseudodiphtheriticum_KPL_3864 | 6.6807e-05    |
+| pseudodiphtheriticum_KPL_2661 | **propinquum_KPL_2667**       | 5.72459e-05   |
+| propinquum_KPL_2662           | **propinquum_KPL_2667**       | 7.39815e-05   |
+
 
 2.  **16 BROAD genomes:** 16 KPL isolates were deposited at NCBI by the Broad as *Corynebacterium* sp. KPL#. None of the genomes were discarded because of low quality of the assembly. Several assemblies were identified as redundant pairs, but kept for follow up analysis. Bold names are genomes we kept that were in a redundant pair.
 
@@ -43,10 +40,7 @@ Add KPL to these names
 | GCF_000477895.1_Cory_sp_KPL1998_V1     | GCF_000477975.1_Cory_sp_KPL1986_V1 | 9.52667e-06   |
 | GCF_000477875.1_Cory_sp_KPL2004_V1     | GCF_000477975.1_Cory_sp_KPL1986_V1 | 4.76262e-06   |
 | **GCF_000477955.1_Cory_sp_KPL1989_V1** | GCF_000477935.1_Cory_sp_KPL1995_V1 | 4.76262e-06   |
-| GCF_000477995.1_Cory_sp_KPL1860_V1     | GCF_000478035.1_Cory_sp_KPL1857_V1 | 1.19092e-05   |
-| GCF_000478115.1_Cory_sp_KPL1821_V1     | GCF_000478035.1_Cory_sp_KPL1857_V1 | 3.33684e-05   |
-| GCF_000478155.1_Cory_sp_KPL1817_V1     | GCF_000478055.1_Cory_sp_KPL1856_V1 | 1.90591e-05   |
-| GCF_000478075.1_Cory_sp_KPL1855_V1     | GCF_000478175.1_Cory_sp_KPL1814_V1 | 7.15897e-05   |
+
 
 3.   reference assemblies using `PanACoTA prepare -s` subcommand. Default parameters were used, therefore genomes with mash distances that was not between 1e-4 and 0.06 were discarded to avoid redundant pairs or mislabeled assemblies.
 
