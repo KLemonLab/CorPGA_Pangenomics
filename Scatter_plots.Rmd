@@ -29,10 +29,49 @@ ggsave("myplot.png")
 ```
 
 ```{r}
-install.packages("devtools")
-devtools::install_github("gertstulp/ggplotgui")
-
 library("ggplotgui")
+
+ggplot_shiny(Cac_size)
 ```
 
 
+```{r}
+View(p)
+```
+
+```{r}
+
+ggplot(Cac_size, aes(x = Genome, y = "Size (bp)" )) +
+  geom_bar(stat = "identity") 
+
+```
+
+```{r}
+ggplot(Cac_size, aes(x = Genome, y = "Size (bp)")) +
+  geom_col()
+scale_y_continuous(name="Size (bp)", limits=c(2300000, 2640000))
+```
+
+```{r}
+ggplot(Cac_size) +
+  aes(x = Genome, y = "Size (bp)") +
+  geom_jitter() +
+  scale_x_discrete(guide = guide_axis(angle = 45)) 
+
+```
+
+```{r}
+order(Cac_size$Size)
+```
+
+```{r}
+Cac_Size_order <- Cac_size[order(Cac_size$Size),]
+```
+
+```{r}
+ggplot(Cac_Size_order) +
+  aes(x = Genome, y = Size) +
+  geom_jitter() +
+  scale_x_discrete(guide = guide_axis(angle = 45)) 
+
+```
