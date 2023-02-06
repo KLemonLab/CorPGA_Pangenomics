@@ -380,15 +380,6 @@ anvi-show-collections-and-bins -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/a
 
 ## PPanGGOLiN Pangenome Compartments
 
-### *C. pseudodiphtheriticum* pangenome
-
-| Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    |
-|------------------|---------------------------|---------------------------|
-| Persistent       | 1771/3590                     | `r round(100*(1771/3590),1)`% |
-| Shell            | 392/3590                      | `r round(100*(392/3590),1)`%  |
-| Cloud            | 1424/3590                     | `r round(100*(1424/3590),1)`% |
-| None             | 3/3590                        | `r round(100*(3/3590),1)`%    |
-
 ### *C. propinquum* pangenome
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    |
@@ -398,14 +389,14 @@ anvi-show-collections-and-bins -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/a
 | Cloud            | 837/3108                      | `r round(100*(837/3108),1)`%  |
 | None             | 3/3108                        | `r round(100*(3/3108),1)`%    |
 
-### *C. tuberculostearicum* pangenome
+### *C. pseudodiphtheriticum* pangenome
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    |
 |------------------|---------------------------|---------------------------|
-| Persistent       | 1991/2907                     | `r round(100*(1991/2907),1)`% |
-| Shell            | 301/2907                      | `r round(100*(301/2907),1)`%  |
-| Cloud            | 766/2907                      | `r round(100*(766/2907),1)`%  |
-| None             | 3/2907                        | `r round(100*(3/2907),1)`%    |
+| Persistent       | 1771/3590                     | `r round(100*(1771/3590),1)`% |
+| Shell            | 392/3590                      | `r round(100*(392/3590),1)`%  |
+| Cloud            | 1424/3590                     | `r round(100*(1424/3590),1)`% |
+| None             | 3/3590                        | `r round(100*(3/3590),1)`%    |
 
 ### *C. accolens* pangenome
 
@@ -415,6 +406,15 @@ anvi-show-collections-and-bins -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/a
 | Shell            | 301/3427                      | `r round(100*(301/3427),1)`%  |
 | Cloud            | 1113/3427                     | `r round(100*(1113/3427),1)`% |
 | None             | 2/3427                        | `r round(100*(2/3427),1)`%    |
+
+### *C. tuberculostearicum* pangenome
+
+| Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    |
+|------------------|---------------------------|---------------------------|
+| Persistent       | 1991/2907                     | `r round(100*(1991/2907),1)`% |
+| Shell            | 147/2907                      | `r round(100*(147/2907),1)`%  |
+| Cloud            | 766/2907                      | `r round(100*(766/2907),1)`%  |
+| None             | 3/2907                        | `r round(100*(3/2907),1)`%    |
 
 <img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
 
