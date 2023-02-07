@@ -1,0 +1,17 @@
+---
+title: "Oral microbiome relationship to oral cancer"
+author: "Tommy Tran"
+date: "2023-02-07"
+output: html_document
+---
+
+# PLOS 'Pearl'-style minireview
+
+## Pearls may take one of the two following formats:
+
+-   "Five facts about X": In this format, authors list significant facts about a topic and then summarize the evidence for them.
+
+-   "Q&A": In this format, each paragraph involves a question followed by an answer -- a more conversational style that may suit some topics better.
+
+
+
