@@ -169,14 +169,14 @@ cd get_homologues
 
 ```{bash, eval=FALSE}
 cd get_homologues
-./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA/108_gbk/All_107_Coryne" -n 8 -t 0 -C 90
+./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA/108_gbk/All_107_Coryne" -n 8 -t 0 -C 90 -G
 ```
 
 107 *Corynebacterium* genomes clustered with OMCL:
 
 ```{bash, eval=FALSE}
 cd get_homologues
-./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA/108_gbk/All_107_Coryne" -n 8 -t 0 -C 90
+./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA/108_gbk/All_107_Coryne" -n 8 -t 0 -C 90 -M
 ```
 
 ## Creating a Conservative Core Venn Diagram
@@ -262,8 +262,8 @@ Running BDBH, COGS, and OMCL on only *C. propinquum*
 ```{bash, eval=FALSE}
 cd get_homologues
 ./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr" -n 8 -t 19 -C 90 # Runs BDBH
-./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr" -n 8 -t 0 -C 90 -M # Runs COGS
-./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr" -n 8 -t 0 -C 90 -G # Runs OMCL
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr" -n 8 -t 0 -C 90 -G # Runs COGS
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr" -n 8 -t 0 -C 90 -M # Runs OMCL
 ```
 
 Running BDBH, COGS, and OMCL on *C. propinquum* with an Outgroup
@@ -271,8 +271,8 @@ Running BDBH, COGS, and OMCL on *C. propinquum* with an Outgroup
 ```{bash, eval=FALSE}
 cd get_homologues
 ./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr" -n 8 -t 20 -C 90 # Runs BDBH
-./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr" -n 8 -t 0 -C 90 -M # Runs COGS
-./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr" -n 8 -t 0 -C 90 -G # Runs OMCL
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr" -n 8 -t 0 -C 90 -G # Runs COGS
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cpr" -n 8 -t 0 -C 90 -M # Runs OMCL
 ```
 
 Running BDBH, COGS, and OMCL on only *C. pseudodiphtheriticum*
@@ -280,8 +280,8 @@ Running BDBH, COGS, and OMCL on only *C. pseudodiphtheriticum*
 ```{bash, eval=FALSE}
 cd get_homologues
 ./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps" -n 8 -t 43 -C 90 # Runs BDBH
-./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps" -n 8 -t 0 -C 90 -M # Runs COGS
-./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps" -n 8 -t 0 -C 90 -G # Runs OMCL
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps" -n 8 -t 0 -C 90 -G # Runs COGS
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps" -n 8 -t 0 -C 90 -M # Runs OMCL
 ```
 
 Running BDBH, COGS, and OMCL on *C. pseudodiphtheriticum* with an Outgroup
@@ -289,8 +289,8 @@ Running BDBH, COGS, and OMCL on *C. pseudodiphtheriticum* with an Outgroup
 ```{bash, eval=FALSE}
 cd get_homologues
 ./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps" -n 8 -t 44 -C 90 # Runs BDBH
-./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps" -n 8 -t 0 -C 90 -M # Runs COGS
-./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps" -n 8 -t 0 -C 90 -G # Runs OMCL
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps" -n 8 -t 0 -C 90 -G # Runs COGS
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT_CorPGA/CorPGA_Cps" -n 8 -t 0 -C 90 -M # Runs OMCL
 ```
 
 Running BDBH, COGS, and OMCL on only *C. tuberculostearicum*
