@@ -3,9 +3,10 @@ title: "Oral microbiome relationship to oral cancer"
 author: "Tommy Tran"
 date: "2023-02-10"
 output:
-  word_document: default
   html_document: default
+  word_document: default
 bibliography: references.bib
+csl: https://raw.githubusercontent.com/citation-style-language/styles/master/research-institute-for-nature-and-forest.csl
 ---
 
 # PLOS 'Pearl'-style minireview
@@ -16,16 +17,15 @@ bibliography: references.bib
 
 -   "Q&A": In this format, each paragraph involves a question followed by an answer -- a more conversational style that may suit some topics better.
 
-# Background/Introduction 
+# Background/Introduction
 
-The prevalence of oral cavity or pharyngeal cancer was estimated to be 410,000 people living with it in the United States. World wide the prevalence could be even higher with the lack of importance on oral health. After being diagnosed with oral cancer only 68% of individuals will survive 5 or more years. The rate of new cases and death rate have remained relatively unchanged for the past 45 years. This shows the need for better fundamental and mechanistic understanding of oral cancer to formulate an effective remedy on prevention and treatment plans. 
+The prevalence of oral cavity or pharyngeal cancer was estimated to be 410,000 people living with it in the United States. World wide the prevalence could be even higher with the lack of importance on oral health. After being diagnosed with oral cancer only 68% of individuals will survive 5 or more years. The rate of new cases and death rate have remained relatively unchanged for the past 45 years. This shows the need for better fundamental and mechanistic understanding of oral cancer to formulate an effective remedy on prevention and treatment plans.
 
-There are only a few large scale case-control studies to help interpret the genomic microbiome and microbiota inhabiting the oral cavity. Studies have shown there are certain taxa that will increase or decrease in abundance. *Fusobacterium* seems to be a major candidate that thrives in the environment of oral cancer. Identification of metabolic functions shifting, revealed differences between diseased and healthy groups. This metabolic change generally favored anaerobic and less oxidative like oral environments. Microbial signatures associated with oral cancers have been predicted that may help future diagnoses and treatment. 
-
+There are only a few large scale case-control studies to help interpret the genomic microbiome and microbiota inhabiting the oral cavity. Studies have shown there are certain taxa that will increase or decrease in abundance. *Fusobacterium* seems to be a major candidate that thrives in the environment of oral cancer. Identification of metabolic functions shifting, revealed differences between diseased and healthy groups. This metabolic change generally favored anaerobic and less oxidative like oral environments. Microbial signatures associated with oral cancers have been predicted that may help future diagnoses and treatment.
 
 ## Oral microbiota composition is most heavily affected by total teeth loss
 
-The oral microbiome in a larger of cohort cancer cases and controls displayed changes in community structure and metabolic pathways. Different factors such as; tooth loss, tumor HPV status, peridontal disease, tobacco usage, and alcohol consumption were assessed to predict whether they affect the oral microbiota and their relationship to oral cancer. The most significant dysbioses occurs when no natural teeth remained and was shown to be the highest risk factor to oral cancer. This caused a higher abundance of *Dialister* which is a Gram-negative bacteria and has been associated with worse peridontal status and endodontic infections [@Kumar2005; @Ribeiro2011; @Drago2013; @Börnigen2017]. 
+The oral microbiome in a larger of cohort cancer cases and controls displayed changes in community structure and metabolic pathways. Different factors such as; tooth loss, tumor HPV status, peridontal disease, tobacco usage, and alcohol consumption were assessed to predict whether they affect the oral microbiota and their relationship to oral cancer. The most significant dysbioses occurs when no natural teeth remained and was shown to be the highest risk factor to oral cancer. This caused a higher abundance of *Dialister* which is a Gram-negative bacteria and has been associated with worse peridontal status and endodontic infections [@Kumar2005; @Ribeiro2011; @Drago2013; @Börnigen2017].
 
 In another study bacteria were profiled from patients within the surface of an oral squamous cell carcinoma (OSCC) lesion and on its adjacent healthy tissue. Taxonomic signatures revealed a profusion of *Fusobacterium nucleatum CTI-2* and a decrease in *Streptococcus pneumoniae* of buccal mucosa cancers[@Su2021; @Al-Hebshi2017].
 
@@ -37,16 +37,19 @@ Prediction of oral microbiome functionality revealed bacterial genes that were a
 
 It is important to acknowledge and begin studying the virome, bacteriome, mycobiome, and parasitic signatures in conjunction, to deepen our understanding of oral cancer. A study screening 100 oral cancer samples did whole genome and transcriptome amplification to predict the prominent signatures diseased samples. In their analysis they found the most viral sequences belonged to Papillomavirdae and this virus was detected in 98% of the cancer samples [@Banerjee2017]. There was an increase in abundance of Proteobacteria and Fusobacteria as stated earlier and an increase in gram-negative bacteria. However, the most prevalent species were Proteobacteria *Brevunidmonas* and Actinobacteria *Mobiluncus* 98% in cancer samples [@Banerjee2017].
 
-## Oral hygiene affecting the microbiome and oral cancer susceptibility 
+## Oral hygiene affecting the microbiome and oral cancer susceptibility
 
 ## Another topic
 
 ## Future directions (edit this to paragraph format)
 
-- Try targeted gene deletion on metabolic pathways that are enriched in oral cancer
-- Creating a sufficient human oral organoid to further test co-inoculation and whether certain microbial taxonomic profiles can deemed positive or negative to health
-- Identifying any metabolite that can prevent or mediate the effects of oral cancer 
-- Higher throughput sequencing of the bacteriome, virome, and mycobiome for to predict more accurate therapies 
+-   Try targeted gene deletion on metabolic pathways that are enriched in oral cancer
+
+-   Creating a sufficient human oral organoid to further test co-inoculation and whether certain microbial taxonomic profiles can deemed positive or negative to health
+
+-   Identifying any metabolite that can prevent or mediate the effects of oral cancer
+
+-   Higher throughput sequencing of the bacteriome, virome, and mycobiome for to predict more accurate therapies
 
 <center>
 
