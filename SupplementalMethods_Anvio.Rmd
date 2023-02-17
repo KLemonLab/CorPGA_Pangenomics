@@ -262,6 +262,17 @@ Cloud - 358bfc
 | Shell            | 972/3590                      | `r round(100*(972/3590),1)`%  | 3-39                                 |
 | Cloud            | 858/3590                      | `r round(100*(858/3590),1)`%  | 1-2                                  |
 
+### *C. pseudodiphtheriticum* pangenome after dropping Cps_090104
+
+| Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
+|-----------------|-----------------|-----------------|---------------------|
+| Core             | 1719/3550                     | `r round(100*(1719/3550),1)`% | 42                                   |
+| Single Copy Core | 1598/3550                     | `r round(100*(1598/3550),1)`% | 42                                   |
+| Multicopy Core   | 121/3550                      | `r round(100*(121/3550),1)`%  | 42                                   |
+| Soft Core        | 40/3550                       | `r round(100*(40/3550),1)`%   | 39-41                                |
+| Shell            | 967/3550                      | `r round(100*(967/3550),1)`%  | 3-38                                 |
+| Cloud            | 824/3550                      | `r round(100*(824/3550),1)`%  | 1-2         
+
 ### *C. accolens* pangenome
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
@@ -272,6 +283,17 @@ Cloud - 358bfc
 | Soft Core        | 77/3427                       | `r round(100*(77/3427),1)`%   | 32-33                                |
 | Shell            | 676/3427                      | `r round(100*(676/3427),1)`%  | 3-31                                 |
 | Cloud            | 770/3427                      | `r round(100*(770/3427),1)`%  | 1-2                                  |
+
+### *C. accolens* pangenome after dropping Cac_49756
+
+| Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
+|-----------------|-----------------|-----------------|---------------------|
+| Core             | 1941/3307                     | `r round(100*(1941/3307),1)`% | 33                                   |
+| Single Copy Core | 1782/3307                     | `r round(100*(1782/3307),1)`% | 33                                   |
+| Multicopy Core   | 159/3307                      | `r round(100*(159/3307),1)`%  | 33                                   |
+| Soft Core        | 41/3307                       | `r round(100*(41/3307),1)`%   | 31-32                                |
+| Shell            | 673/3307                      | `r round(100*(673/33307),1)`%  | 3-30                                 |
+| Cloud            | 652/3307                      | `r round(100*(652/3307),1)`%  | 1-2                                  |
 
 ### *C. tuberculostearicum* pangenome
 
