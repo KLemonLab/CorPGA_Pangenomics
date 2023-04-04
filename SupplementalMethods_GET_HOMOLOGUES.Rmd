@@ -767,6 +767,11 @@ cd get_homologues
 ./plot_pancore_matrix.pl -i "/Users/klemonlab/get_homologues/Cac_gbk_34_homologues/pan_genome_algOMCL_C90.tab" -f pan
 ```
 
+## Cps and Cac troubleshooting 
+
+We noticed the core genome of the rarefaction curve for *C. pseudodiphtheriticum* and *C. accolens* was splitting. We were getting a false lower bound and were able to fix this by dropping Cps_090104 and Cac_ATCC_49726 from the analysis. Sean Colan helped pinpoint these two specific genomes with the [[methods here]{.underline}](outlier.html).
+
+
 ## Edit svg Rarefaction Files
 
 The svg rarefaction curves were opened and edited in Adobe Illustrator to their final forms.
