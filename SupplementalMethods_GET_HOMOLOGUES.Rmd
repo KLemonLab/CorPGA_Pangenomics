@@ -38,56 +38,56 @@ There will be **two** ANI matrices at the nucleotide level for each of the four 
 
 ```{bash, eval=FALSE}
 cd get_homologues
-./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA_Anvio/108_gbf/Cpr" -A -t 19 -M -n 8 -C 90
+./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA_Anvio/108_gbf/Cpr" -A -t 19 -M -n 8 -C 90 -a 'CDS'
 ```
 
 *C. propinquum* all shared CDS regions ANI tab file:
 
 ```{bash, eval=FALSE}
 cd get_homologues
-./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA_Anvio/108_gbf/Cpr" -A -t 0 -M -n 8 -C 90
+./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA_Anvio/108_gbf/Cpr" -A -t 0 -M -n 8 -C 90 -a 'CDS'
 ```
 
 *C. pseudodiphtheriticum* core CDS ANI tab file:
 
 ```{bash, eval=FALSE}
 cd get_homologues
-./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA_Anvio/108_gbf/Cps" -A -t 43 -M -n 8 -C 90
+./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA_Anvio/108_gbf/Cps" -A -t 43 -M -n 8 -C 90 -a 'CDS'
 ```
 
 *C. pseudodiphtheriticum* all shared CDS regions ANI tab file:
 
 ```{bash, eval=FALSE}
 cd get_homologues
-./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA_Anvio/108_gbf/Cps" -A -t 0 -M -n 8 -C 90
+./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA_Anvio/108_gbf/Cps" -A -t 0 -M -n 8 -C 90 -a 'CDS'
 ```
 
 *C. tuberculostearicum* core CDS ANI tab file:
 
 ```{bash, eval=FALSE}
 cd get_homologues
-./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA_Anvio/108_gbf/Ctu" -A -t 8 -M -n 8 -C 90   
+./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA_Anvio/108_gbf/Ctu" -A -t 8 -M -n 8 -C 90 -a 'CDS'
 ```
 
 *C. tuberculostearicum* all shared CDS regions ANI tab file:
 
 ```{bash, eval=FALSE}
 cd get_homologues
-./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA_Anvio/108_gbf/Ctu" -A -t 0 -M -n 8 -C 90
+./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA_Anvio/108_gbf/Ctu" -A -t 0 -M -n 8 -C 90 -a 'CDS'
 ```
 
 *C. accolens* core CDS ANI tab file:
 
 ```{bash, eval=FALSE}
 cd get_homologues
-./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA_Anvio/108_gbf/Cac" -A -t 34 -M -n 8 -C 90
+./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA_Anvio/108_gbf/Cac" -A -t 34 -M -n 8 -C 90 -a 'CDS'
 ```
 
 *C. accolens* all shared CDS regions ANI tab file:
 
 ```{bash, eval=FALSE}
 cd get_homologues
-./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA_Anvio/108_gbf/Cac" -A -t 0 -M -n 8 -C 90
+./get_homologues.pl -d "/Users/klemonlab/Downloads/Prokka_out_107_CorPGA_Anvio/108_gbf/Cac" -A -t 0 -M -n 8 -C 90 -a 'CDS'
 ```
 
 ## Convert ANI Tab Files into Editable svgs
@@ -770,7 +770,6 @@ cd get_homologues
 ## Cps and Cac troubleshooting 
 
 We noticed the core genome of the rarefaction curve for *C. pseudodiphtheriticum* and *C. accolens* was splitting. We were getting a false lower bound and were able to fix this by dropping Cps_090104 and Cac_ATCC_49726 from the analysis. Sean Colan helped pinpoint these two specific genomes with the [[methods here]{.underline}](outlier.html).
-
 
 ## Edit svg Rarefaction Files
 
