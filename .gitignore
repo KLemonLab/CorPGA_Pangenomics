@@ -40,4 +40,4 @@ vignettes/*.pdf
 
 
 **/.DS_Store
-*.fasta
+**/*.fasta
