@@ -31,7 +31,6 @@ Several assemblies were identified as redundant pairs:
 | pseudodiphtheriticum_KPL_2661 | **propinquum_KPL_2667**       | 5.72459e-05   |
 | propinquum_KPL_2662           | **propinquum_KPL_2667**       | 7.39815e-05   |
 
-
 2.  **16 BROAD genomes:** 16 KPL isolates were deposited at NCBI by the Broad as *Corynebacterium* sp. KPL#. None of the genomes were discarded because of low quality of the assembly. Several assemblies were identified as redundant pairs, but kept for follow up analysis. Bold names are genomes we kept that were in a redundant pair.
 
 | Genome                                 | Problem to Genome                  | MASH distance |
@@ -41,12 +40,9 @@ Several assemblies were identified as redundant pairs:
 | GCF_000477875.1_Cory_sp_KPL2004_V1     | GCF_000477975.1_Cory_sp_KPL1986_V1 | 4.76262e-06   |
 | **GCF_000477955.1_Cory_sp_KPL1989_V1** | GCF_000477935.1_Cory_sp_KPL1995_V1 | 4.76262e-06   |
 
+3.  **71 BWA genomes:** 71 nasal isolates from Botswana were provided by Dr. Matthew Kelly at Duke. None of the genomes were discarded due to quality. However, 6 discarded due to redundancy. We choose the strain with higher quality to keep between the pairs.
 
-3.   reference assemblies using `PanACoTA prepare -s` subcommand. Default parameters were used, therefore genomes with mash distances that was not between 1e-4 and 0.06 were discarded to avoid redundant pairs or mislabeled assemblies.
-
-4.  **71 BWA genomes:** 71 nasal isolates from Botswana were provided by Dr. Matthew Kelly at Duke. None of the genomes were discarded due to quality. However, 6 discarded due to redundancy. We choose the strain with higher quality to keep between the pairs.
-
-Download NCBI reference assemblies with `PanACoTa prepare -s`:
+4.   NCBI reference assemblies were downloaded using `PanACoTA prepare -s` subcommand. Default parameters were used, therefore genomes with mash distances that was not between 1e-4 and 0.06 were discarded to avoid redundant pairs or mislabeled assemblies.
 
 ```{bash, eval=FALSE}
     PanACoTA prepare -s "Corynebacterium accolens" -o "GENOMES/Genomes_NCBI/C_accolens"
