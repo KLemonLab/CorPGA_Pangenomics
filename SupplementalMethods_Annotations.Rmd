@@ -2,7 +2,7 @@
 title: "SupplementalMethods_Annotations"
 author: 
 - Tommy Tran, (KLemonLab) Tommy.Tran@bcm.edu
-- Isabel Escapa, isabel.fernandez.escapa@gmail.com
+- Isabel Escapa, (KLemonLab) Isabel.FernandezEscapa@bcm.edu
 output:
   rmdformats::robobook:
     use_bookdown: true
