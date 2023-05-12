@@ -3,7 +3,7 @@ title: "SupplementalMethods_anvi'o"
 author:
   - Tommy Tran, (KLemonLab) Tommy.Tran@bcm.edu
   - Ari Roberts, (KLemonLab) Ari.Roberts@bcm.edu
-  - Isabel Escapa, isabel.fernandez.escapa@gmail.com
+  - Isabel Escapa, (KLemonLab) Isabel.FernandezEscapa@bcm.edu
 output:
   rmdformats::robobook:
     use_bookdown: true
