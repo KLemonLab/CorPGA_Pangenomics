@@ -1,5 +1,5 @@
 ---
-title: "*Corynebacterium* species Pangenomics and Metabolomics"
+title: "*Corynebacterium* species Pangenomics"
 date: 'KLemonLab'
 output:
   prettydoc::html_pretty:
@@ -14,8 +14,6 @@ output:
 ## This repository includes:
 
 -   Supplemental methods for program [[installations]{.underline}](SupplementalMethods_Installations.html).
-
--   Supplemental methods and output files for quality control and MASH analysis executed with [[PanACoTA]{.underline}](SupplementalMethods_GENOMES.html).
 
 -   Supplemental methods and output files for [[Prokka v1.14.6 annotation]{.underline}](SupplementalMethods_Annotations.html) of 107 *Corynebacterium* strain genomes.
 
