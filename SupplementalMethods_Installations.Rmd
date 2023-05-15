@@ -16,7 +16,6 @@ output:
 klippy::klippy(c('r', 'bash'))
 ```
 
-# INSTALLATIONS
 
 ## Installing Conda (MacOSX)
 
@@ -92,6 +91,20 @@ git pull
 ./make upgrade
 ```
 
+## Installing Prokka
+
+Guide to installing Prokka using this link: <https://github.com/tseemann/prokka>
+
+Install using conda through terminal. You can try installing it into your specific anvi'o environment but that did not work for us. So, we installed Prokka on our base python environment.
+
+Run the command:
+
+```{bash, eval=FALSE}
+conda install -c conda-forge -c bioconda -c defaults prokka
+```
+
+Then check if you have prokka installed by running the command `prokka -v`
+
 ## Installing anvi'o v7
 
 Follow instructions here: <https://merenlab.org/2016/06/26/installation-v2/#3-install-anvio>
@@ -112,20 +125,6 @@ pip install --upgrade git+git://github.com/merenlab/anvio.git
 -   A course on microbial 'omics <http://merenlab.org/momics/>
 -   Vocabulary <http://merenlab.org/vocabulary/>
 -   Interactive interface <http://merenlab.org/2016/02/27/the-anvio-interactive-interface/>
-
-## Installing Prokka
-
-Guide to installing Prokka using this link: <https://github.com/tseemann/prokka>
-
-Install using conda through terminal. You can try installing it into your specific anvi'o environment but that did not work for us. So, we installed Prokka on our base python environment.
-
-Run the command:
-
-```{bash, eval=FALSE}
-conda install -c conda-forge -c bioconda -c defaults prokka
-```
-
-Then check if you have prokka installed by running the command `prokka -v`
 
 ## Installing PPanGGOLiN
 
@@ -220,7 +219,7 @@ You may want to add get_phylomarkers to your \$PATH. We did this on MacOSX.
 
 ```{bash, eval=FALSE}
 nano ~/.zshrc
-export PATH=$PATH:/Users/tommytran/bin # For this line use your own path /Users/yourname/bin
+export PATH=$PATH:/Users/yourname/bin 
 ```
 
 After you added your path exit nano and then close terminal. Start a new window and check if your path was added by running.
