@@ -27,7 +27,7 @@ More information about Prokka can be found here: <https://github.com/tseemann/pr
 This step annotates all the .fasta files in the selected input folder (`path_i`) and places the all the output annotated files in the output folder (`path_o`). Output files headers get updated with --genus 'Corynebacterium' --species 'sp' and --strain based on the file name. We used default parameters, including gene recognition and translation initiation site identification with Prodigal [@Hyatt2010].
 
 ```{bash, eval=FALSE}
-mkdir -p "/analysis_GH/Prokka_out"
+mkdir -p "analysis_GH/Prokka_out"
 path_i="/Strain_genomes"
 path_o="/analysis_GH/Prokka_out"
 
@@ -47,7 +47,7 @@ Before the annotation step with Prokka we need to reformat the .fasta files usin
 
 ```{bash, eval=FALSE}
 #conda activate anvio-7
-mkdir -p "/analysis_Anvio7/Reformatted"
+mkdir -p "analysis_Anvio7/Reformatted"
 path_i="/Strain_genomes"
 path_o="/analysis_Anvio7/Reformatted"
 
@@ -63,7 +63,7 @@ This step repeats the Prokka annotation using the anvio reformatted .fasta files
 
 ```{bash, eval=FALSE}
 #conda activate base
-mkdir -p "/analysis_Anvio7/Prokka_out"
+mkdir -p "analysis_Anvio7/Prokka_out"
 path_i="/analysis_Anvio7/Reformatted"
 path_o="/analysis_Anvio7/Prokka_out"
 
@@ -79,7 +79,7 @@ This step is to parse Prokka annotated genomes to import both the external Prodi
 
 ```{bash, eval = FALSE}
 conda activate anvio-7.1
-mkdir -p "/analysis_Anvio7/Parsed_prokka"
+mkdir -p "analysis_Anvio7/Parsed_prokka"
 path_i="/analysis_Anvio7/Prokka_out"
 path_o="/analysis_Anvio7/Parsed_prokka"
 
@@ -95,7 +95,7 @@ In this step the reformatted fasta files (`path_i`) and the external gene calls 
 
 ```{bash, eval = FALSE}
 conda activate anvio-7.1
-mkdir -p "/analysis_Anvio7/Contigs_db"
+mkdir -p "analysis_Anvio7/Contigs_db"
 path_i="/analysis_Anvio7/Reformatted"
 path_e="/analysis_Anvio7/Parsed_prokka"
 path_o="/analysis_Anvio7/Contigs_db"

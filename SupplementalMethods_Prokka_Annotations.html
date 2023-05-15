@@ -1789,7 +1789,7 @@ margin-left: 0 !important;
 <div id="prokka-annotation-for-get_homologues" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> Prokka annotation for GET_HOMOLOGUES</h1>
 <p>This step annotates all the .fasta files in the selected input folder (<code>path_i</code>) and places the all the output annotated files in the output folder (<code>path_o</code>). Output files headers get updated with –genus ‘Corynebacterium’ –species ‘sp’ and –strain based on the file name. We used default parameters, including gene recognition and translation initiation site identification with Prodigal <span class="citation">(Hyatt et al. 2010)</span>.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="st">&quot;/analysis_GH/Prokka_out&quot;</span></span>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="st">&quot;analysis_GH/Prokka_out&quot;</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="va">path_i</span><span class="op">=</span><span class="st">&quot;/Strain_genomes&quot;</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="va">path_o</span><span class="op">=</span><span class="st">&quot;/analysis_GH/Prokka_out&quot;</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -1805,7 +1805,7 @@ margin-left: 0 !important;
 <h2><span class="header-section-number">2.1</span> Fasta reformatting</h2>
 <p>Before the annotation step with Prokka we need to reformat the .fasta files using <code>anvi-script-reformat-fasta</code>. This script creates .fasta files with simplified deflines and also by using –seq-type NT prevents downstream errors with “characters that are not any of A, C, T, G, N, a, c, t, g, n.”</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#conda activate anvio-7</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="st">&quot;/analysis_Anvio7/Reformatted&quot;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="st">&quot;analysis_Anvio7/Reformatted&quot;</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="va">path_i</span><span class="op">=</span><span class="st">&quot;/Strain_genomes&quot;</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="va">path_o</span><span class="op">=</span><span class="st">&quot;/analysis_Anvio7/Reformatted&quot;</span></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
@@ -1818,7 +1818,7 @@ margin-left: 0 !important;
 <h2><span class="header-section-number">2.2</span> Prokka annotation</h2>
 <p>This step repeats the Prokka annotation using the anvio reformatted .fasta files.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#conda activate base</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="st">&quot;/analysis_Anvio7/Prokka_out&quot;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="st">&quot;analysis_Anvio7/Prokka_out&quot;</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="va">path_i</span><span class="op">=</span><span class="st">&quot;/analysis_Anvio7/Reformatted&quot;</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="va">path_o</span><span class="op">=</span><span class="st">&quot;/analysis_Anvio7/Prokka_out&quot;</span></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
@@ -1831,7 +1831,7 @@ margin-left: 0 !important;
 <h2><span class="header-section-number">2.3</span> Parsing .gff files</h2>
 <p>This step is to parse Prokka annotated genomes to import both the external Prodigal gene calls and functions independently into anvi’o. The input (<code>path_i</code>) is the annotation in GFF3 format and outputs (<code>path_o</code>) are tab-delimited text files, one for gene calls (<code>calls_*.txt</code>) and one for annotations (<code>annot_*.txt</code>). This is done with the script <code>gff_parser.py</code> described in this <a href="https://merenlab.org/2017/05/18/working-with-prokka/">tutorial</a>.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate anvio-7.1</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="st">&quot;/analysis_Anvio7/Parsed_prokka&quot;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="st">&quot;analysis_Anvio7/Parsed_prokka&quot;</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="va">path_i</span><span class="op">=</span><span class="st">&quot;/analysis_Anvio7/Prokka_out&quot;</span></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="va">path_o</span><span class="op">=</span><span class="st">&quot;/analysis_Anvio7/Parsed_prokka&quot;</span></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
@@ -1844,7 +1844,7 @@ margin-left: 0 !important;
 <h2><span class="header-section-number">2.4</span> Generating contigs databases</h2>
 <p>In this step the reformatted fasta files (<code>path_i</code>) and the external gene calls (<code>calls_*.txt</code>) from Prokka (<code>path_e</code>) get imported to generate anvi’o contigs databases (<code>path_o</code>). Initially we got a lot of early stop codon errors. Therefore, we add the –ignore-internal-stop-codons flag.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate anvio-7.1</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="st">&quot;/analysis_Anvio7/Contigs_db&quot;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="st">&quot;analysis_Anvio7/Contigs_db&quot;</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="va">path_i</span><span class="op">=</span><span class="st">&quot;/analysis_Anvio7/Reformatted&quot;</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="va">path_e</span><span class="op">=</span><span class="st">&quot;/analysis_Anvio7/Parsed_prokka&quot;</span></span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="va">path_o</span><span class="op">=</span><span class="st">&quot;/analysis_Anvio7/Contigs_db&quot;</span></span>
