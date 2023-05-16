@@ -29,4 +29,9 @@ output:
 
 <img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="right" width="200" height="90"/>
 
+<<<<<<< HEAD
 #THT TEST
+=======
+
+## TEST 
+>>>>>>> 832f210963dd7e6e57e5948745f3a74c0f915bc4
