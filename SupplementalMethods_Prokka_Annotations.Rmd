@@ -28,8 +28,8 @@ This step annotates all the .fasta files in the selected input folder (`path_i`)
 
 ```{bash, eval=FALSE}
 mkdir -p "analysis_GH/Prokka_out"
-path_i="/Strain_genomes"
-path_o="/analysis_GH/Prokka_out"
+path_i="Strain_genomes"
+path_o="analysis_GH/Prokka_out"
 
 for file in $path_i/*.f*; do
     FILENAME=`basename ${file%.*}`
@@ -48,8 +48,8 @@ Before the annotation step with Prokka we need to reformat the .fasta files usin
 ```{bash, eval=FALSE}
 #conda activate anvio-7
 mkdir -p "analysis_Anvio7/Reformatted"
-path_i="/Strain_genomes"
-path_o="/analysis_Anvio7/Reformatted"
+path_i="Strain_genomes"
+path_o="analysis_Anvio7/Reformatted"
 
 for file in $path_i/*.f*; do
     FILENAME=`basename ${file%.*}`
@@ -64,8 +64,8 @@ This step repeats the Prokka annotation using the anvio reformatted .fasta files
 ```{bash, eval=FALSE}
 #conda activate base
 mkdir -p "analysis_Anvio7/Prokka_out"
-path_i="/analysis_Anvio7/Reformatted"
-path_o="/analysis_Anvio7/Prokka_out"
+path_i="analysis_Anvio7/Reformatted"
+path_o="analysis_Anvio7/Prokka_out"
 
 for file in $path_i/*.f*; do
     FILENAME=`basename ${file%.*}`
@@ -80,8 +80,8 @@ This step is to parse Prokka annotated genomes to import both the external Prodi
 ```{bash, eval = FALSE}
 conda activate anvio-7.1
 mkdir -p "analysis_Anvio7/Parsed_prokka"
-path_i="/analysis_Anvio7/Prokka_out"
-path_o="/analysis_Anvio7/Parsed_prokka"
+path_i="analysis_Anvio7/Prokka_out"
+path_o="analysis_Anvio7/Parsed_prokka"
 
 for file in $path_i/*.gff; do
     FILENAME=`basename ${file%.*}`
@@ -96,9 +96,9 @@ In this step the reformatted fasta files (`path_i`) and the external gene calls 
 ```{bash, eval = FALSE}
 conda activate anvio-7.1
 mkdir -p "analysis_Anvio7/Contigs_db"
-path_i="/analysis_Anvio7/Reformatted"
-path_e="/analysis_Anvio7/Parsed_prokka"
-path_o="/analysis_Anvio7/Contigs_db"
+path_i="analysis_Anvio7/Reformatted"
+path_e="analysis_Anvio7/Parsed_prokka"
+path_o="analysis_Anvio7/Contigs_db"
 
 for file in $path_i/*.fna; do
     FILENAME=`basename ${file%.*}`
@@ -116,8 +116,8 @@ Finally, the external functional annotations (`annot_*.txt`) from Prokka (`path_
 
 ```{bash, eval = FALSE}
 conda activate anvio-7.1
-path_i="/analysis_Anvio7/Contigs_db"
-path_e="/analysis_Anvio7/Parsed_prokka"
+path_i="analysis_Anvio7/Contigs_db"
+path_e="analysis_Anvio7/Parsed_prokka"
 
 for file in $path_i/*.db; do
     FILENAME=`basename ${file%.*}`
