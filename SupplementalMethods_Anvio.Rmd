@@ -18,9 +18,11 @@ bibliography: referencesAnvio.bib
 klippy::klippy(c('r', 'bash'))
 ```
 
-# anvi'o v7
 
-This notebook contains analyses using anvi'o version 7.1.2 [@Eren2021]. If you want to know more in-depth information about anvi'o you can go to their official online site here: <https://anvio.org/>
+
+This notebook contains analyses using anvi'o version 7.1.2 [@Eren2021]. For more in-depth information about anvi'o go to their official online site here: <https://anvio.org/>
+
+We will use as input (`path_i`) the anvi'o contigs database files (`.db`) that were generated in [[SupplementalMethods_Prokka_Annotations]{.underline}](SupplementalMethods_Prokka_Annotations.html).
 
 # Import functional annotations
 
@@ -32,9 +34,9 @@ Now the `anvi-run-ncbi-cogs` command can be used to annotate the .db genome file
 
 ```{bash, eval = FALSE}
 #conda activate anvio-7.1.2
-path_f="analysis_Anvio7_1/Contigs_db"
+path_i="analysis_Anvio7/Contigs_db"
 
-for file in $path_f/*.db; do
+for file in $path_i/*.db; do
     anvi-run-ncbi-cogs -T 8 --sensitive -c $file;
 done
 ```
@@ -43,22 +45,22 @@ done
 
 First you need to download and set up the KEGG KOfam database using `anvi-setup-kegg-kofams`: this is something you will do only once.
 
-The program `anvi-run-kegg-kofams` annotates genes in a given anvi'o contigs database with KEGG Orthology (KO) numbers via hits to the KEGG KOfam database [@Kanehisa2000].
+The program `anvi-run-kegg-kofams` annotates genes in a given anvi'o contigs database with KEGG Orthology (KO) numbers via hits to the KEGG KOfam database [@Kanehisa2000]. 
 
 ```{bash, eval = FALSE}
 #conda activate anvio-7.1.2
-path_f="analysis_Anvio7_1/Contigs_db"
+path_i="analysis_Anvio7/Contigs_db"
 
-for file in $path_f/*.db; do
+for file in $path_i/*.db; do
     anvi-run-kegg-kofams -T 8 --log-bitscores -c $file;
 done
 ```
 
-The option `--log-bitscores` records the bit scores values. They were saved to the main folder for the repo, so we move them to a folder:
+The option `--log-bitscores` records the bit scores values. They were saved to the main folder for the repo, so we move them to a new subfolder:
 
 ```{bash, eval = FALSE}
-mkdir "analysis_Anvio7_1/KEGGbitscores"
-mv *_bitscores.txt analysis_Anvio7_1/KEGGbitscores/
+mkdir "analysis_Anvio7/KEGGbitscores"
+mv *_bitscores.txt analysis_Anvio7/KEGGbitscores/
 ```
 
 ## PFAM annotation
@@ -69,22 +71,22 @@ The program `anvi-run-kegg-pfam` annotates genes in a given anvi'o contigs datab
 
 ```{bash, eval = FALSE}
 #conda activate anvio-7.1.2
-path_f="analysis_Anvio7_1/Contigs_db"
+path_i="analysis_Anvio7/Contigs_db"
 
-for file in $path_f/*.db; do
+for file in $path_i/*.db; do
     anvi-run-pfams -T 8 -c $file;
 done
 ```
 
 ## Running HMMs
 
-When you run the following command the occurrence of bacterial single-copy genes across your contigs is all added to your contigs database [@Eddy2011].
+When you run the following command the occurrence of bacterial single-copy genes across your contigs is added to your contigs database [@Eddy2011].
 
 ```{bash, eval = FALSE}
 #conda activate anvio-7.1.2
-path_f="analysis_Anvio7_1/Contigs_db"
+path_i="analysis_Anvio7/Contigs_db"
 
-for file in $path_f/*.db; do
+for file in $path_i/*.db; do
     anvi-run-hmms -T 8 -c $file --just-do-it;
 done
 ```
@@ -95,12 +97,12 @@ This generates basic stats on the annotations:
 
 ```{bash, eval = FALSE}
 #conda activate anvio-7.1.2
-mkdir -p "analysis_Anvio7_1/Contigs_stats"
+mkdir -p "analysis_Anvio7/Contigs_stats"
 
-path_f="analysis_Anvio7_1/Contigs_db"
-path_o="analysis_Anvio7_1/Contigs_stats"
+path_i="analysis_Anvio7/Contigs_db"
+path_o="analysis_Anvio7/Contigs_stats"
 
-for file in $path_f/*.db; do
+for file in $path_i/*.db; do
     FILENAME=`basename ${file%.*}`
     anvi-display-contigs-stats $file --report-as-text -o $path_o/stats_$FILENAME.txt;
 done
@@ -110,16 +112,16 @@ This provides basic info on the contigs databases:
 
 ```{bash, eval = FALSE}
 #conda activate anvio-7.1.2
-path_f="analysis_Anvio7_1/Contigs_db"
+path_i="analysis_Anvio7/Contigs_db"
 
-for file in $path_f/*.db; do
+for file in $path_i/*.db; do
     anvi-db-info $file;
 done
 ```
 
-Terminal output saved to `analysis_Anvio7_1/anvi-db-info_log.txt`.
+Terminal output saved to `analysis_Anvio7/anvi-db-info_log.txt`.
 
-# PANGENOME ANALYSIS
+# Pangenome Analysis
 
 ## Generating an anvi'o genomes storage
 
@@ -129,35 +131,35 @@ We create 1 database with the 107 genomes that can be used to run the pangenomic
 
 ```{bash, eval = FALSE}
 #conda activate anvio-7.1
-mkdir -p "analysis_Anvio7_1/Pangenomic_Results"
+mkdir -p "analysis_Anvio7/Pangenomic_Results"
 
-anvi-gen-genomes-storage -e "analysis_Anvio7_1/All_107_CorynesAnvio.txt" -o "analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db" --gene-caller Prodigal
+anvi-gen-genomes-storage -e "analysis_Anvio7/All_107_CorynesAnvio.txt" -o "analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db" --gene-caller Prodigal
 ```
 
 This provides basic info on the generated genomes storage database:
 
 ```{bash, eval = FALSE}
-anvi-db-info "analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db"
+anvi-db-info "analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db"
 ```
 
-# Make Species Genome Lists
+## Make Species Genome Lists
 
 We had to make new anvi'o environment with python 3.7 since the step below would not work unless we did that. This could be related to the updates with anvio 7.1 
 ```{bash, eval = FALSE}
 conda create -y --name anvio-7.1.2 python=3.7
 ```
 
-# Running the pangenomic analsyses
+## Running the pangenomic analsyses
 
 ```{bash, eval = FALSE}
 #conda activate anvio-7.1
-anvi-pan-genome -g analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -G Cacc.txt -o analysis_Anvio7_1/Pangenomic_Results/Cacc -n PAN_Cacc --use-ncbi-blast --mcl-inflation 10  --num-threads 8
+anvi-pan-genome -g analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -G Cacc.txt -o analysis_Anvio7/Pangenomic_Results/Cacc -n PAN_Cacc --use-ncbi-blast --mcl-inflation 10  --num-threads 8
 
-anvi-pan-genome -g analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -G Cpro.txt -o analysis_Anvio7_1/Pangenomic_Results/Cpro -n PAN_Cpro --use-ncbi-blast --mcl-inflation 10  --num-threads 8
+anvi-pan-genome -g analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -G Cpro.txt -o analysis_Anvio7/Pangenomic_Results/Cpro -n PAN_Cpro --use-ncbi-blast --mcl-inflation 10  --num-threads 8
 
-anvi-pan-genome -g analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -G Ctub.txt -o analysis_Anvio7_1/Pangenomic_Results/Ctub -n PAN_Ctub --use-ncbi-blast --mcl-inflation 10  --num-threads 8 
+anvi-pan-genome -g analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -G Ctub.txt -o analysis_Anvio7/Pangenomic_Results/Ctub -n PAN_Ctub --use-ncbi-blast --mcl-inflation 10  --num-threads 8 
 
-anvi-pan-genome -g analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -G Cpsd.txt -o analysis_Anvio7_1/Pangenomic_Results/Cpsd -n PAN_Cpsd --use-ncbi-blast --mcl-inflation 10  --num-threads 8
+anvi-pan-genome -g analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -G Cpsd.txt -o analysis_Anvio7/Pangenomic_Results/Cpsd -n PAN_Cpsd --use-ncbi-blast --mcl-inflation 10  --num-threads 8
 ```
 
 ## Displaying the pangenomes
@@ -166,13 +168,13 @@ This will display the pangenome in your default internet browser. Anvi'o says go
 
 ```{bash, eval = FALSE}
 #conda activate anvio-7
-anvi-display-pan -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db"
+anvi-display-pan -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db"
 
-anvi-display-pan -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db" -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db"
+anvi-display-pan -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db" -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db"
 
-anvi-display-pan -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db"
+anvi-display-pan -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db"
 
-anvi-display-pan -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db" -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db"
+anvi-display-pan -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db" -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db"
 ```
 
 If you are using Windows and it cannot display the interactive page then try copy and pasting either 127.0.0.1:8080 or <http://localhost:8080/> into your browser. Do not use sudo in the front of the command either.
@@ -185,23 +187,23 @@ We can create tables with a summary of the pangenomes using the program `anvi-su
 
 ```{bash, eval = FALSE}
 #conda activate anvio-7
-anvi-summarize -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" \
-               -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db" \
+anvi-summarize -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" \
+               -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db" \
                -o "/Users/klemonlab/Downloads/Cps_PAN_SUMMARY" \
                -C CorevsAccessory
                
-anvi-summarize -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db" \
-               -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db" \
+anvi-summarize -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db" \
+               -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db" \
                -o "/Users/klemonlab/Downloads/Cpr_PAN_SUMMARY" \
                -C CorevsAccessory
                
-anvi-summarize -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db" \
-               -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db" \
+anvi-summarize -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db" \
+               -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db" \
                -o "/Users/klemonlab/Downloads/Ctu_PAN_SUMMARY" \
                -C CorevsAccessory
                
-anvi-summarize -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" \
-               -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db" \
+anvi-summarize -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" \
+               -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db" \
                -o "/Users/klemonlab/Downloads/Cac_PAN_SUMMARY" \
                -C CorevsAccessory
 ```
@@ -311,41 +313,41 @@ Cloud - 358bfc
 You will need to know the collection to assign for the `-C` flag in the `anvi-summarize` command. This is an example of how to see the collections and bins you have for a pangenome db file from anvi'o.
 
 ```{bash, eval=FALSE}
-anvi-show-collections-and-bins -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/PAN_Cpro-PAN.db" --debug 
+anvi-show-collections-and-bins -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cpro-PAN.db" --debug 
 ```
 
 Find GC Content for *C. propinquum*:
 
 ```{bash, eval=FALSE}
 # conda activate Anvio
-anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db -C CorevsAccessory
+anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db -C CorevsAccessory
 ```
 
 Find GC Content for *C. pseudodiphtheriticum*:
 
 ```{bash, eval=FALSE}
 # conda activate Anvio
-anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpse/PAN_Cpse-PAN.db -C CorevsAccessory
+anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Cpse/PAN_Cpse-PAN.db -C CorevsAccessory
 ```
 
 Find GC Content for *C. accolens*:
 
 ```{bash, eval=FALSE}
 # conda activate Anvio
-anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db -C CorevsAccessory
+anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db -C CorevsAccessory
 ```
 
 Find GC Content for *C. tuberculostearicum*:
 
 ```{bash, eval=FALSE}
 # conda activate Anvio
-anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db -C CorevsAccessory
+anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db -C CorevsAccessory
 ```
 
 # anvi'o KEGG Analysis Pipeline
 
 ```{bash, eval = FALSE}
-cd ./Documents/CorPGA_rerun_aqr/analysis_Anvio7_1 # go to anvi'o environment
+cd ./Documents/CorPGA_rerun_aqr/analysis_Anvio7 # go to anvi'o environment
 conda activate anvio-7.1.2
 
 anvi-estimate-metabolism -e genome_list_Coryne_No_Mac.txt -O Coryne_No_Mac --matrix-format
