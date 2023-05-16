@@ -1,7 +1,7 @@
 ---
 title: "SupplementalMethods_GET_HOMOLOGUES"
 author: 
-- Tommy Tran, (username) Tommy.Tran@bcm.edu
+- Tommy Tran, (KLemonLab) Tommy.Tran@bcm.edu
 output:
   rmdformats::robobook:
     use_bookdown: true
@@ -23,49 +23,49 @@ This notebook contains analyses using the genomic software GET_HOMOLOGUES versio
 We will want to use the `.gbk` (genebank) file for each *Corynebacterium* strain genome from the Prokka output. We copied and isolated the `.gbk` files into new folders for each of the species, plus a combined one with all the 107 genomes.
 
 ```{bash, eval=FALSE}
-cd /analysis_GH/Prokka_out
+cd "/analysis_GH/Prokka_out"
 
-mkdir -p "Prokka_All_gbk"
-mkdir -p "Prokka_Cpr_gbk"
-mkdir -p "Prokka_Cps_gbk"
-mkdir -p "Prokka_Cac_gbk"
-mkdir -p "Prokka_Ctu_gbk"
+mkdir -p "Prokka_All_gbk" # gbk files of all 107 Corynebacterium species
+mkdir -p "Prokka_Cpr_gbk" # gbk files of 19 Cpr
+mkdir -p "Prokka_Cps_gbk" # gbk files of 43 Cps
+mkdir -p "Prokka_Cac_gbk" # gbk files of 34 Cac
+mkdir -p "Prokka_Ctu_gbk" # gbk files of 8 Ctu
 
-cp *.gbk Prokka_All_gbk/
-cp Cpr_*.gbk Cpr/
-cp Cps_*.gbk Cps/
-cp Cac_*.gbk Cac/
-cp Ctu_*.gbk Ctu/
+cp *.gbk "Prokka_All_gbk/"
+cp Cpr_*.gbk "Cpr/"
+cp Cps_*.gbk "Cps/"
+cp Cac_*.gbk "Cac/"
+cp Ctu_*.gbk "Ctu/"
 ```
 
 # ANI (Average Nucleotide Identity)
 
 There will be **two** ANI matrices at the nucleotide level for each of the four species using OMCL (OrthoMuscle) [@Li2003]. The first one is to calculate ANI percentages from the core CDS (coding sequences) and the second is to calculate ANI values from all shared CDS regions. You must use `.gbk` provided from the Prokka annotation.
 
-## Generate ANI tab files
+## Generate ANI `.tab` files
 
-*C. propinquum* core CDS ANI tab file:
+*C. propinquum* core CDS ANI `.tab` file:
 
 ```{bash, eval=FALSE}
 cd get_homologues
 ./get_homologues.pl -d "/analysis_GH/Prokka_out/Cpr" -A -t 19 -M -n 8 -C 90 -a 'CDS'
 ```
 
-*C. propinquum* all shared CDS regions ANI tab file:
+*C. propinquum* all shared CDS regions ANI `.tab` file:
 
 ```{bash, eval=FALSE}
 cd get_homologues
 ./get_homologues.pl -d "/analysis_GH/Prokka_out/Cpr" -A -t 0 -M -n 8 -C 90 -a 'CDS'
 ```
 
-*C. pseudodiphtheriticum* core CDS ANI tab file:
+*C. pseudodiphtheriticum* core CDS ANI `.tab` file:
 
 ```{bash, eval=FALSE}
 cd get_homologues
 ./get_homologues.pl -d "/analysis_GH/Prokka_out/Cps" -A -t 43 -M -n 8 -C 90 -a 'CDS'
 ```
 
-*C. pseudodiphtheriticum* all shared CDS regions ANI tab file:
+*C. pseudodiphtheriticum* all shared CDS regions ANI `.tab` file:
 
 ```{bash, eval=FALSE}
 cd get_homologues
@@ -79,88 +79,88 @@ cd get_homologues
 ./get_homologues.pl -d "/analysis_GH/Prokka_out/Ctu" -A -t 8 -M -n 8 -C 90 -a 'CDS'
 ```
 
-*C. tuberculostearicum* all shared CDS regions ANI tab file:
+*C. tuberculostearicum* all shared CDS regions ANI `.tab` file:
 
 ```{bash, eval=FALSE}
 cd get_homologues
 ./get_homologues.pl -d "/analysis_GH/Prokka_out/Ctu" -A -t 0 -M -n 8 -C 90 -a 'CDS'
 ```
 
-*C. accolens* core CDS ANI tab file:
+*C. accolens* core CDS ANI `.tab` file:
 
 ```{bash, eval=FALSE}
 cd get_homologues
 ./get_homologues.pl -d "/analysis_GH/Prokka_out/Cac" -A -t 34 -M -n 8 -C 90 -a 'CDS'
 ```
 
-*C. accolens* all shared CDS regions ANI tab file:
+*C. accolens* all shared CDS regions ANI `.tab` file:
 
 ```{bash, eval=FALSE}
 cd get_homologues
 ./get_homologues.pl -d "/analysis_GH/Prokka_out/Cac" -A -t 0 -M -n 8 -C 90 -a 'CDS'
 ```
 
-## Convert ANI Tab Files into Editable svgs
+## Use the ANI `.tab` files to Create Editable `.svgs`
 
-*C. propinquum* core CDS ANI tab file:
-
-```{bash, eval=FALSE}
-cd get_homologues
-./plot_matrix_heatmap.sh -i "/Users/username/get_homologues/Cpr_homologues/Cpr*_f0_19taxa_algOMCL_e0_C90_Avg_identity.tab" -d 1 -t "Cpr Core CDS ANI" -H 9 -W 13
-```
-
-*C. propinquum* all shared CDS regions ANI tab file:
+*C. propinquum* core CDS ANI `.tab` file plot to `.svg`:
 
 ```{bash, eval=FALSE}
 cd get_homologues
-./plot_matrix_heatmap.sh -i "/Users/username/get_homologues/Cpr_homologues/Cpr*_f0_0taxa_algOMCL_e0_C90_Avg_identity.tab" -d 1 -t "Cpr All Shared CDS Regions ANI" -H 9 -W 13
+./plot_matrix_heatmap.sh -i "/Users/username/get_homologues/Cpr/Cpr*_f0_19taxa_algOMCL_e0_C90_Avg_identity.tab" -d 1 -t "Cpr Core CDS ANI" -H 9 -W 13
 ```
 
-*C. pseudodiphtheriticum* core CDS ANI tab file:
+*C. propinquum* all shared CDS regions ANI `.tab` file plot to `.svg`:
 
 ```{bash, eval=FALSE}
 cd get_homologues
-./plot_matrix_heatmap.sh -i "/Users/username/get_homologues/Cps_homologues/Cps*_f0_43taxa_algOMCL_e0_C90_Avg_identity.tab" -d 1 -t "Cps Core CDS ANI" -H 16 -W 23
+./plot_matrix_heatmap.sh -i "/Users/username/get_homologues/Cpr/Cpr*_f0_0taxa_algOMCL_e0_C90_Avg_identity.tab" -d 1 -t "Cpr All Shared CDS Regions ANI" -H 9 -W 13
 ```
 
-*C. pseudodiphtheriticum* all shared CDS regions ANI tab file:
+*C. pseudodiphtheriticum* core CDS ANI `.tab` file plot to `.svg`:
 
 ```{bash, eval=FALSE}
 cd get_homologues
-./plot_matrix_heatmap.sh -i "/Users/username/get_homologues/Cps_homologues/Cps*_f0_0taxa_algOMCL_e0_C90_Avg_identity.tab" -d 1 -t "Cps All Shared CDS Regions ANI" -H 16 -W 23
+./plot_matrix_heatmap.sh -i "/Users/username/get_homologues/Cps/Cps*_f0_43taxa_algOMCL_e0_C90_Avg_identity.tab" -d 1 -t "Cps Core CDS ANI" -H 16 -W 23
 ```
 
-*C. tuberculostearicum* core CDS ANI tab file:
+*C. pseudodiphtheriticum* all shared CDS regions ANI `.tab` file plot to `.svg`:
 
 ```{bash, eval=FALSE}
 cd get_homologues
-./plot_matrix_heatmap.sh -i "/Users/username/get_homologues/Ctu_homologues/Ctu*_f0_8taxa_algOMCL_e0_C90_Avg_identity.tab" -d 1 -t "Ctu Core CDS ANI" -H 7 -W 8
+./plot_matrix_heatmap.sh -i "/Users/username/get_homologues/Cps/Cps*_f0_0taxa_algOMCL_e0_C90_Avg_identity.tab" -d 1 -t "Cps All Shared CDS Regions ANI" -H 16 -W 23
 ```
 
-*C. tuberculostearicum* all shared CDS regions ANI tab file:
+*C. accolens* core CDS ANI `.tab` file plot to `.svg`:
 
 ```{bash, eval=FALSE}
 cd get_homologues
-./plot_matrix_heatmap.sh -i "/Users/username/get_homologues/Ctu_homologues/Ctu*_f0_0taxa_algOMCL_e0_C90_Avg_identity.tab" -d 1 -t "Ctu All Shared CDS Regions ANI" -H 7 -W 8
+./plot_matrix_heatmap.sh -i "/Users/username/get_homologues/Cac/Cac*_f0_34taxa_algOMCL_e0_C90_Avg_identity.tab" -d 1 -t "Cac Core CDS ANI" -H 15 -W 19
 ```
 
-*C. accolens* core CDS ANI tab file:
+*C. accolens* all shared CDS regions ANI `.tab` file plot to `.svg`:
 
 ```{bash, eval=FALSE}
 cd get_homologues
-./plot_matrix_heatmap.sh -i "/Users/username/get_homologues/Cac_homologues/Cac*_f0_34taxa_algOMCL_e0_C90_Avg_identity.tab" -d 1 -t "Cac Core CDS ANI" -H 15 -W 19
+./plot_matrix_heatmap.sh -i "/Users/username/get_homologues/Cac/Cac*_f0_0taxa_algOMCL_e0_C90_Avg_identity.tab" -d 1 -t "Cac All Shared CDS Regions ANI" -H 15 -W 19
 ```
 
-*C. accolens* all shared CDS regions ANI tab file:
+*C. tuberculostearicum* core CDS ANI `.tab` file plot to `.svg`:
 
 ```{bash, eval=FALSE}
 cd get_homologues
-./plot_matrix_heatmap.sh -i "/Users/username/get_homologues/Cac_homologues/Cac*_f0_0taxa_algOMCL_e0_C90_Avg_identity.tab" -d 1 -t "Cac All Shared CDS Regions ANI" -H 15 -W 19
+./plot_matrix_heatmap.sh -i "/Users/username/get_homologues/Ctu/Ctu*_f0_8taxa_algOMCL_e0_C90_Avg_identity.tab" -d 1 -t "Ctu Core CDS ANI" -H 7 -W 8
 ```
 
-## Edit ANI svg files
+*C. tuberculostearicum* all shared CDS regions ANI `.tab` file plot to `.svg`:
 
-Once all eight svg files were created, they were each opened with adobe illustrator and edited and polished until final forms.
+```{bash, eval=FALSE}
+cd get_homologues
+./plot_matrix_heatmap.sh -i "/Users/username/get_homologues/Ctu/Ctu*_f0_0taxa_algOMCL_e0_C90_Avg_identity.tab" -d 1 -t "Ctu All Shared CDS Regions ANI" -H 7 -W 8
+```
+
+## Edit ANI `.svg` files
+
+Once all eight `.svg` files were created, they were each opened with Adobe Illustrator and edited and polished until final forms.
 
 # Conservative Core and Phylogeny of All 107 *Corynebacterium* Genomes
 
@@ -189,70 +189,70 @@ cd get_homologues
 ./get_homologues.pl -d "/analysis_GH/Prokka_out/Prokka_All_gbk" -n 8 -t 0 -C 90 -M
 ```
 
-## Creating a Conservative Core Venn Diagram
+## Creating a Conservative Core Venn Diagram of 107 *Corynebacterium* genomes
 
 From our experience you will run into less issues here if you move the three cluster folders and cluster list files into a new directory. Then use the paths to those cluster folders after the `-d` flag separated by commas.
 
-Create conservative core venn diagram intersection to output faa files:
+Create conservative core venn diagram intersection to output `.faa` files:
 
 ```{bash, eval=FALSE}
 cd get_homologues
-./compare_clusters.pl -o "/analysis_GH/CorPGA_107_intersect" -d "/analysis_GH/CorPGA_107_cluster_files/CpsDU080_f0_107taxa_algBDBH_e0_C90_","/analysis_GH/CorPGA_107_cluster_files/CpsDU080_f0_0taxa_algOMCL_e0_C90_","/analysis_GH/CorPGA_107_cluster_files/CpsDU080_f0_0taxa_algCOG_e0_C90_" -t 107
+./compare_clusters.pl -o "/analysis_GH/All_gbk_venn" \
+                      -d "/analysis_GH/All_gbk_cluster_files/C*_f0_107taxa_algBDBH_e0_C90_","/analysis_GH/All_gbk_cluster_files/C*_f0_0taxa_algOMCL_e0_C90_","/analysis_GH/All_gbk_cluster_files/C*_f0_0taxa_algCOG_e0_C90_" \
+                      -t 107
 ```
 
-Create conservative core venn diagram intersection to output fna files:
+Create conservative core venn diagram intersection to output `.fna` files:
 
 ```{bash, eval=FALSE}
 cd get_homologues
-./compare_clusters.pl -o "/analysis_GH/CorPGA_107_intersect" -d "/analysis_GH/CorPGA_107_cluster_files/CpsDU080_f0_107taxa_algBDBH_e0_C90_","/analysis_GH/CorPGA_107_cluster_files/CpsDU080_f0_0taxa_algOMCL_e0_C90_","/analysis_GH/CorPGA_107_cluster_files/CpsDU080_f0_0taxa_algCOG_e0_C90_" -t 107 -n
+./compare_clusters.pl -o "/analysis_GH/All_gbk_venn" \
+                      -d "/analysis_GH/All_gbk_cluster_files/C*_f0_107taxa_algBDBH_e0_C90_","/analysis_GH/All_gbk_cluster_files/C*_f0_0taxa_algOMCL_e0_C90_","/analysis_GH/All_gbk_cluster_files/C*_f0_0taxa_algCOG_e0_C90_" \
+                      -t 107 \
+                      -n
 ```
 
 ## Generate a Phylogenomic Tree of four *Corynebacterium* species from the Conservative Core
 
-At this point we have created `.faa` and `.fna` files of the core gene clusters from 107 *Corynebacterium* genomes. To begin generating a phylogenomic tree we begin by isolating only the `.faa` and `.fna` files into one folder.
+At this point we have created `.faa` and `.fna` files of the core gene clusters from 107 *Corynebacterium* genomes. To begin generating a phylogenomic tree we begin by isolating only the `.faa` and `.fna` files into a new folder.
 
-Move all files with the extension `.faa` and `.fna` to new destination folder:
-
-```{bash, eval=FALSE}
-cd /path/where/the/faa/and/fna/files/are # this should be the output folder from creating the venn diagram intersection
-mv *.faa /analysis_GH/CorPGA_107_faa_fna_only
-mv *.fna /analysis_GH/CorPGA_107_faa_fna_only
-```
-
-Now we use GET_PHYLOMARKERS version 2.2.9.1 [@Vinuesa2018] to generate concatenated alignment file for each single copy core gene cluster.
-
-Before running it we located the file "run_get_phylomarkers_pipeline.sh" and deleted lines 925-932 to remove a block that halts the process if all GCs do not contain the same number of concatenated taxa.
-
-Concatenate and align the faa and fna files to generate codon alignment files:
+Create a new folder and move all files with the extension `.faa` and `.fna` into a new destination folder:
 
 ```{bash, eval=FALSE}
-cd /new/path/where/only/faa/fna/files/are # go to directory holding all the .fna and .faa intersection of Corynebacterium
-/Users/username/get_phylomarkers/run_get_phylomarkers_pipeline.sh -R 1 -t DNA -k 0.7 -m 0.7
+mkdir -p "analysis_GH/All_gbk_faa_fna" 
+cd "/analysis_GH/All_gbk_venn" # this should be the output folder from creating the venn diagram intersection
+mv *.faa "/analysis_GH/All_gbk_faa_fna"
+mv *.fna "/analysis_GH/All_gbk_faa_fna"
 ```
 
-Create a folder in IQ-Tree v2.1.3 [@Minh2020] directory and move the codon alignment files outputted from GET_PHYLOMARKERS into that folder.
+Now we use GET_PHYLOMARKERS version 2.2.9.1 [@Vinuesa2018] to generate a concatenated alignment file for each single copy core gene cluster.
 
-Make a directory to hold codon alignment files and move codon alignment files into that directory:
+Before running it we located the file "run_get_phylomarkers_pipeline.sh" and **deleted lines 925-932** to remove a block that halts the process if all GCs do not contain the same number of concatenated taxa.
+
+Concatenate and align the `.faa` and `.fna` files to generate codon alignment files:
 
 ```{bash, eval=FALSE}
-cd IQ-TREE2
-mkdir -p CorPGA_107_codon_alignment_files
-cd /path/to/where/codon/alignment/files/are
-mv *.fasta /Users/username/Documents/IQ-TREE-2.1.3-MacOSX/CorPGA_107_codon_alignment_files
+cd "/analysis_GH/All_gbk_faa_fna" # go to directory holding all the .fna and .faa files only
+/Users/username/get_phylomarkers/run_get_phylomarkers_pipeline.sh -R 1 -t DNA -k 0.7 -m 0.7 # run the get_phylomarkers master script
 ```
 
-This will create a maximum likely hood tree and a consensus tree. **This tree is being generated from the gene clustering.** The treefile file was used because it is the best fit maximum likely hood tree. It was viewed through iTOL [@Letunic2021] tree editor on Google Chrome browser.
+We made a directory to hold the codon alignment folder generated from get_phylmarkers and moved the codon alignments folder into it:
 
-The `-p` flag performs edge-linked proportional partition model [@Chernomor2016] for each of the individual clusters. Fast model selection for each cluster was determined by ModelFinder [@Kalyaanamoorthy2017].
+```{bash, eval=FALSE}
+mkdir -p "analysis_GH/Codon_alignments"
+mv "/analysis_GH/All_gbk_faa_fna/All_gbk_codon_alignments" "analysis_GH/Codon_alignments"
+```
 
-Run IQ-TREE v2.1.3 with the codon alignment files in the new folder:
+Run IQ-TREE v2.1.3 with the codon alignment folder cotaining `.fasta` files:
 
 ```{bash, eval=FALSE}
 cd IQ-TREE2
-bin/IQ-TREE2 -p "CorPGA_107_codon_alignment_files" --prefix CorPGA_107_codon_alignment_files -alrt 1000 -B 1000 -T 8
+bin/iqtree2 -p "analysis_GH/Codon_alignments/All_gbk_codon_alignments" --prefix All_107_C_sp -alrt 1000 -B 1000 -T 8
 ```
 
-The treefile generated from IQ-TREE v2.1.3 was then opened in iTol to scale and assign strain names from the `tree_labels.list` file created from GET_PHYLOMARKERS. After scaling and assigning strain names the svg version was exported from iTol and further edited in Adobe Illustrator.
+The `-p` flag performs edge-linked proportional partition model [@Chernomor2016] for each of the individual gene clusters. Fast model selection for each cluster was determined by ModelFinder [@Kalyaanamoorthy2017]. The flags `-alrt 1000` and `-B 1000` represent 1000 replicates of sH-aLRT and UFbootstraps. `-T 8` runs the program at 8 threads.
+
+This will create a maximum likely hood tree. The `.treefile` file was used because it is the best fit maximum likely hood tree. The `.treefile` was viewed through iTOL [@Letunic2021] tree editor on Google Chrome browser. In iTol the tree was scaled and assigned strain names from the `tree_labels.list` file created from GET_PHYLOMARKERS with the [iTol annotaton editor](https://itoleditor.letunic.com/). After scaling and assigning strain names the `.svg` version was exported from iTol and further edited in Adobe Illustrator.
 
 # Generate *Corynebacterium* species Specific Phylogenomic Trees with an Outgroup
 
@@ -260,8 +260,21 @@ We are able to create phylogenies with an addition of an outgroup without losing
 
 ## Setting Up Two Data Sets for Each of the Four Species
 
-1.  First, we created a directory for each of the four species and only have the `.gbk` (genebank) files for each of the four species in their corresponding directory.
-2.  Secondly, we created another directory with the same four folders with the addition of an outgroup we chose for each species.
+1.  We have already created a directory for each of the four species containing `.gbk` (genebank) files for each of the four species.
+```{bash, eval=FALSE}
+"/analysis_GH/Prokka_out/Prokka_Cpr_gbk" # gbk files of 19 Cpr
+"/analysis_GH/Prokka_out/Prokka_Cps_gbk" # gbk files of 43 Cps
+"/analysis_GH/Prokka_out/Prokka_Cac_gbk" # gbk files of 34 Cac
+"/analysis_GH/Prokka_out/Prokka_Ctu_gbk" # gbk files of 8 Ctu
+```
+
+2.  Secondly, we created a copy of the same four folders with the addition of an outgroup we chose for each species.
+```{bash, eval=FALSE}
+"/analysis_GH/Prokka_out/Prokka_Cpr_gbk_outgroup" # gbk files of 19 Cpr + 1 = 20
+"/analysis_GH/Prokka_out/Prokka_Cps_gbk_outgroup" # gbk files of 43 Cps + 1 = 44 
+"/analysis_GH/Prokka_out/Prokka_Cac_gbk_outgroup" # gbk files of 34 Cac + 1 = 35
+"/analysis_GH/Prokka_out/Prokka_Ctu_gbk_outgroup" # gbk files of 8 Ctu + 1 = 9
+```
 
 There was **eight** total directories. The first four only contain n (\# of genomes of that specific species) in each of its directory. The latter four directories have n+1 genomes due to the addition of the outgroup we chose.
 
@@ -271,92 +284,102 @@ Running BDBH, COGS, and OMCL on only *C. propinquum*
 
 ```{bash, eval=FALSE}
 cd get_homologues
-./get_homologues.pl -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Cpr" -n 8 -t 19 -C 90 # Runs BDBH
-./get_homologues.pl -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Cpr" -n 8 -t 0 -C 90 -G # Runs COGS
-./get_homologues.pl -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Cpr" -n 8 -t 0 -C 90 -M # Runs OMCL
+./get_homologues.pl -d "/analysis_GH/Prokka_out/Prokka_Cpr_gbk" -n 8 -t 19 -C 90 # Runs BDBH
+./get_homologues.pl -d "/analysis_GH/Prokka_out/Prokka_Cpr_gbk" -n 8 -t 0 -C 90 -G # Runs COGS
+./get_homologues.pl -d "/analysis_GH/Prokka_out/Prokka_Cpr_gbk" -n 8 -t 0 -C 90 -M # Runs OMCL
 ```
 
 Running BDBH, COGS, and OMCL on *C. propinquum* with an Outgroup
 
 ```{bash, eval=FALSE}
 cd get_homologues
-./get_homologues.pl -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Cpr" -n 8 -t 20 -C 90 # Runs BDBH
-./get_homologues.pl -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Cpr" -n 8 -t 0 -C 90 -G # Runs COGS
-./get_homologues.pl -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Cpr" -n 8 -t 0 -C 90 -M # Runs OMCL
+./get_homologues.pl -d "/analysis_GH/Prokka_out/Prokka_Cpr_gbk_outgroup" -n 8 -t 20 -C 90 # Runs BDBH
+./get_homologues.pl -d "/analysis_GH/Prokka_out/Prokka_Cpr_gbk_outgroup" -n 8 -t 0 -C 90 -G # Runs COGS
+./get_homologues.pl -d "/analysis_GH/Prokka_out/Prokka_Cpr_gbk_outgroup" -n 8 -t 0 -C 90 -M # Runs OMCL
 ```
 
 Running BDBH, COGS, and OMCL on only *C. pseudodiphtheriticum*
 
 ```{bash, eval=FALSE}
 cd get_homologues
-./get_homologues.pl -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Cps" -n 8 -t 43 -C 90 # Runs BDBH
-./get_homologues.pl -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Cps" -n 8 -t 0 -C 90 -G # Runs COGS
-./get_homologues.pl -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Cps" -n 8 -t 0 -C 90 -M # Runs OMCL
+./get_homologues.pl -d "/analysis_GH/Prokka_out/Prokka_Cps_gbk" -n 8 -t 43 -C 90 # Runs BDBH
+./get_homologues.pl -d "/analysis_GH/Prokka_out/Prokka_Cps_gbk" -n 8 -t 0 -C 90 -G # Runs COGS
+./get_homologues.pl -d "/analysis_GH/Prokka_out/Prokka_Cps_gbk" -n 8 -t 0 -C 90 -M # Runs OMCL
 ```
 
 Running BDBH, COGS, and OMCL on *C. pseudodiphtheriticum* with an Outgroup
 
 ```{bash, eval=FALSE}
 cd get_homologues
-./get_homologues.pl -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Cps" -n 8 -t 44 -C 90 # Runs BDBH
-./get_homologues.pl -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Cps" -n 8 -t 0 -C 90 -G # Runs COGS
-./get_homologues.pl -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Cps" -n 8 -t 0 -C 90 -M # Runs OMCL
-```
-
-Running BDBH, COGS, and OMCL on only *C. tuberculostearicum*
-
-```{bash, eval=FALSE}
-cd get_homologues
-./get_homologues.pl -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Ctu" -n 8 -t 8 -C 90 # Runs BDBH
-./get_homologues.pl -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Ctu" -n 8 -t 0 -C 90 -M # Runs COGS
-./get_homologues.pl -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Ctu" -n 8 -t 0 -C 90 -G # Runs OMCL
-```
-
-Running BDBH, COGS, and OMCL on *C. tuberculostearicum* with an Outgroup
-
-```{bash, eval=FALSE}
-cd get_homologues
-./get_homologues.pl -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Ctu" -n 8 -t 9 -C 90 # Runs BDBH
-./get_homologues.pl -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Ctu" -n 8 -t 0 -C 90 -M # Runs COGS
-./get_homologues.pl -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Ctu" -n 8 -t 0 -C 90 -G # Runs OMCL
+./get_homologues.pl -d "/analysis_GH/Prokka_out/Prokka_Cps_gbk_outgroup" -n 8 -t 44 -C 90 # Runs BDBH
+./get_homologues.pl -d "/analysis_GH/Prokka_out/Prokka_Cps_gbk_outgroup" -n 8 -t 0 -C 90 -G # Runs COGS
+./get_homologues.pl -d "/analysis_GH/Prokka_out/Prokka_Cps_gbk_outgroup" -n 8 -t 0 -C 90 -M # Runs OMCL
 ```
 
 Running BDBH, COGS, and OMCL on only *C. accolens*
 
 ```{bash, eval=FALSE}
 cd get_homologues
-./get_homologues.pl -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Cac" -n 8 -t 34 -C 90 # Runs BDBH
-./get_homologues.pl -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Cac" -n 8 -t 0 -C 90 -M # Runs COGS
-./get_homologues.pl -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Cac" -n 8 -t 0 -C 90 -G # Runs OMCL
+./get_homologues.pl -d "/analysis_GH/Prokka_out/Prokka_Cac_gbk" -n 8 -t 34 -C 90 # Runs BDBH
+./get_homologues.pl -d "/analysis_GH/Prokka_out/Prokka_Cac_gbk" -n 8 -t 0 -C 90 -M # Runs COGS
+./get_homologues.pl -d "/analysis_GH/Prokka_out/Prokka_Cac_gbk" -n 8 -t 0 -C 90 -G # Runs OMCL
 ```
 
 Running BDBH, COGS, and OMCL on *C. accolens* with an Outgroup
 
 ```{bash, eval=FALSE}
 cd get_homologues
-./get_homologues.pl -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Cac" -n 8 -t 35 -C 90 # Runs BDBH
-./get_homologues.pl -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Cac" -n 8 -t 0 -C 90 -M # Runs COGS
-./get_homologues.pl -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Cac" -n 8 -t 0 -C 90 -G # Runs OMCL
+./get_homologues.pl -d "/analysis_GH/Prokka_out/Prokka_Cac_gbk_outgroup" -n 8 -t 35 -C 90 # Runs BDBH
+./get_homologues.pl -d "/analysis_GH/Prokka_out/Prokka_Cac_gbk_outgroup" -n 8 -t 0 -C 90 -M # Runs COGS
+./get_homologues.pl -d "/analysis_GH/Prokka_out/Prokka_Cac_gbk_outgroup" -n 8 -t 0 -C 90 -G # Runs OMCL
 ```
 
-## Creating a Conservative Core of Only the Species of Interest and with the Additional Outgroup per Species
-
-From our experience you will run into less issues here if you move the three cluster folders and cluster list files into a new directory. Then use the paths to those cluster folders after the `-d` flag separated by commas.
-
-Create conservative core venn diagram intersection to output faa and fna files for *C. propinquum*:
+Running BDBH, COGS, and OMCL on only *C. tuberculostearicum*
 
 ```{bash, eval=FALSE}
 cd get_homologues
-./compare_clusters.pl -o "/Users/username/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_intersection_19" -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_19/CprBWA290_f0_0taxa_algCOG_e0_C90_","/Users/username/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_19/CprBWA290_f0_0taxa_algOMCL_e0_C90_","/Users/username/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_19/CprBWA290_f0_19taxa_algBDBH_e0_C90_" -t 19 # Creates a conservative core with the output of faa files
-./compare_clusters.pl -o "/Users/username/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_intersection_19" -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_19/CprBWA290_f0_0taxa_algCOG_e0_C90_","/Users/username/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_19/CprBWA290_f0_0taxa_algOMCL_e0_C90_","/Users/username/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_19/CprBWA290_f0_19taxa_algBDBH_e0_C90_" -t 19 -n # Creates a conservative core with the output of fna files from the additional `-n` flag
+./get_homologues.pl -d "/analysis_GH/Prokka_out/Prokka_Ctu_gbk" -n 8 -t 8 -C 90 # Runs BDBH
+./get_homologues.pl -d "/analysis_GH/Prokka_out/Prokka_Ctu_gbk" -n 8 -t 0 -C 90 -M # Runs COGS
+./get_homologues.pl -d "/analysis_GH/Prokka_out/Prokka_Ctu_gbk" -n 8 -t 0 -C 90 -G # Runs OMCL
+```
+
+Running BDBH, COGS, and OMCL on *C. tuberculostearicum* with an Outgroup
+
+```{bash, eval=FALSE}
+cd get_homologues
+./get_homologues.pl -d "/analysis_GH/Prokka_out/Prokka_Ctu_gbk_outgroup" -n 8 -t 9 -C 90 # Runs BDBH
+./get_homologues.pl -d "/analysis_GH/Prokka_out/Prokka_Ctu_gbk_outgroup" -n 8 -t 0 -C 90 -M # Runs COGS
+./get_homologues.pl -d "/analysis_GH/Prokka_out/Prokka_Ctu_gbk_outgroup" -n 8 -t 0 -C 90 -G # Runs OMCL
+```
+
+## Calculating a Conservative Core GCs of Only the Species of Interest, and with the Additional Outgroup per Species
+
+From our experience you will run into less issues here if you move the three cluster folders and cluster list files into a new directory. Then use the paths to those cluster folders after the `-d` flag separated by commas.
+
+Create two conservative core venn diagrams and outputting `.faa` and `.fna` files for *C. propinquum*:
+
+```{bash, eval=FALSE}
+cd get_homologues
+./compare_clusters.pl -o "/analysis_GH/Cpr_gbk_venn" -d "/analysis_GH/Cpr_gbk_cluster_files/Cpr*_f0_0taxa_algCOG_e0_C90_","/analysis_GH/Cpr_gbk_cluster_files/Cpr*_f0_0taxa_algOMCL_e0_C90_","/analysis_GH/Cpr_gbk_cluster_files/Cpr*_f0_19taxa_algBDBH_e0_C90_" -t 19 # Creates a conservative core with the output of faa files
+
+./compare_clusters.pl -o "/analysis_GH/Cpr_gbk_venn" -d "/analysis_GH/Cpr_gbk_cluster_files/Cpr*_f0_0taxa_algCOG_e0_C90_","/analysis_GH/Cpr_gbk_cluster_files/Cpr*_f0_0taxa_algOMCL_e0_C90_","/analysis_GH/Cpr_gbk_cluster_files/Cpr*_f0_19taxa_algBDBH_e0_C90_" -t 19 -n # Creates a conservative core with the output of fna files from the additional `-n` flag
 ```
 
 Create conservative core venn diagram intersection to output faa and fna files for *C. propinquum* with an outgroup:
 
 ```{bash, eval=FALSE}
 cd get_homologues
-./compare_clusters.pl -o "/Users/username/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_intersection_outgroup_20" -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_outgroup_20/CpsDSM44287_f0_0taxa_algCOG_e0_C90_","/Users/username/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_outgroup_20/CpsDSM44287_f0_0taxa_algOMCL_e0_C90_","/Users/username/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_outgroup_20/CpsDSM44287_f0_20taxa_algBDBH_e0_C90_" -t 20  # Creates a conservative core with the output of faa files
-./compare_clusters.pl -o "/Users/username/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_intersection_outgroup_20" -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_outgroup_20/CpsDSM44287_f0_0taxa_algCOG_e0_C90_","/Users/username/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_outgroup_20/CpsDSM44287_f0_0taxa_algOMCL_e0_C90_","/Users/username/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_clusters_outgroup_20/CpsDSM44287_f0_20taxa_algBDBH_e0_C90_" -t 20 -n # Creates a conservative core with the output of fna files from the additional `-n` flag
+
+# Creates a conservative core with the output of faa files
+./compare_clusters.pl -o "/analysis_GH/Cpr_gbk_outgroup_venn" \
+                      -d "/analysis_GH/Cpr_gbk_outgroup_cluster_files/C*_f0_0taxa_algCOG_e0_C90_","/analysis_GH/Cpr_gbk_outgroup_cluster_files/C*_f0_0taxa_algOMCL_e0_C90_","/analysis_GH/Cpr_gbk_outgroup_cluster_files/C*_f0_20taxa_algBDBH_e0_C90_" \
+                      -t 20  
+                      
+# Creates a conservative core with the output of fna files from the additional `-n` flag
+./compare_clusters.pl -o "/analysis_GH/Cpr_gbk_outgroup_venn" \
+                      -d "/analysis_GH/Cpr_gbk_outgroup_cluster_files/C*_f0_0taxa_algCOG_e0_C90_","/analysis_GH/Cpr_gbk_outgroup_cluster_files/C*_f0_0taxa_algOMCL_e0_C90_","/analysis_GH/Cpr_gbk_outgroup_cluster_files/C*_f0_20taxa_algBDBH_e0_C90_" \
+                      -t 20 \
+                      -n 
 ```
 
 Create conservative core venn diagram intersection to output faa and fna files for *C. pseudodiphtheriticum*:
@@ -364,6 +387,7 @@ Create conservative core venn diagram intersection to output faa and fna files f
 ```{bash, eval=FALSE}
 cd get_homologues
 ./compare_clusters.pl -o "/Users/username/Desktop/THT_CorPGA/CorPGA_Cps/Cps_intersection_43" -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Cps/Cps_clusters_43/CpsDU080_f0_43taxa_algBDBH_e0_C90_","/Users/username/Desktop/THT_CorPGA/CorPGA_Cps/Cps_clusters_43/CpsDU080_f0_43taxa_algCOG_e0_C90_","/Users/username/Desktop/THT_CorPGA/CorPGA_Cps/Cps_clusters_43/CpsDU080_f0_43taxa_algOMCL_e0_C90_" -t 43 # Creates a conservative core with the output of faa files
+
 ./compare_clusters.pl -o "/Users/username/Desktop/THT_CorPGA/CorPGA_Cps/Cps_intersection_43" -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Cps/Cps_clusters_43/CpsDU080_f0_43taxa_algBDBH_e0_C90_","/Users/username/Desktop/THT_CorPGA/CorPGA_Cps/Cps_clusters_43/CpsDU080_f0_43taxa_algCOG_e0_C90_","/Users/username/Desktop/THT_CorPGA/CorPGA_Cps/Cps_clusters_43/CpsDU080_f0_43taxa_algOMCL_e0_C90_" -t 43 -n # Creates a conservative core with the output of fna files from the additional `-n` flag
 ```
 
@@ -689,37 +713,37 @@ $MIN_PERSEQID_HOM = 50;
 $MIN_COVERAGE_HOM = 50;
 ```
 
-## Create Core-genome and Pangenome Tab Files
+## Create Core-genome and Pangenome `.tab` Files
 
-Create *C. propinquum* rarefaction core-genome and pangenome tab file:
+Create *C. propinquum* rarefaction core-genome and pangenome `.tab` file:
 
 ```{bash, eval=FALSE}
 cd get_homologues
 ./get_homologues.pl -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Cpr/Cpr_gbk_19" -c -n 8 -M -C 90 
 ```
 
-Create *C. pseudodiphtheriticum* rarefaction core-genome and pangenome tab file:
+Create *C. pseudodiphtheriticum* rarefaction core-genome and pangenome `.tab` file:
 
 ```{bash, eval=FALSE}
 cd get_homologues
 ./get_homologues.pl -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Cps/Cps_gbk_43" -c -n 8 -M -C 90 
 ```
 
-Create *C. tuberculostearicum* rarefaction core-genome and pangenome tab file:
+Create *C. tuberculostearicum* rarefaction core-genome and pangenome `.tab` file:
 
 ```{bash, eval=FALSE}
 cd get_homologues
 ./get_homologues.pl -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Ctu/Ctu_gbk_8" -c -n 8 -M -C 90 
 ```
 
-Create *C. accolens* rarefaction core-genome and pangenome tab file:
+Create *C. accolens* rarefaction core-genome and pangenome `.tab` file:
 
 ```{bash, eval=FALSE}
 cd get_homologues
 ./get_homologues.pl -d "/Users/username/Desktop/THT_CorPGA/CorPGA_Cac/Cac_gbk_34" -c -n 8 -M -C 90 
 ```
 
-## Plot Core-genome and Pangenome Tab Files
+## Plot Core-genome and Pangenome `.tab` Files
 
 Plot *C. propinquum* rarefaction core-genome curve:
 
@@ -777,7 +801,7 @@ cd get_homologues
 ./plot_pancore_matrix.pl -i "/Users/username/get_homologues/Cac_gbk_34_homologues/pan_genome_algOMCL_C90.tab" -f pan
 ```
 
-## Cps and Cac troubleshooting 
+## Cps and Cac troubleshooting
 
 We noticed the core genome of the rarefaction curve for *C. pseudodiphtheriticum* and *C. accolens* was splitting. We were getting a false lower bound and were able to fix this by dropping Cps_090104 and Cac_ATCC_49726 from the analysis. Sean Colan helped pinpoint these two specific genomes with the [[methods here]{.underline}](outlier.html).
 
@@ -870,7 +894,7 @@ Flags that are **bolded** are the ones that we used or modified.
 ## `./get_homologues.pl`
 
 | Flags  | Meanings                                                                           |
-|------------------------|------------------------------------------------|
+|------------------------|-----------------------------------------------|
 | -h     | help message                                                                       |
 | -v     | print version, credits and checks installation                                     |
 | **-d** | **directory with input .gbk files**                                                |
@@ -886,14 +910,14 @@ Flags that are **bolded** are the ones that we used or modified.
 Algorithms instead of default bidirectional best-hits (BDBH):
 
 |        |                                                                                    |
-|------------------------|------------------------------------------------|
+|------------------------|-----------------------------------------------|
 | **-G** | **use COGtriangle algorithm (COGS, PubMed=20439257), (requires 3+ genomes\|taxa)** |
 | **-M** | **use orthoMCL algorithm (OMCL, PubMed=12952885)**                                 |
 
 Options that control sequence similarity searches:
 
 |        |                                                                                         |
-|------------------------|------------------------------------------------|
+|------------------------|-----------------------------------------------|
 | -X     | use diamond instead of blastp                                                           |
 | **-C** | **min %coverage in BLAST pairwise alignments (range [1-100],default=75)**               |
 | -E     | max E-value (default=1e-05,max=0.01)                                                    |
@@ -905,7 +929,7 @@ Options that control sequence similarity searches:
 Options that control clustering:
 
 |        |                                                                                                                       |
-|------------------------|------------------------------------------------|
+|------------------------|-----------------------------------------------|
 | **-t** | **report sequence clusters including at least t taxa (default t=numberOfTaxa,t=0 reports all clusters [OMCL\|COGS])** |
 | **-a** | **report clusters of sequence features in GenBank files instead of default 'CDS' GenBank features**                   |
 | -g     | report clusters of intergenic sequences flanked by ORFs in addition to default 'CDS' clusters                         |
@@ -923,7 +947,7 @@ get_homologues will run the **default clustering algorithm Bidirectional Best Hi
 ## `./compare_clusters.pl`
 
 | Flags  | Meanings                                                                                                      |
-|------------------------|------------------------------------------------|
+|------------------------|-----------------------------------------------|
 | -h     | help message                                                                                                  |
 | **-d** | **comma-separated names of cluster directories**                                                              |
 | **-o** | **output directory**                                                                                          |
