@@ -15,7 +15,7 @@ output:
 
 -   Supplemental methods for program [[installations]{.underline}](SupplementalMethods_Installations.html).
 
--   Supplemental methods and output files for [[Prokka v1.14.6 annotation]{.underline}](SupplementalMethods_Annotations.html) of 107 *Corynebacterium* strain genomes.
+-   Supplemental methods and output files for [[Prokka v1.14.6 annotation]{.underline}](SupplementalMethods_Prokka_Annotations.html) of 107 *Corynebacterium* strain genomes.
 
 -   Supplemental methods and output files of pangenome analyses performed with [[GET_HOMOLOGUES]{.underline}](SupplementalMethods_GET_HOMOLOGUES.html).
 
