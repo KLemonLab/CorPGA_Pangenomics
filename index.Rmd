@@ -13,6 +13,8 @@ output:
 
 ## This repository includes:
 
+-   Data availability: The raw `.fasta` files for initial input are provided in the [[Github repository]{.underline}](https://github.com/KLemonLab/CorPGA_Pangenomics).
+
 -   Supplemental methods for program [[installations]{.underline}](SupplementalMethods_Installations.html).
 
 -   Supplemental methods and output files for [[Prokka v1.14.6 annotation]{.underline}](SupplementalMethods_Prokka_Annotations.html) of 107 *Corynebacterium* strain genomes.
@@ -30,4 +32,3 @@ output:
 <img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="right" width="200" height="90"/>
 
 
-THT test git code
