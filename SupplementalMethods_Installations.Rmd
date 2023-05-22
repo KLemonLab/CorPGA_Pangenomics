@@ -17,7 +17,7 @@ klippy::klippy(c('r', 'bash'))
 ```
 
 
-## Installing Conda (MacOSX)
+# Installing Conda (MacOSX)
 
 First check if you have conda on your system by opening terminal and typing `conda` then pressing enter. If the command was not found you need follow up with this installation. If you already have it installed then run the command `conda update conda`.
 
@@ -44,7 +44,7 @@ conda config --set auto_activate_base false
 
 Here is a [link](https://docs.conda.io/projects/conda/en/4.6.0/_downloads/52a95608c49671267e40c689e0bc00ca/conda-cheatsheet.pdf) to some conda commands that may come in handy.
 
-## Installing PanACoTa
+# Installing PanACoTa
 
 We create a new Python environment (here it's version 3.6 of Python) on the Mac Terminal:
 
@@ -53,7 +53,7 @@ conda create -y --name PanACoTa python=3.6
 conda activate PanACoTa
 ```
 
-### Dependencies
+## Dependencies
 
 We install all dependencies in the new PanACoTa environment on the Mac Terminal:
 
@@ -68,7 +68,7 @@ conda install -c conda-forge -c bioconda mmseqs2
 -   For align module: mafft (to align persistent genome) From <https://mafft.cbrc.jp/alignment/software/macstandard.html>. We download and install mafft-7.453-signed.pkg
 -   For tree module: IQ Tree, FastTreeMP, FastME or Quicktree (to infer a phylogenetic tree) From <http://www.iqtree.org> We get the Stable release 1.6.12 (August 15, 2019) and move the 'iqtree' binary to /usr/local/bin
 
-### PanACoTA
+## PanACoTA
 
 PanACoTA Documentation:
 
@@ -91,7 +91,7 @@ git pull
 ./make upgrade
 ```
 
-## Installing Prokka
+# Installing Prokka
 
 Guide to installing Prokka using this link: <https://github.com/tseemann/prokka>
 
@@ -105,20 +105,20 @@ conda install -c conda-forge -c bioconda -c defaults prokka
 
 Then check if you have prokka installed by running the command `prokka -v`
 
-## Installing anvi'o v7
+# Installing anvi'o v7
 
 Follow instructions here: <https://merenlab.org/2016/06/26/installation-v2/#3-install-anvio>
 
 > If you are using Windows WSL2 Linux through Ubuntu 20.04 LTS and get to the step of doing the `anvi-self-test`, and the html site cannot be reached. Then try and use 127.0.0.1:8080 or <http://localhost:8080/> to get the interactive display to work.
 
-### Updating anvi'o from GitHub
+## Updating anvi'o from GitHub
 
 ```{bash, eval=FALSE}
 conda activate anvio-7
 pip install --upgrade git+git://github.com/merenlab/anvio.git
 ```
 
-### anvi'o Help
+## anvi'o Help
 
 -   Help <http://merenlab.org/2019/10/07/getting-help/>
 -   All Programs and Scripts <http://merenlab.org/software/anvio/vignette/>
@@ -126,7 +126,7 @@ pip install --upgrade git+git://github.com/merenlab/anvio.git
 -   Vocabulary <http://merenlab.org/vocabulary/>
 -   Interactive interface <http://merenlab.org/2016/02/27/the-anvio-interactive-interface/>
 
-## Installing PPanGGOLiN
+# Installing PPanGGOLiN
 
 We create a new Python environment (here it's version 3.6 of Python) on terminal:
 
@@ -153,7 +153,7 @@ pip install git+https://github.com/labgem/PPanGGOLiN.git#egg=PPanGGOLiN
 #pip install --upgrade git+git://github.com/labgem/PPanGGOLiN.git
 ```
 
-## Installing GET_HOMOLOGUES
+# Installing GET_HOMOLOGUES
 
 This should be done in your MacOSX terminal or in your Linux WSL2 subsystem if you are using Windows.
 
@@ -187,7 +187,7 @@ Test if it is on your system by running:
 
 The output of this will be the version and credits of get_homologues.
 
-## Installing GET_PHYLOMARKERS
+# Installing GET_PHYLOMARKERS
 
 This should be done in your MacOSX terminal or in your Linux WSL2 subsystem if you are using Windows.
 

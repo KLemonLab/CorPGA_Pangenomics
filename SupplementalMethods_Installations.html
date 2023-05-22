@@ -1738,13 +1738,21 @@ margin-left: 0 !important;
         </ul>
         <nav role="navigation" id="toc">
           <ul>
-          <li><a href="#installing-conda-macosx" id="toc-installing-conda-macosx"><span class="toc-section-number">0.1</span> Installing Conda (MacOSX)</a></li>
-          <li><a href="#installing-panacota" id="toc-installing-panacota"><span class="toc-section-number">0.2</span> Installing PanACoTa</a></li>
-          <li><a href="#installing-prokka" id="toc-installing-prokka"><span class="toc-section-number">0.3</span> Installing Prokka</a></li>
-          <li><a href="#installing-anvio-v7" id="toc-installing-anvio-v7"><span class="toc-section-number">0.4</span> Installing anvi’o v7</a></li>
-          <li><a href="#installing-ppanggolin" id="toc-installing-ppanggolin"><span class="toc-section-number">0.5</span> Installing PPanGGOLiN</a></li>
-          <li><a href="#installing-get_homologues" id="toc-installing-get_homologues"><span class="toc-section-number">0.6</span> Installing GET_HOMOLOGUES</a></li>
-          <li><a href="#installing-get_phylomarkers" id="toc-installing-get_phylomarkers"><span class="toc-section-number">0.7</span> Installing GET_PHYLOMARKERS</a></li>
+          <li><a href="#installing-conda-macosx" id="toc-installing-conda-macosx"><span class="toc-section-number">1</span> Installing Conda (MacOSX)</a></li>
+          <li><a href="#installing-panacota" id="toc-installing-panacota"><span class="toc-section-number">2</span> Installing PanACoTa</a>
+          <ul>
+          <li><a href="#dependencies" id="toc-dependencies"><span class="toc-section-number">2.1</span> Dependencies</a></li>
+          <li><a href="#panacota" id="toc-panacota"><span class="toc-section-number">2.2</span> PanACoTA</a></li>
+          </ul></li>
+          <li><a href="#installing-prokka" id="toc-installing-prokka"><span class="toc-section-number">3</span> Installing Prokka</a></li>
+          <li><a href="#installing-anvio-v7" id="toc-installing-anvio-v7"><span class="toc-section-number">4</span> Installing anvi’o v7</a>
+          <ul>
+          <li><a href="#updating-anvio-from-github" id="toc-updating-anvio-from-github"><span class="toc-section-number">4.1</span> Updating anvi’o from GitHub</a></li>
+          <li><a href="#anvio-help" id="toc-anvio-help"><span class="toc-section-number">4.2</span> anvi’o Help</a></li>
+          </ul></li>
+          <li><a href="#installing-ppanggolin" id="toc-installing-ppanggolin"><span class="toc-section-number">5</span> Installing PPanGGOLiN</a></li>
+          <li><a href="#installing-get_homologues" id="toc-installing-get_homologues"><span class="toc-section-number">6</span> Installing GET_HOMOLOGUES</a></li>
+          <li><a href="#installing-get_phylomarkers" id="toc-installing-get_phylomarkers"><span class="toc-section-number">7</span> Installing GET_PHYLOMARKERS</a></li>
           </ul>
         </nav>
         <ul class="authors">
@@ -1782,8 +1790,8 @@ margin-left: 0 !important;
   addClassKlippyTo("pre.r, pre.bash");
   addKlippy('left', 'top', 'auto', '1', 'Copy code', 'Copied!');
 </script>
-<div id="installing-conda-macosx" class="section level2" number="0.1">
-<h2><span class="header-section-number">0.1</span> Installing Conda (MacOSX)</h2>
+<div id="installing-conda-macosx" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Installing Conda (MacOSX)</h1>
 <p>First check if you have conda on your system by opening terminal and typing <code>conda</code> then pressing enter. If the command was not found you need follow up with this installation. If you already have it installed then run the command <code>conda update conda</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> update conda</span></code></pre></div>
@@ -1800,13 +1808,13 @@ margin-left: 0 !important;
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> config <span class="at">--set</span> auto_activate_base false</span></code></pre></div>
 <p>Here is a <a href="https://docs.conda.io/projects/conda/en/4.6.0/_downloads/52a95608c49671267e40c689e0bc00ca/conda-cheatsheet.pdf">link</a> to some conda commands that may come in handy.</p>
 </div>
-<div id="installing-panacota" class="section level2" number="0.2">
-<h2><span class="header-section-number">0.2</span> Installing PanACoTa</h2>
+<div id="installing-panacota" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Installing PanACoTa</h1>
 <p>We create a new Python environment (here it’s version 3.6 of Python) on the Mac Terminal:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> create <span class="at">-y</span> <span class="at">--name</span> PanACoTa python=3.6</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate PanACoTa</span></code></pre></div>
-<div id="dependencies" class="section level3" number="0.2.1">
-<h3><span class="header-section-number">0.2.1</span> Dependencies</h3>
+<div id="dependencies" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Dependencies</h2>
 <p>We install all dependencies in the new PanACoTa environment on the Mac Terminal:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> install <span class="at">-c</span> conda-forge <span class="at">-c</span> bioconda <span class="at">-c</span> defaults prokka</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> install <span class="at">-c</span> conda-forge <span class="at">-c</span> bioconda mmseqs2</span></code></pre></div>
@@ -1818,8 +1826,8 @@ margin-left: 0 !important;
 <li>For tree module: IQ Tree, FastTreeMP, FastME or Quicktree (to infer a phylogenetic tree) From <a href="http://www.iqtree.org" class="uri">http://www.iqtree.org</a> We get the Stable release 1.6.12 (August 15, 2019) and move the ‘iqtree’ binary to /usr/local/bin</li>
 </ul>
 </div>
-<div id="panacota" class="section level3" number="0.2.2">
-<h3><span class="header-section-number">0.2.2</span> PanACoTA</h3>
+<div id="panacota" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> PanACoTA</h2>
 <p>PanACoTA Documentation:</p>
 <ul>
 <li><a href="https://github.com/gem-pasteur/PanACoTA" class="uri">https://github.com/gem-pasteur/PanACoTA</a></li>
@@ -1835,27 +1843,27 @@ margin-left: 0 !important;
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./make</span> upgrade</span></code></pre></div>
 </div>
 </div>
-<div id="installing-prokka" class="section level2" number="0.3">
-<h2><span class="header-section-number">0.3</span> Installing Prokka</h2>
+<div id="installing-prokka" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Installing Prokka</h1>
 <p>Guide to installing Prokka using this link: <a href="https://github.com/tseemann/prokka" class="uri">https://github.com/tseemann/prokka</a></p>
 <p>Install using conda through terminal. You can try installing it into your specific anvi’o environment but that did not work for us. So, we installed Prokka on our base python environment.</p>
 <p>Run the command:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> install <span class="at">-c</span> conda-forge <span class="at">-c</span> bioconda <span class="at">-c</span> defaults prokka</span></code></pre></div>
 <p>Then check if you have prokka installed by running the command <code>prokka -v</code></p>
 </div>
-<div id="installing-anvio-v7" class="section level2" number="0.4">
-<h2><span class="header-section-number">0.4</span> Installing anvi’o v7</h2>
+<div id="installing-anvio-v7" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Installing anvi’o v7</h1>
 <p>Follow instructions here: <a href="https://merenlab.org/2016/06/26/installation-v2/#3-install-anvio" class="uri">https://merenlab.org/2016/06/26/installation-v2/#3-install-anvio</a></p>
 <blockquote>
 <p>If you are using Windows WSL2 Linux through Ubuntu 20.04 LTS and get to the step of doing the <code>anvi-self-test</code>, and the html site cannot be reached. Then try and use 127.0.0.1:8080 or <a href="http://localhost:8080/" class="uri">http://localhost:8080/</a> to get the interactive display to work.</p>
 </blockquote>
-<div id="updating-anvio-from-github" class="section level3" number="0.4.1">
-<h3><span class="header-section-number">0.4.1</span> Updating anvi’o from GitHub</h3>
+<div id="updating-anvio-from-github" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Updating anvi’o from GitHub</h2>
 <div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate anvio-7</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">--upgrade</span> git+git://github.com/merenlab/anvio.git</span></code></pre></div>
 </div>
-<div id="anvio-help" class="section level3" number="0.4.2">
-<h3><span class="header-section-number">0.4.2</span> anvi’o Help</h3>
+<div id="anvio-help" class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span> anvi’o Help</h2>
 <ul>
 <li>Help <a href="http://merenlab.org/2019/10/07/getting-help/" class="uri">http://merenlab.org/2019/10/07/getting-help/</a></li>
 <li>All Programs and Scripts <a href="http://merenlab.org/software/anvio/vignette/" class="uri">http://merenlab.org/software/anvio/vignette/</a></li>
@@ -1865,8 +1873,8 @@ margin-left: 0 !important;
 </ul>
 </div>
 </div>
-<div id="installing-ppanggolin" class="section level2" number="0.5">
-<h2><span class="header-section-number">0.5</span> Installing PPanGGOLiN</h2>
+<div id="installing-ppanggolin" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Installing PPanGGOLiN</h1>
 <p>We create a new Python environment (here it’s version 3.6 of Python) on terminal:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> create <span class="at">-y</span> <span class="at">--name</span> PPanGGOLiN python=3.6</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate PPanGGOLiN</span></code></pre></div>
@@ -1879,8 +1887,8 @@ margin-left: 0 !important;
 <div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install git+https://github.com/labgem/PPanGGOLiN.git#egg=PPanGGOLiN</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">#pip install --upgrade git+git://github.com/labgem/PPanGGOLiN.git</span></span></code></pre></div>
 </div>
-<div id="installing-get_homologues" class="section level2" number="0.6">
-<h2><span class="header-section-number">0.6</span> Installing GET_HOMOLOGUES</h2>
+<div id="installing-get_homologues" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> Installing GET_HOMOLOGUES</h1>
 <p>This should be done in your MacOSX terminal or in your Linux WSL2 subsystem if you are using Windows.</p>
 <p>For more info on get_homologues go here: <a href="http://eead-csic-compbio.github.io/get_homologues/manual/" class="uri">http://eead-csic-compbio.github.io/get_homologues/manual/</a></p>
 <p>Run the following commands below to clone the current get_homologues software from Github onto your system:</p>
@@ -1895,8 +1903,8 @@ margin-left: 0 !important;
 <div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./get_homologues.pl</span> <span class="at">-v</span> </span></code></pre></div>
 <p>The output of this will be the version and credits of get_homologues.</p>
 </div>
-<div id="installing-get_phylomarkers" class="section level2" number="0.7">
-<h2><span class="header-section-number">0.7</span> Installing GET_PHYLOMARKERS</h2>
+<div id="installing-get_phylomarkers" class="section level1" number="7">
+<h1><span class="header-section-number">7</span> Installing GET_PHYLOMARKERS</h1>
 <p>This should be done in your MacOSX terminal or in your Linux WSL2 subsystem if you are using Windows.</p>
 <p>For more info on get_phylomarkers go here: <a href="https://vinuesa.github.io/get_phylomarkers/" class="uri">https://vinuesa.github.io/get_phylomarkers/</a></p>
 <p>Run the following commands below to clone the current get_pylomarkers software from Github onto your system:</p>
