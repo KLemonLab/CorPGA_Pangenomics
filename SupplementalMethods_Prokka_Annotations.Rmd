@@ -1,5 +1,5 @@
 ---
-title: "SupplementalMethods_Prokka_Annotations"
+title: "Supplemental Methods: Prokka Annotations"
 author: 
 - Tommy Tran, (KLemonLab) Tommy.Tran@bcm.edu
 - Isabel Escapa, (KLemonLab) Isabel.FernandezEscapa@bcm.edu
