@@ -1,5 +1,5 @@
 ---
-title: "SupplementalMethods_PPanGGOLiN"
+title: "Supplemental Methods: PPanGGOLiN"
 author: 
 - Tommy Tran, (KLemonLab) Tommy.Tran@bcm.edu
 - Isabel Escapa, (KLemonLab) Isabel.FernandezEscapa@bcm.edu
