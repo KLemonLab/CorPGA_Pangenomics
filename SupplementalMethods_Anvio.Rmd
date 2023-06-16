@@ -31,7 +31,7 @@ First you need to download and set up the NCBI's Clusters of Orthologous Groups 
 Now the `anvi-run-ncbi-cogs` command can be used to annotate the .db genome files against the NCBI's COGs database [@Tatusov2001]: It uses DIAMOND [@Buchfink2015] "fast" as default, but it is recommended to use the "sensitive" option. This will take considerably much longer. Blastp can also be used instead of DIAMOND.
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1.2
+#-7.1.2
 path_i="analysis_Anvio7/Contigs_db"
 
 for file in $path_i/*.db; do
@@ -46,7 +46,7 @@ First you need to download and set up the KEGG KOfam database using `anvi-setup-
 The program `anvi-run-kegg-kofams` annotates genes in a given anvi'o contigs database with KEGG Orthology (KO) numbers via hits to the KEGG KOfam database [@Kanehisa2000].
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1.2
+#-7.1.2
 path_i="analysis_Anvio7/Contigs_db"
 
 for file in $path_i/*.db; do
@@ -68,7 +68,7 @@ First you need to download and set up the PFAM database using `anvi-setup-pfams`
 The program `anvi-run-kegg-pfam` annotates genes in a given anvi'o contigs database with the PFAM database [@Mistry2021].
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1.2
+#-7.1.2
 path_i="analysis_Anvio7/Contigs_db"
 
 for file in $path_i/*.db; do
@@ -81,7 +81,7 @@ done
 When you run the following command the occurrence of bacterial single-copy genes across your contigs is added to your contigs database [@Eddy2011].
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1.2
+#-7.1.2
 path_i="analysis_Anvio7/Contigs_db"
 
 for file in $path_i/*.db; do
@@ -94,7 +94,7 @@ done
 This generates basic stats on the annotations:
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1.2
+#-7.1.2
 mkdir -p "analysis_Anvio7/Contigs_stats"
 
 path_i="analysis_Anvio7/Contigs_db"
@@ -109,7 +109,6 @@ done
 This provides basic info on the contigs databases:
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1.2
 path_i="analysis_Anvio7/Contigs_db"
 
 for file in $path_i/*.db; do
@@ -128,7 +127,6 @@ The program `anvi-gen-genomes-storage` requires you to provide names and locatio
 We create 1 database with the 107 genomes that can be used to run the pangenomic analysis with all the strains at once or by selecting subsets of strains (i.e. by species, or by grouping related species together).
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1
 mkdir -p "analysis_Anvio7/Pangenomic_Results"
 
 anvi-gen-genomes-storage -e "analysis_Anvio7/All_107_CorynesAnvio.txt" -o "analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db" --gene-caller Prodigal
@@ -145,13 +143,12 @@ anvi-db-info "analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db"
 We had to make new anvi'o environment with python 3.7 since the step below would not work unless we did that. This could be related to the updates with anvio 7.1
 
 ```{bash, eval = FALSE}
-conda create -y --name anvio-7.1.2 python=3.7
+conda create -y --name anvio-7.1 python=3.7
 ```
 
 ## Running the pangenomic analsyses
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1
 anvi-pan-genome -g analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -G Cacc.txt -o analysis_Anvio7/Pangenomic_Results/Cacc -n PAN_Cacc --use-ncbi-blast --mcl-inflation 10  --num-threads 8
 
 anvi-pan-genome -g analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -G Cpro.txt -o analysis_Anvio7/Pangenomic_Results/Cpro -n PAN_Cpro --use-ncbi-blast --mcl-inflation 10  --num-threads 8
@@ -166,14 +163,13 @@ anvi-pan-genome -g analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -G Cpsd.
 This will display the pangenome in your default internet browser. Anvi'o says google chrome is the most compatible with the anvi''o interactive interface. You need to pick one of the `-p` inputs for each PAN.db file:
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7
-anvi-display-pan -p "/analysis_Anvio7/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db"
+anvi-display-pan -p "/analysis_Anvio7/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" -g "/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db"
 
-anvi-display-pan -p "/analysis_Anvio7/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db" -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db"
+anvi-display-pan -p "/analysis_Anvio7/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db" -g "/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db"
 
-anvi-display-pan -p "/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db"
+anvi-display-pan -p "/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" -g "/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db"
 
-anvi-display-pan -p "/analysis_Anvio7/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db" -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db"
+anvi-display-pan -p "/analysis_Anvio7/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db" -g "/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db"
 ```
 
 If you are using Windows and it cannot display the interactive page then try copy and pasting either 127.0.0.1:8080 or <http://localhost:8080/> into your browser. Do not use sudo in the front of the command either.
@@ -185,9 +181,8 @@ Once it opens in the browser, you can adjust image settings and click the "DRAW"
 We can create tables with a summary of the pangenomes using the program `anvi-summarize`:
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7
 anvi-summarize -p "/analysis_Anvio7/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" \
-               -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db" \
+               -g "/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db" \
                -o "/Users/klemonlab/Downloads/Cps_PAN_SUMMARY" \
                -C CorevsAccessory
                
@@ -284,42 +279,41 @@ Click and drag the names. The order names is inverse to the layers in the concen
 You will need to know the collection to assign for the `-C` flag in the `anvi-summarize` command. This is an example of how to see the collections and bins you have for a pangenome db file from anvi'o.
 
 ```{bash, eval=FALSE}
-anvi-show-collections-and-bins -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cpro-PAN.db" --debug 
+anvi-show-collections-and-bins -p "/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cpro-PAN.db" --debug 
 ```
 
 Find GC Content for *C. propinquum*:
 
 ```{bash, eval=FALSE}
-# conda activate Anvio
-anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db -C CorevsAccessory
+anvi-summarize -g /analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -p /analysis_Anvio7/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db -C CorevsAccessory
 ```
 
 Find GC Content for *C. pseudodiphtheriticum*:
 
 ```{bash, eval=FALSE}
-# conda activate Anvio
-anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Cpse/PAN_Cpse-PAN.db -C CorevsAccessory
+anvi-summarize -g /analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -p /analysis_Anvio7/Pangenomic_Results/Cpse/PAN_Cpse-PAN.db -C CorevsAccessory
 ```
 
 Find GC Content for *C. accolens*:
 
 ```{bash, eval=FALSE}
-# conda activate Anvio
-anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db -C CorevsAccessory
+anvi-summarize -g /analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -p /analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db -C CorevsAccessory
 ```
 
 Find GC Content for *C. tuberculostearicum*:
 
 ```{bash, eval=FALSE}
-# conda activate Anvio
-anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db -C CorevsAccessory
+anvi-summarize -g /analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -p /analysis_Anvio7/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db -C CorevsAccessory
 ```
 
-# anvi'o KEGG Analysis Pipeline
+# KEGG Analysis Pipeline
+
+We then used a workflow from anvi'o ([https://merenlab.org/tutorials/infant-gut/#chapter-v-metabolism-prediction)](https://merenlab.org/tutorials/infant-gut/#chapter-v-metabolism-prediction)) that allowed us to estimate the completeness of KEGG modules in each of the four Corynebacterium pangenomes and in the combined pangenome for the 104 strains.
+
+First we made a text document that was a list of the genome files excluding C. macingleyi. This was used as input for the estimate metabolism step. It contains two columns, the first column, labeled "Name", is the name of the strain genome, the second column, labeled "Contigs_db_path", is the file name and location of the genome database file.
 
 ```{bash, eval = FALSE}
-cd ./Documents/CorPGA_rerun_aqr/analysis_Anvio7 # go to anvi'o environment
-conda activate anvio-7.1.2
+cd ./analysis_Anvio7
 
 anvi-estimate-metabolism -e genome_list_Coryne_No_Mac.txt -O Coryne_No_Mac --matrix-format
 
@@ -332,7 +326,7 @@ Dry run to get the profile db:
 anvi-interactive -d Coryne_No_Mac-completeness-MATRIX.txt -p Coryne_No_Mac_metabolism_PROFILE.db --manual-mode --dry-run
 ```
 
-Run for reals:
+Run :
 
 ```{bash, eval = FALSE}
 anvi-interactive --manual-mode -d Coryne_No_Mac-completeness-MATRIX.txt -t Coryne_No_Mac-completeness-MATRIX.txt.newick -p Coryne_No_Mac_metabolism_PROFILE.db --title "Coryne_No_Mac Metabolism Heatmap"
@@ -373,9 +367,11 @@ anvi-compute-metabolic-enrichment -M Coryne_No_Mac_metabolism_modules.txt -G Cor
 
 # *Corynebacterium* species vs *Dolosigranulum pigrum*
 
+For this run, we follow the same protocol except we included 27 D. pigrum genomes and included them in the genome list.
+
 ```{bash, eval = FALSE}
 cd ./Documents/aqr_metabol_comp
-conda activate anvio-7.1.2
+-7.1.2
 anvi-estimate-metabolism -e genome_list_Coryne_Dpi.txt -O Coryne_Dpi --matrix-format
 
 anvi-matrix-to-newick Coryne_Dpi-completeness-MATRIX.txt
@@ -387,7 +383,7 @@ Dry run to get the profile db:
 anvi-interactive -d Coryne_Dpi-completeness-MATRIX.txt -p Coryne_Dpi_metabolism_PROFILE.db --manual-mode --dry-run
 ```
 
-Run for reals:
+Run :
 
 ```{bash, eval = FALSE}
 anvi-interactive --manual-mode -d Coryne_Dpi-completeness-MATRIX.txt -t Coryne_Dpi-completeness-MATRIX.txt.newick -p Coryne_Dpi_metabolism_PROFILE.db --title "Coryne_Dpi Metabolism Heatmap"
@@ -430,7 +426,7 @@ anvi-compute-metabolic-enrichment -M Coryne_Dpi_metabolism_modules.txt -G Coryne
 
 ```{bash, eval = FALSE}
 cd ./Documents/aqr_metabol_comp
-conda activate anvio-7.1.2
+-7.1.2
 anvi-estimate-metabolism -e genome_list_Cprop.txt -O Cprop --matrix-format
 
 anvi-matrix-to-newick Cprop-completeness-MATRIX.txt
@@ -442,7 +438,7 @@ Dry run to get the profile db:
 anvi-interactive -d Cprop-completeness-MATRIX.txt -p Cprop_metabolism_PROFILE.db --manual-mode --dry-run
 ```
 
-Run for reals:
+Run :
 
 ```{bash, eval = FALSE}
 anvi-interactive --manual-mode -d Cprop-completeness-MATRIX.txt -t Cprop-completeness-MATRIX.txt.newick -p Cprop_metabolism_PROFILE.db --title "Cprop Metabolism Heatmap"
@@ -483,7 +479,7 @@ anvi-compute-metabolic-enrichment -M Cprop_metabolism_modules.txt -G Cprop_geo_g
 
 ```{bash, eval = FALSE}
 cd ./Documents/aqr_metabol_comp
-conda activate anvio-7.1.2
+-7.1.2
 anvi-estimate-metabolism -e genome_list_Cpsd.txt -O Cpsd --matrix-format
 anvi-matrix-to-newick Cpsd-completeness-MATRIX.txt
 ```
@@ -494,7 +490,7 @@ Dry run to get the profile db:
 anvi-interactive -d Cpsd-completeness-MATRIX.txt -p Cpsd_metabolism_PROFILE.db --manual-mode --dry-run
 ```
 
-Run for reals:
+Run :
 
 ```{bash, eval = FALSE}
 anvi-interactive --manual-mode -d Cpsd-completeness-MATRIX.txt -t Cpsd-completeness-MATRIX.txt.newick -p Cpsd_metabolism_PROFILE.db --title "Cpsd Metabolism Heatmap"
@@ -535,7 +531,7 @@ anvi-compute-metabolic-enrichment -M Cpsd_metabolism_modules.txt -G Cpsd_geo_gro
 
 ```{bash, eval = FALSE}
 cd ./Documents/aqr_metabol_comp
-conda activate anvio-7.1.2
+-7.1.2
 anvi-estimate-metabolism -e genome_list_Cacc.txt -O Cacc --matrix-format
 
 anvi-matrix-to-newick Cacc-completeness-MATRIX.txt
@@ -547,7 +543,7 @@ Dry run to get the profile db:
 anvi-interactive -d Cacc-completeness-MATRIX.txt -p Cacc_metabolism_PROFILE.db --manual-mode --dry-run
 ```
 
-Run for reals:
+Runs:
 
 ```{bash, eval = FALSE}
 anvi-interactive --manual-mode -d Cacc-completeness-MATRIX.txt -t Cacc-completeness-MATRIX.txt.newick -p Cacc_metabolism_PROFILE.db --title "Cacc Metabolism Heatmap"
@@ -588,7 +584,7 @@ anvi-compute-metabolic-enrichment -M Cacc_metabolism_modules.txt -G Cacc_geo_gro
 
 ```{bash, eval = FALSE}
 cd ./Documents/aqr_metabol_comp
-conda activate anvio-7.1.2
+-7.1.2
 anvi-estimate-metabolism -e genome_list_Ctub.txt -O Ctub --matrix-format
 anvi-matrix-to-newick Ctub-completeness-MATRIX.txt
 ```
