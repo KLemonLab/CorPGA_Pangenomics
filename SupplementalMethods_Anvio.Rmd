@@ -183,7 +183,7 @@ We can create tables with a summary of the pangenomes using the program `anvi-su
 ```{bash, eval = FALSE}
 anvi-summarize -p "/analysis_Anvio7/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" \
                -g "/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db" \
-               -o "/Users/klemonlab/Downloads/Cps_PAN_SUMMARY" \
+               -o "/analysis_Anvio7/Cps_PAN_SUMMARY" \
                -C CorevsAccessory
                
 anvi-summarize -p "analysis_Anvio7/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db" \
@@ -211,7 +211,7 @@ Click and drag the names. The order names is inverse to the layers in the concen
 ### *C. propinquum* pangenome
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
-|-----------------|-----------------|-----------------|--------------------|
+|-----------------|-----------------|-----------------|---------------------|
 | Core             | 1824/3108                     | `r round(100*(1824/3108),1)`% | 19                                   |
 | Single Copy Core | 1715/3108                     | `r round(100*(1715/3108),1)`% | 19                                   |
 | Multicopy Core   | 109/3108                      | `r round(100*(109/3108),1)`%  | 19                                   |
@@ -222,7 +222,7 @@ Click and drag the names. The order names is inverse to the layers in the concen
 ### *C. pseudodiphtheriticum* pangenome
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
-|-----------------|-----------------|-----------------|--------------------|
+|-----------------|-----------------|-----------------|---------------------|
 | Core             | 1714/3590                     | `r round(100*(1714/3590),1)`% | 43                                   |
 | Single Copy Core | 1488/3590                     | `r round(100*(1488/3590),1)`% | 43                                   |
 | Multicopy Core   | 226/3590                      | `r round(100*(226/3590),1)`%  | 43                                   |
@@ -233,7 +233,7 @@ Click and drag the names. The order names is inverse to the layers in the concen
 ### *C. pseudodiphtheriticum* pangenome after dropping Cps_090104
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
-|-----------------|-----------------|-----------------|--------------------|
+|-----------------|-----------------|-----------------|---------------------|
 | Core             | 1719/3550                     | `r round(100*(1719/3550),1)`% | 42                                   |
 | Single Copy Core | 1598/3550                     | `r round(100*(1598/3550),1)`% | 42                                   |
 | Multicopy Core   | 121/3550                      | `r round(100*(121/3550),1)`%  | 42                                   |
@@ -244,7 +244,7 @@ Click and drag the names. The order names is inverse to the layers in the concen
 ### *C. accolens* pangenome
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
-|-----------------|-----------------|-----------------|--------------------|
+|-----------------|-----------------|-----------------|---------------------|
 | Core             | 1904/3427                     | `r round(100*(1904/3427),1)`% | 34                                   |
 | Single Copy Core | 1734/3427                     | `r round(100*(1734/3427),1)`% | 34                                   |
 | Multicopy Core   | 170/3427                      | `r round(100*(170/3427),1)`%  | 34                                   |
@@ -255,7 +255,7 @@ Click and drag the names. The order names is inverse to the layers in the concen
 ### *C. accolens* pangenome after dropping Cac_49756
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
-|-----------------|-----------------|-----------------|--------------------|
+|-----------------|-----------------|-----------------|---------------------|
 | Core             | 1941/3307                     | `r round(100*(1941/3307),1)`% | 33                                   |
 | Single Copy Core | 1782/3307                     | `r round(100*(1782/3307),1)`% | 33                                   |
 | Multicopy Core   | 159/3307                      | `r round(100*(159/3307),1)`%  | 33                                   |
@@ -266,7 +266,7 @@ Click and drag the names. The order names is inverse to the layers in the concen
 ### *C. tuberculostearicum* pangenome
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
-|-----------------|-----------------|-----------------|--------------------|
+|-----------------|-----------------|-----------------|---------------------|
 | Core             | 1915/2907                     | `r round(100*(1915/2907),1)`% | 8                                    |
 | Single Copy Core | 1860/2907                     | `r round(100*(1860/2907),1)`% | 8                                    |
 | Multicopy Core   | 55/2907                       | `r round(100*(55/2907),1)`%   | 8                                    |
@@ -634,12 +634,12 @@ anvi-compute-metabolic-enrichment -M Ctub_metabolism_modules.txt -G Ctub_geo_gro
 library(readxl)
 library(ggplot2)
  
-# read in module files of each species
-cacc <- read_excel("/Users/klemonlab/Documents/aqr_metabol_comp/Cacc_metabolism_modules.xlsx")
-cpro <- read_excel("/Users/klemonlab/Documents/aqr_metabol_comp/Cprop_metabolism_modules.xlsx")
-cpsd <- read_excel("/Users/klemonlab/Documents/aqr_metabol_comp/Cpsd_metabolism_modules.xlsx")
-ctub <- read_excel("/Users/klemonlab/Documents/aqr_metabol_comp/Ctub_metabolism_modules.xlsx")
-dpig <- read_excel("/Users/klemonlab/Documents/aqr_metabol_comp/Pigrum_metabolism_modules.xlsx")
+# read in module files of each species independent KEGG run after saving text file outputs as xlsx files
+cacc <- read_excel("Cacc_metabolism_modules.xlsx")
+cpro <- read_excel("Cprop_metabolism_modules.xlsx")
+cpsd <- read_excel("Cpsd_metabolism_modules.xlsx")
+ctub <- read_excel("Ctub_metabolism_modules.xlsx")
+dpig <- read_excel("Pigrum_metabolism_modules.xlsx")
 
 # remove warning column
 cacc_2 <- subset(cacc, select = -c(db_name, warnings))
