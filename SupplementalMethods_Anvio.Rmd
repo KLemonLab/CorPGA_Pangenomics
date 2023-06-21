@@ -122,14 +122,14 @@ Terminal output saved to `analysis_Anvio7/anvi-db-info_log.txt`.
 
 ## Generating an anvi'o genomes storage
 
-The program `anvi-gen-genomes-storage` requires you to provide names and locations of the genomes to be included in the genome storage database in a .txt file. We created the All_107_CorynesAnvio.txt file with the renamed file names and paths based on the info on `GENOMES/METADATA_107taxa.csv`. This file includes the name anvi'o will use internally to identify each genome. We added the prefix "RefSeq\_" to the reference genomes because some of them start with a digit and anvi'o only allow names that start with an ASCII letter.
+The program `anvi-gen-genomes-storage` requires you to provide names and locations of the genomes to be included in the genome storage database in a .txt file. We created the All_104_CorynesAnvio.txt file with the file names and paths. This file includes the name anvi'o will use internally to identify each genome. We added the prefix "RefSeq\_" to the reference genomes because some of them start with a digit and anvi'o only allow names that start with an ASCII letter. We made equiuvalent files for each of the four species
 
-We create 1 database with the 107 genomes that can be used to run the pangenomic analysis with all the strains at once or by selecting subsets of strains (i.e. by species, or by grouping related species together).
+We create 1 database with the 104 genomes that can be used to run the pangenomic analysis with all the strains at once or by selecting subsets of strains (i.e. by species, or by grouping related species together).
 
 ```{bash, eval = FALSE}
 mkdir -p "analysis_Anvio7/Pangenomic_Results"
 
-anvi-gen-genomes-storage -e "analysis_Anvio7/All_107_CorynesAnvio.txt" -o "analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db" --gene-caller Prodigal
+anvi-gen-genomes-storage -e "analysis_Anvio7/All_104_CorynesAnvio.txt" -o "analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db" --gene-caller Prodigal
 ```
 
 This provides basic info on the generated genomes storage database:
@@ -204,14 +204,12 @@ anvi-summarize -p "/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" \
 
 The resulting summary folders contain a `gene_clusters_summary.txt.gz` file that links each gene to gene clusters, genomes, functions, layers, and bins selected from the interface.
 
-## Manually Reorder the Layers to Match Phylogenomic Trees per Species
-
-Click and drag the names. The order names is inverse to the layers in the concentric diagram. When all the layers were re-ordered to match the phylogenomic tree we clicked the draw button and saved the svg file.
+To manually reorder the layers to match phylogenomic trees per species, click and drag the names. The order names is inverse to the layers in the concentric diagram. When all the layers were re-ordered to match the phylogenomic tree we clicked the draw button and saved the svg file.
 
 ### *C. propinquum* pangenome
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
-|-----------------|-----------------|-----------------|---------------------|
+|------------------|------------------|------------------|--------------------|
 | Core             | 1824/3108                     | `r round(100*(1824/3108),1)`% | 19                                   |
 | Single Copy Core | 1715/3108                     | `r round(100*(1715/3108),1)`% | 19                                   |
 | Multicopy Core   | 109/3108                      | `r round(100*(109/3108),1)`%  | 19                                   |
@@ -222,7 +220,7 @@ Click and drag the names. The order names is inverse to the layers in the concen
 ### *C. pseudodiphtheriticum* pangenome
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
-|-----------------|-----------------|-----------------|---------------------|
+|------------------|------------------|------------------|--------------------|
 | Core             | 1714/3590                     | `r round(100*(1714/3590),1)`% | 43                                   |
 | Single Copy Core | 1488/3590                     | `r round(100*(1488/3590),1)`% | 43                                   |
 | Multicopy Core   | 226/3590                      | `r round(100*(226/3590),1)`%  | 43                                   |
@@ -233,7 +231,7 @@ Click and drag the names. The order names is inverse to the layers in the concen
 ### *C. pseudodiphtheriticum* pangenome after dropping Cps_090104
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
-|-----------------|-----------------|-----------------|---------------------|
+|------------------|------------------|------------------|--------------------|
 | Core             | 1719/3550                     | `r round(100*(1719/3550),1)`% | 42                                   |
 | Single Copy Core | 1598/3550                     | `r round(100*(1598/3550),1)`% | 42                                   |
 | Multicopy Core   | 121/3550                      | `r round(100*(121/3550),1)`%  | 42                                   |
@@ -244,7 +242,7 @@ Click and drag the names. The order names is inverse to the layers in the concen
 ### *C. accolens* pangenome
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
-|-----------------|-----------------|-----------------|---------------------|
+|------------------|------------------|------------------|--------------------|
 | Core             | 1904/3427                     | `r round(100*(1904/3427),1)`% | 34                                   |
 | Single Copy Core | 1734/3427                     | `r round(100*(1734/3427),1)`% | 34                                   |
 | Multicopy Core   | 170/3427                      | `r round(100*(170/3427),1)`%  | 34                                   |
@@ -255,7 +253,7 @@ Click and drag the names. The order names is inverse to the layers in the concen
 ### *C. accolens* pangenome after dropping Cac_49756
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
-|-----------------|-----------------|-----------------|---------------------|
+|------------------|------------------|------------------|--------------------|
 | Core             | 1941/3307                     | `r round(100*(1941/3307),1)`% | 33                                   |
 | Single Copy Core | 1782/3307                     | `r round(100*(1782/3307),1)`% | 33                                   |
 | Multicopy Core   | 159/3307                      | `r round(100*(159/3307),1)`%  | 33                                   |
@@ -266,7 +264,7 @@ Click and drag the names. The order names is inverse to the layers in the concen
 ### *C. tuberculostearicum* pangenome
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
-|-----------------|-----------------|-----------------|---------------------|
+|------------------|------------------|------------------|--------------------|
 | Core             | 1915/2907                     | `r round(100*(1915/2907),1)`% | 8                                    |
 | Single Copy Core | 1860/2907                     | `r round(100*(1860/2907),1)`% | 8                                    |
 | Multicopy Core   | 55/2907                       | `r round(100*(55/2907),1)`%   | 8                                    |
@@ -274,7 +272,7 @@ Click and drag the names. The order names is inverse to the layers in the concen
 | Shell            | 270/2907                      | `r round(100*(270/2907),1)`%  | 3-6                                  |
 | Cloud            | 671/2907                      | `r round(100*(671/2907),1)`%  | 1-2                                  |
 
-# Finding GC Content
+## Finding GC Content
 
 You will need to know the collection to assign for the `-C` flag in the `anvi-summarize` command. This is an example of how to see the collections and bins you have for a pangenome db file from anvi'o.
 
@@ -308,9 +306,13 @@ anvi-summarize -g /analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -p /anal
 
 # KEGG Analysis Pipeline
 
-We then used a workflow from anvi'o ([https://merenlab.org/tutorials/infant-gut/#chapter-v-metabolism-prediction)](https://merenlab.org/tutorials/infant-gut/#chapter-v-metabolism-prediction)) that allowed us to estimate the completeness of KEGG modules in each of the four Corynebacterium pangenomes and in the combined pangenome for the 104 strains.
+We then used a workflow from anvi'o (<https://merenlab.org/tutorials/infant-gut/#chapter-v-metabolism-prediction>) that allowed us to estimate the completeness of KEGG modules.
 
-First we made a text document that was a list of the genome files excluding C. macingleyi. This was used as input for the estimate metabolism step. It contains two columns, the first column, labeled "Name", is the name of the strain genome, the second column, labeled "Contigs_db_path", is the file name and location of the genome database file.
+## Four *Corynebacterium* species. 
+
+We first did this in each of the four *Corynebacterium* pangenomes and in the combined pangenome for the 104 strains.
+
+First we made a text document that was a list of the genome files excluding *C. macingleyi*. This was used as input for the estimate metabolism step. It contains two columns, the first column, labeled "Name", is the name of the strain genome, the second column, labeled "Contigs_db_path", is the file name and location of the genome database file.
 
 ```{bash, eval = FALSE}
 cd ./analysis_Anvio7
@@ -365,9 +367,9 @@ anvi-compute-metabolic-enrichment -M Coryne_No_Mac_metabolism_modules.txt -G Cor
 anvi-compute-metabolic-enrichment -M Coryne_No_Mac_metabolism_modules.txt -G Coryne_No_Mac_collection_groups.txt -o Coryne_No_Mac_enriched_coll_modules.txt
 ```
 
-# *Corynebacterium* species vs *Dolosigranulum pigrum*
+## *Corynebacterium* species vs *Dolosigranulum pigrum*
 
-For this run, we follow the same protocol except we included 27 D. pigrum genomes and included them in the genome list.
+For this run, we follow the same protocol except we included 27 *D. pigrum* genomes and included them in the genome list.
 
 ```{bash, eval = FALSE}
 cd ./Documents/aqr_metabol_comp
@@ -420,9 +422,9 @@ Need to use compute-metabolic-enrichment in anvio 7.1:
 anvi-compute-metabolic-enrichment -M Coryne_Dpi_metabolism_modules.txt -G Coryne_Dpi_species_groups.txt -o Coryne_Dpi_enriched_modules.txt
 ```
 
-# Intra-Species Geographic Comparison
+## Intra-Species Geographic Comparison
 
-## *C. propinquum*
+### *C. propinquum*
 
 ```{bash, eval = FALSE}
 cd ./Documents/aqr_metabol_comp
@@ -475,7 +477,7 @@ Need to use compute-metabolic-enrichment in anvio 7.1:
 anvi-compute-metabolic-enrichment -M Cprop_metabolism_modules.txt -G Cprop_geo_groups.txt -o Cprop_enriched_modules.txt
 ```
 
-## *C. pseudodiphtheriticum*
+### *C. pseudodiphtheriticum*
 
 ```{bash, eval = FALSE}
 cd ./Documents/aqr_metabol_comp
@@ -527,7 +529,7 @@ Need to use compute-metabolic-enrichment in anvio 7.1:
 anvi-compute-metabolic-enrichment -M Cpsd_metabolism_modules.txt -G Cpsd_geo_groups.txt -o Cpsd_enriched_modules.txt
 ```
 
-## *C. accolens*
+### *C. accolens*
 
 ```{bash, eval = FALSE}
 cd ./Documents/aqr_metabol_comp
@@ -580,7 +582,7 @@ Need to use compute-metabolic-enrichment in anvio 7.1:
 anvi-compute-metabolic-enrichment -M Cacc_metabolism_modules.txt -G Cacc_geo_groups.txt -o Cacc_enriched_modules.txt
 ```
 
-## *C. tuberculostearicum*
+### *C. tuberculostearicum*
 
 ```{bash, eval = FALSE}
 cd ./Documents/aqr_metabol_comp
@@ -627,7 +629,9 @@ Need to use compute-metabolic-enrichment in anvio 7.1:
 anvi-compute-metabolic-enrichment -M Ctub_metabolism_modules.txt -G Ctub_geo_groups.txt -o Ctub_enriched_modules.txt
 ```
 
-# Generate a Distribution Plot
+## Generate a Distribution Plot (Figure 5)
+
+We took the text file outputs with metabolism_modules and converted them into xlsx files before reading them into R.
 
 ```{R, eval = FALSE}
 # read in libraries
