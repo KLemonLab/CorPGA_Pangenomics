@@ -130,7 +130,7 @@ This provides basic info on the generated genomes storage database:
 anvi-db-info "analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db"
 ```
 
-## Running the pangenomic analsyses
+## Running the pangenomic analyses
 
 We generated a `.txt` file for each of the four species including the list of genomes/paths for that group and run the pangenome analysis:
 
@@ -360,7 +360,7 @@ For this run, we follow the same protocol except we included 27 *D. pigrum* geno
 
 ```{bash, eval = FALSE}
 cd ./Documents/aqr_metabol_comp
--7.1
+
 anvi-estimate-metabolism -e genome_list_Coryne_Dpi.txt -O Coryne_Dpi --matrix-format
 
 anvi-matrix-to-newick Coryne_Dpi-completeness-MATRIX.txt
@@ -415,7 +415,7 @@ anvi-compute-metabolic-enrichment -M Coryne_Dpi_metabolism_modules.txt -G Coryne
 
 ```{bash, eval = FALSE}
 cd ./Documents/aqr_metabol_comp
--7.1
+
 anvi-estimate-metabolism -e genome_list_Cprop.txt -O Cprop --matrix-format
 
 anvi-matrix-to-newick Cprop-completeness-MATRIX.txt
@@ -520,7 +520,6 @@ anvi-compute-metabolic-enrichment -M Cpsd_metabolism_modules.txt -G Cpsd_geo_gro
 
 ```{bash, eval = FALSE}
 cd ./Documents/aqr_metabol_comp
--7.1
 anvi-estimate-metabolism -e genome_list_Cacc.txt -O Cacc --matrix-format
 
 anvi-matrix-to-newick Cacc-completeness-MATRIX.txt
@@ -532,7 +531,7 @@ Dry run to get the profile db:
 anvi-interactive -d Cacc-completeness-MATRIX.txt -p Cacc_metabolism_PROFILE.db --manual-mode --dry-run
 ```
 
-Runs:
+Run:
 
 ```{bash, eval = FALSE}
 anvi-interactive --manual-mode -d Cacc-completeness-MATRIX.txt -t Cacc-completeness-MATRIX.txt.newick -p Cacc_metabolism_PROFILE.db --title "Cacc Metabolism Heatmap"
@@ -615,7 +614,7 @@ Need to use compute-metabolic-enrichment in anvio 7.1:
 anvi-compute-metabolic-enrichment -M Ctub_metabolism_modules.txt -G Ctub_geo_groups.txt -o Ctub_enriched_modules.txt
 ```
 
-## Generate a Distribution Plot (Figure 5)
+## Generate the Distribution Plot in Figure 5
 
 We took the text file outputs with metabolism_modules and converted them into xlsx files before reading them into R.
 
