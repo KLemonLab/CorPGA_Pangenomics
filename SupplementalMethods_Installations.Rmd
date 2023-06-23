@@ -7,17 +7,13 @@ output:
   rmdformats::robobook:
     use_bookdown: true
     code_folding: show
-  github_document:
-    toc: true
-    toc_depth: 4
 ---
 
 ```{r klippy, echo=FALSE, include=TRUE}
 klippy::klippy(c('r', 'bash'))
 ```
 
-
-# Install Conda (MacOSX)
+# Install Conda (MacOSX) 
 
 First check if you have conda on your system by opening terminal and typing `conda` then pressing enter. If the command was not found you need follow up with this installation. If you already have it installed then run the command `conda update conda`.
 

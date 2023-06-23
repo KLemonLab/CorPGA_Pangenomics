@@ -6,9 +6,6 @@ output:
   rmdformats::robobook:
     use_bookdown: true
     code_folding: show
-  github_document:
-    toc: true
-    toc_depth: 4
 bibliography: referencesGET_HOMOLOGUES.bib
 ---
 
