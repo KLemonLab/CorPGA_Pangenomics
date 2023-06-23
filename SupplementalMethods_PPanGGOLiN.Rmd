@@ -22,19 +22,14 @@ library(knitr)
 
 PPanGGOLiN v1.1.141 [@Gautreau2020] was used for this analysis.
 
-
 # Import Prokka annotations and anvi'o 7 clusters into PPanGGOLiN
 
 In order to import the anvi'o clustering into PPanGGOLiN we need:
 
-1.  A .tsv file listing in the first column the gene family names, and
-    in the second column the gene ID that is used in the annotation
-    files.
-2.  The annotated genomes with gene IDs that match the ones listed in
-    the previous .tsv file.
+1.  A .tsv file listing in the first column the gene family names, and in the second column the gene ID that is used in the annotation files.
+2.  The annotated genomes with gene IDs that match the ones listed in the previous .tsv file.
 
-We read here the files generated using `anvi-summarize` that link each
-gene to gene clusters, genomes and functions:
+We read here the files generated using `anvi-summarize` that link each gene to gene clusters, genomes and functions:
 
 ```{r}
 AnvioSummary_Cpse <- read.delim("/analysis_Anvio7/Pangenomic_Results/Cpsd/Cps_PAN_SUMMARY/PAN_Cpsd_gene_clusters_summary.txt.gz")
@@ -46,11 +41,7 @@ AnvioSummary_Ctub <- read.delim("/analysis_Anvio7/Pangenomic_Results/Ctub/Ctu_PA
 AnvioSummary_Cacc <- read.delim("/analysis_Anvio7/Pangenomic_Results/Cacc/Cac_PAN_SUMMARY/PAN_Cacc_gene_clusters_summary.txt.gz")
 ```
 
-Here we subset the info needed to generate the .tsv files. We clean up
-the "RefSeq\_" prefix that was added to the genome names to avoid anvi'o
-complains about genome names starting with a number. We need to remove
-the prefix to match the info inside the new .gffs we are about to
-export:
+Here we subset the info needed to generate the .tsv files. We clean up the "RefSeq\_" prefix that was added to the genome names to avoid anvi'o complains about genome names starting with a number. We need to remove the prefix to match the info inside the new .gffs we are about to export:
 
 ```{r}
 AnvioClusters_Cpse <- AnvioSummary_Cpse %>% unite(new_id, genome_name:gene_callers_id, sep = "___", remove = FALSE) %>% mutate(new_id = gsub("RefSeq_", "", new_id))
@@ -69,27 +60,16 @@ AnvioClusters_Cacc <- select(AnvioClusters_Cacc, c(gene_cluster_id, new_id))
 Now we write those as .tsv files:
 
 ```{r, eval=FALSE}
-write_delim(AnvioClusters_Cpse, "/analysis_Anvio7/Pangenomic_Results/Cpsd/Cps_PAN_SUMMARY.tsv", col_names=FALSE)
+write_delim(AnvioClusters_Cpse, "/analysis_PPanGGOLiN/Cps_PAN_SUMMARY.tsv", col_names=FALSE)
 
-write_delim(AnvioClusters_Cpro, "/analysis_Anvio7/Pangenomic_Results/Cpro/Cpr_PAN_SUMMARY.tsv", col_names=FALSE)
+write_delim(AnvioClusters_Cpro, "/analysis_PPanGGOLiN/Cpr_PAN_SUMMARY.tsv", col_names=FALSE)
 
-write_delim(AnvioClusters_Ctub, "/analysis_Anvio7/Pangenomic_Results/Ctub/Ctu_PAN_SUMMARY.tsv", col_names=FALSE)
+write_delim(AnvioClusters_Ctub, "/analysis_PPanGGOLiN/Ctu_PAN_SUMMARY.tsv", col_names=FALSE)
 
-write_delim(AnvioClusters_Cacc, "/analysis_Anvio7/Pangenomic_Results/Cacc/Cac_PAN_SUMMARY.tsv", col_names=FALSE)
+write_delim(AnvioClusters_Cacc, "/analysis_PPanGGOLiN/Cac_PAN_SUMMARY.tsv", col_names=FALSE)
 ```
 
-[**IMPORTANT**]{.underline}**:** The gene_callers_id provided by anvi'o
-don't match the original ones in the prokka annotation. The prokka
-annotated genomes were parsed into two text files, one for gene calls
-and one for annotations, with the script `gff_parser.py`. By default
-prokka annotates also tRNAs, rRNAs and CRISPR regions. However,
-`gff_parser.py` will only utilize open reading frames reported by
-Prodigal in the prokka output in order to be compatible with the
-pangenomic anvi'o pipeline. While parsing new gene_callers_id are
-generated only for the ORFs that will be imported into anvi'o.
-Fortunately, `anvi-get-sequences-for-gene-calls` can be used to export
-new .gff files with only the ORFs and these can be used for PPanGGOLiN,
-instead of the original prokka ones:
+[**IMPORTANT**]{.underline}**:** The gene_callers_id provided by anvi'o don't match the original ones in the prokka annotation. The prokka annotated genomes were parsed into two text files, one for gene calls and one for annotations, with the script `gff_parser.py`. By default prokka annotates also tRNAs, rRNAs and CRISPR regions. However, `gff_parser.py` will only utilize open reading frames reported by Prodigal in the prokka output in order to be compatible with the pangenomic anvi'o pipeline. While parsing new gene_callers_id are generated only for the ORFs that will be imported into anvi'o. Fortunately, `anvi-get-sequences-for-gene-calls` can be used to export new .gff files with only the ORFs and these can be used for PPanGGOLiN, instead of the original prokka ones:
 
 ```{bash, eval=FALSE}
 #conda activate anvio-7
@@ -105,150 +85,124 @@ for file in $path_f/*.db; do
 done
 ```
 
-We create two tab delimited text files per species. Both of the text
-files will have a two column structure. The first column is the name to
-be utilized by PPanGGOLiNn for each genome per line, and the second
-column contains the paths to the corresponding file. So, one text file
-is for the anvi'o exported .gff and the other is for the reformatted
-.fasta files. The extension by default was .fa for the reformatted
-anvi'o files, so we had to convert them all to .fasta for PPanGGOLiN to
-accept them. We need to create the text files to run the `annotate`
-subcommand.
+We create two tab delimited text files per species. Both of the text files will have a two column structure. The first column is the name to be utilized by PPanGGOLiNn for each genome per line, and the second column contains the paths to the corresponding file. One text file is for the anvi'o exported .gff and the other is for the reformatted .fasta files. The extension by default was .fa for the reformatted anvi'o files, so we had to convert them all to .fasta for PPanGGOLiN to accept them. We need to create the text files to run the `annotate` subcommand.
 
 ```{bash, eval=FALSE}
 #conda activate PPanGGOLiN
-ppanggolin annotate --anno "/Users/tommytran/Downloads/Cac_gff.txt" --fasta "/Users/tommytran/Downloads/Cac_fasta_gff.txt" -o "/Users/tommytran/Downloads/Cac_anno_output" --basename Cac -f 
+ppanggolin annotate --anno "/analysis_PPanGGOLiN/Cac_AnvioExported_gff.txt" --fasta "/analysis_PPanGGOLiN/Cac_AnvioReformatted_fasta.txt" -o "/analysis_PPanGGOLiN/Cac_anno_output" --basename Cac -f 
 
-ppanggolin annotate --anno "/Users/tommytran/Downloads/Cpr_gff.txt" --fasta "/Users/tommytran/Downloads/Cpr_fasta_gff.txt" -o "/Users/tommytran/Downloads/Cpr_anno_output" --basename Cpr -f 
+ppanggolin annotate --anno "/analysis_PPanGGOLiN/Cpr_AnvioExported_gff.txt" --fasta "/analysis_PPanGGOLiN/Cpr_AnvioReformatted_fasta.txt" -o "/analysis_PPanGGOLiN/Cpr_anno_output" --basename Cpr -f 
 
-ppanggolin annotate --anno "/Users/tommytran/Downloads/Cps_gff.txt" --fasta "/Users/tommytran/Downloads/Cps_fasta_gff.txt" -o "/Users/tommytran/Downloads/Cps_anno_output" --basename Cps -f 
+ppanggolin annotate --anno "/analysis_PPanGGOLiN/Cps_AnvioExported_gff.txt" --fasta "/analysis_PPanGGOLiN/Cps_AnvioReformatted_fasta.txt" -o "/analysis_PPanGGOLiN/Cps_anno_output" --basename Cps -f 
 
-ppanggolin annotate --anno "/Users/tommytran/Downloads/Ctu_gff.txt" --fasta  -o "/Users/tommytran/Downloads/Ctu_anno_output" --basename Ctu -f 
+ppanggolin annotate --anno "/analysis_PPanGGOLiN/Ctu_AnvioExported_gff.txt" --fasta "/analysis_PPanGGOLiN/Ctu_AnvioReformatted_fasta.txt" -o "/analysis_PPanGGOLiN/Ctu_anno_output" --basename Ctu -f 
 ```
 
-For the `cluster` subcommand we use the .tsv files created before from
-the `anvi-summarize` output.
+For the `cluster` subcommand we use the .tsv files created before from the `anvi-summarize` output.
 
 ```{bash, eval=FALSE}
 #conda activate PPanGGOLiN
-ppanggolin cluster -p "/Users/tommytran/Downloads/Cac_anno_output/Cac.h5"
---clusters "/Users/tommytran/Downloads/Cac_PAN_SUMMARY.tsv" --infer_singletons
+ppanggolin cluster -p "/analysis_PPanGGOLiN/Cac_anno_output/Cac.h5" --clusters "/analysis_PPanGGOLiN/Cac_PAN_SUMMARY.tsv" --infer_singletons
 
-ppanggolin cluster -p "/Users/tommytran/Downloads/Cps_anno_output/Cps.h5"
---clusters "/Users/tommytran/Downloads/Cps_PAN_SUMMARY.tsv" --infer_singletons
+ppanggolin cluster -p "/analysis_PPanGGOLiN/Cps_anno_output/Cps.h5" --clusters "/analysis_PPanGGOLiN/Cps_PAN_SUMMARY.tsv" --infer_singletons
 
-ppanggolin cluster -p "/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5" --clusters "/Users/tommytran/Downloads/Ctu_PAN_SUMMARY.tsv" --infer_singletons
+ppanggolin cluster -p "/analysis_PPanGGOLiN/Ctu_anno_output/Ctu.h5" --clusters "/analysis_PPanGGOLiN/Ctu_PAN_SUMMARY.tsv" --infer_singletons
 
-ppanggolin cluster -p "/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5" --clusters "/Users/tommytran/Downloads/Cpr_PAN_SUMMARY.tsv" --infer_singletons
+ppanggolin cluster -p "/analysis_PPanGGOLiN/Cpr_anno_output/Cpr.h5" --clusters "/analysis_PPanGGOLiN/Cpr_PAN_SUMMARY.tsv" --infer_singletons
 ```
 
 ## Graphing and Partitioning
 
-The `graph` subcommand has only a single other option, which is '-r' or
-'--remove_high_copy_number'. If used, it will remove the gene families
-that are too duplicated in your genomes. This is useful if you want to
-visualize your pangenome afterward and want to remove the biggest hubs
-to have a clearer view. It can also be used to limit the influence of
-very duplicated genes such as transposases or ABC transporters in the
-partition step.
+The `graph` subcommand has only a single other option, which is '-r' or '--remove_high_copy_number'. If used, it will remove the gene families that are too duplicated in your genomes. This is useful if you want to visualize your pangenome afterward and want to remove the biggest hubs to have a clearer view. It can also be used to limit the influence of very duplicated genes such as transposases or ABC transporters in the partition step.
 
 ```{bash, eval=FALSE}
 #conda activate PPanGGOLiN
-ppanggolin graph -p "/Users/tommytran/Downloads/Cac_anno_output/Cac.h5"
-ppanggolin graph -p "/Users/tommytran/Downloads/Cps_anno_output/Cps.h5"
-ppanggolin graph -p "/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5"
-ppanggolin graph -p "/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5"
+ppanggolin graph -p "/analysis_PPanGGOLiN/Cac_anno_output/Cac.h5"
+ppanggolin graph -p "/analysis_PPanGGOLiN/Cps_anno_output/Cps.h5"
+ppanggolin graph -p "/analysis_PPanGGOLiN/Ctu_anno_output/Ctu.h5"
+ppanggolin graph -p "/analysis_PPanGGOLiN/Cpr_anno_output/Cpr.h5"
 ```
 
-We let the `partition` subcommand statistical criterion find the optimal
-number of partitions.
+We let the `partition` subcommand statistical criterion find the optimal number of partitions.
 
 ```{bash, eval=FALSE}
 #conda activate PPanGGOLiN
-ppanggolin partition -p "/Users/tommytran/Downloads/Cac_anno_output/Cac.h5"
-ppanggolin partition -p "/Users/tommytran/Downloads/Cps_anno_output/Cps.h5"
-ppanggolin partition -p "/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5"
-ppanggolin partition -p "/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5"
+ppanggolin partition -p "/analysis_PPanGGOLiN/Cac_anno_output/Cac.h5"
+ppanggolin partition -p "/analysis_PPanGGOLiN/Cps_anno_output/Cps.h5"
+ppanggolin partition -p "/analysis_PPanGGOLiN/Ctu_anno_output/Ctu.h5"
+ppanggolin partition -p "/analysis_PPanGGOLiN/Cpr_anno_output/Cpr.h5"
 ```
 
 ## Writing outputs
 
-For details on PPanGGOLiN outputs see:
-<https://github.com/labgem/PPanGGOLiN/wiki/Outputs>
+For details on PPanGGOLiN outputs see: <https://github.com/labgem/PPanGGOLiN/wiki/Outputs>
 
 ```{bash, eval=FALSE}
 #conda activate PPanGGOLiN
-ppanggolin write -p "/Users/tommytran/Downloads/Cac_anno_output/Cac.h5" -o "/Users/tommytran/Downloads/Output_Cac" --light_gexf --gexf  --csv --Rtab --stats --partitions --projection --families_tsv -f
+ppanggolin write -p "/analysis_PPanGGOLiN/Cac_anno_output/Cac.h5" -o "/analysis_PPanGGOLiN/Output_Cac" --light_gexf --gexf  --csv --Rtab --stats --partitions --projection --families_tsv -f
 
-ppanggolin write -p "/Users/tommytran/Downloads/Cps_anno_output/Cps.h5" -o "/Users/tommytran/Downloads/Output_Cps" --light_gexf --gexf  --csv --Rtab --stats --partitions --projection --families_tsv -f
+ppanggolin write -p "/analysis_PPanGGOLiN/Cps_anno_output/Cps.h5" -o "/analysis_PPanGGOLiN/Output_Cps" --light_gexf --gexf  --csv --Rtab --stats --partitions --projection --families_tsv -f
 
-ppanggolin write -p "/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5" -o "/Users/tommytran/Downloads/Output_Ctu" --light_gexf --gexf  --csv --Rtab --stats --partitions --projection --families_tsv -f
+ppanggolin write -p "/analysis_PPanGGOLiN/Ctu_anno_output/Ctu.h5" -o "/analysis_PPanGGOLiN/Output_Ctu" --light_gexf --gexf  --csv --Rtab --stats --partitions --projection --families_tsv -f
 
-ppanggolin write -p "/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5" -o "/Users/tommytran/Downloads/Output_Cpr" --light_gexf --gexf  --csv --Rtab --stats --partitions --projection --families_tsv -f
+ppanggolin write -p "/analysis_PPanGGOLiN/Cpr_anno_output/Cpr.h5" -o "/analysis_PPanGGOLiN/Output_Cpr" --light_gexf --gexf  --csv --Rtab --stats --partitions --projection --families_tsv -f
 ```
 
 ## Rarefaction curves
 
 ```{bash, eval=FALSE}
 #conda activate PPanGGOLiN
-ppanggolin rarefaction -p "/Users/tommytran/Downloads/Cac_anno_output/Cac.h5" --force -o "/Users/tommytran/Downloads/Output_Cac_rarefaction"
+ppanggolin rarefaction -p "/analysis_PPanGGOLiN/Cac_anno_output/Cac.h5" --force -o "/analysis_PPanGGOLiN/Output_Cac_rarefaction"
 
-ppanggolin rarefaction -p "/Users/tommytran/Downloads/Cps_anno_output/Cps.h5" --force -o "/Users/tommytran/Downloads/Output_Cps_rarefaction"
+ppanggolin rarefaction -p "/analysis_PPanGGOLiN/Cps_anno_output/Cps.h5" --force -o "/analysis_PPanGGOLiN/Output_Cps_rarefaction"
 
-ppanggolin rarefaction -p "/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5" --force -o "/Users/tommytran/Downloads/Output_Ctu_rarefaction"
+ppanggolin rarefaction -p "/analysis_PPanGGOLiN/Ctu_anno_output/Ctu.h5" --force -o "/analysis_PPanGGOLiN/Output_Ctu_rarefaction"
 
-ppanggolin rarefaction -p "/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5" --force -o "/Users/tommytran/Downloads/Output_Cpr_rarefaction"
+ppanggolin rarefaction -p "/analysis_PPanGGOLiN/Cpr_anno_output/Cpr.h5" --force -o "/analysis_PPanGGOLiN/Output_Cpr_rarefaction"
 ```
 
 ## Finding Regions of Genome Plasticity
 
-For details on RGPs see:
-<https://github.com/labgem/PPanGGOLiN/wiki/Regions-of-Genome-Plasticity>
+For details on RGPs see: <https://github.com/labgem/PPanGGOLiN/wiki/Regions-of-Genome-Plasticity>
 
 The spots can be labeled by:
 
 ```{bash, eval=FALSE}
 #conda activate PPanGGOLiN
-ppanggolin rgp -p "/Users/tommytran/Downloads/Cac_anno_output/Cac.h5" 
-ppanggolin rgp -p "/Users/tommytran/Downloads/Cps_anno_output/Cps.h5" 
-ppanggolin rgp -p "/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5" 
-ppanggolin rgp -p "/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5"
+ppanggolin rgp -p "/analysis_PPanGGOLiN/Cac_anno_output/Cac.h5" 
+ppanggolin rgp -p "/analysis_PPanGGOLiN/Cps_anno_output/Cps.h5" 
+ppanggolin rgp -p "/analysis_PPanGGOLiN/Ctu_anno_output/Ctu.h5" 
+ppanggolin rgp -p "/analysis_PPanGGOLiN/Cpr_anno_output/Cpr.h5"
 
-ppanggolin spot -p "/Users/tommytran/Downloads/Cac_anno_output/Cac.h5" --draw_hotspots -o "/Users/tommytran/Downloads/Output_Cac_spots/spots_ID" -f
-ppanggolin spot -p "/Users/tommytran/Downloads/Cps_anno_output/Cps.h5" --draw_hotspots -o "/Users/tommytran/Downloads/Output_Cps_spots/spots_ID" -f
-ppanggolin spot -p "/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5" --draw_hotspots -o "/Users/tommytran/Downloads/Output_Ctu_spots/spots_ID" -f
-ppanggolin spot -p "/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5" --draw_hotspots -o "/Users/tommytran/Downloads/Output_Cpr_spots/spots_ID" -f
+ppanggolin spot -p "/analysis_PPanGGOLiN/Cac_anno_output/Cac.h5" --draw_hotspots -o "/analysis_PPanGGOLiN/Output_Cac_spots/spots_ID" -f
+ppanggolin spot -p "/analysis_PPanGGOLiN/Cps_anno_output/Cps.h5" --draw_hotspots -o "/analysis_PPanGGOLiN/Output_Cps_spots/spots_ID" -f
+ppanggolin spot -p "/analysis_PPanGGOLiN/Ctu_anno_output/Ctu.h5" --draw_hotspots -o "/analysis_PPanGGOLiN/Output_Ctu_spots/spots_ID" -f
+ppanggolin spot -p "/analysis_PPanGGOLiN/Cpr_anno_output/Cpr.h5" --draw_hotspots -o "/analysis_PPanGGOLiN/Output_Cpr_spots/spots_ID" -f
 
-ppanggolin write -p "/Users/tommytran/Downloads/Cac_anno_output/Cac.h5" -o "/Users/tommytran/Downloads/Output_Cac_spots" --regions --spots -f
-ppanggolin write -p "/Users/tommytran/Downloads/Cps_anno_output/Cps.h5" -o "/Users/tommytran/Downloads/Output_Cps_spots" --regions --spots -f
-ppanggolin write -p "/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5" -o "/Users/tommytran/Downloads/Output_Ctu_spots" --regions --spots -f
-ppanggolin write -p "/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5" -o "/Users/tommytran/Downloads/Output_Cpr_spots" --regions --spots -f
+ppanggolin write -p "/analysis_PPanGGOLiN/Cac_anno_output/Cac.h5" -o "/analysis_PPanGGOLiN/Output_Cac_spots" --regions --spots -f
+ppanggolin write -p "/analysis_PPanGGOLiN/Cps_anno_output/Cps.h5" -o "/analysis_PPanGGOLiN/Output_Cps_spots" --regions --spots -f
+ppanggolin write -p "/analysis_PPanGGOLiN/Ctu_anno_output/Ctu.h5" -o "/analysis_PPanGGOLiN/Output_Ctu_spots" --regions --spots -f
+ppanggolin write -p "/analysis_PPanGGOLiN/Cpr_anno_output/Cpr.h5" -o "/analysis_PPanGGOLiN/Output_Cpr_spots" --regions --spots -f
 ```
 
 ## Summary of used parameters
 
-The `info` subcommand indicates, for each steps of the analysis, the
-PPanGGOLiN parameters that were used and the source of the data if
-appropriate. This is useful for methods sections on manuscripts.
+The `info` subcommand indicates, for each steps of the analysis, the PPanGGOLiN parameters that were used and the source of the data if appropriate. This is useful for methods sections on manuscripts.
 
 ```{bash, eval=FALSE}
 #conda activate PPanGGOLiN
-ppanggolin info -p "/Users/tommytran/Downloads/Cac_anno_output/Cac.h5" --parameters --content --status
+ppanggolin info -p "/analysis_PPanGGOLiN/Cac_anno_output/Cac.h5" --parameters --content --status
 
-ppanggolin info -p "/Users/tommytran/Downloads/Cps_anno_output/Cps.h5" --parameters --content --status
+ppanggolin info -p "/analysis_PPanGGOLiN/Cps_anno_output/Cps.h5" --parameters --content --status
 
-ppanggolin info -p "/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5" --parameters --content --status
+ppanggolin info -p "/analysis_PPanGGOLiN/Ctu_anno_output/Ctu.h5" --parameters --content --status
 
-ppanggolin info -p "/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5" --parameters --content --status
+ppanggolin info -p "/analysis_PPanGGOLiN/Cpr_anno_output/Cpr.h5" --parameters --content --status
 ```
 
 # Import PPanGGOLiN Partitions into anvio
 
-The `pangenomeGraph.gexf` file can be opened with Gephi, and the Data
-Table exported as a `gephi_table.csv`. This can be used to easily
-explore the PPanGGOLiN output with the same gene IDs anvi'o uses. The
-`matrix.csv` should be used with caution, since records PPanGGOLiN
-internal gene IDs, that are different from the anvi'o ones.
+The `pangenomeGraph.gexf` file can be opened with Gephi, and the Data Table exported as a `gephi_table.csv`. This can be used to easily explore the PPanGGOLiN output with the same gene IDs anvi'o uses. The `matrix.csv` should be used with caution, since records PPanGGOLiN internal gene IDs, that are different from the anvi'o ones.
 
 ```{r, message=FALSE}
 Gephi <-  read.delim("analysis_PPanGGOLiN/Output_Cpse/Cpse_gephi_table.csv", ",", escape_double = FALSE, trim_ws = TRUE)
@@ -262,55 +216,51 @@ Gephi <-  read.delim("analysis_PPanGGOLiN/Output_Cacc/Cacc_gephi_table.csv", ","
 
 ## Persistent vs. Accessory based on PPanGGOLiN
 
-PPanGGOLiN generates a "partitions" folder as part of its output. We
-read the persistent, cloud and shell files from this output and add a
-column labeling them. We combine the three in one `partitions.txt` file
-that can be imported into anvi'o:
+PPanGGOLiN generates a "partitions" folder as part of its output. We read the persistent, cloud and shell files from this output and add a column labeling them. We combine the three in one `partitions.txt` file that can be imported into anvi'o:
 
 ```{r}
-Cpse_persistent <- read.delim("/Users/tommytran/Downloads/Output_Cps/partitions/persistent.txt", col.names = "GC")
+Cpse_persistent <- read.delim("/analysis_PPanGGOLiN/Output_Cps/partitions/persistent.txt", col.names = "GC")
 Cpse_persistent$PPanGGOLiN <- "persistent"
-Cpse_cloud <- read.delim("/Users/tommytran/Downloads/Output_Cps/partitions/cloud.txt", col.names = "GC")
+Cpse_cloud <- read.delim("/analysis_PPanGGOLiN/Output_Cps/partitions/cloud.txt", col.names = "GC")
 Cpse_cloud$PPanGGOLiN <- "cloud"
-Cpse_shell <- read.delim("/Users/tommytran/Downloads/Output_Cps/partitions/shell.txt", col.names = "GC")
+Cpse_shell <- read.delim("/analysis_PPanGGOLiN/Output_Cps/partitions/shell.txt", col.names = "GC")
 Cpse_shell$PPanGGOLiN <- "shell"
 Cpse_partitions <- rbind(Cpse_persistent, Cpse_cloud, Cpse_shell)
 Cpse_partitions <- Cpse_partitions[grep("GC_00", Cpse_partitions$GC),]
-write_delim(Cpse_partitions, "/Users/tommytran/Downloads/Output_Cps/partitions/partitions.txt", delim = "\t")
+write_delim(Cpse_partitions, "/analysis_PPanGGOLiN/Output_Cps/partitions/partitions.txt", delim = "\t")
 
-Cpro_persistent <- read.delim("/Users/tommytran/Downloads/Output_Cpr/partitions/persistent.txt", col.names = "GC")
+Cpro_persistent <- read.delim("/analysis_PPanGGOLiN/Output_Cpr/partitions/persistent.txt", col.names = "GC")
 Cpro_persistent$PPanGGOLiN <- "persistent"
-Cpro_cloud <- read.delim("/Users/tommytran/Downloads/Output_Cpr/partitions/cloud.txt", col.names = "GC")
+Cpro_cloud <- read.delim("/analysis_PPanGGOLiN/Output_Cpr/partitions/cloud.txt", col.names = "GC")
 Cpro_cloud$PPanGGOLiN <- "cloud"
-Cpro_shell <- read.delim("/Users/tommytran/Downloads/Output_Cpr/partitions/shell.txt", col.names = "GC")
+Cpro_shell <- read.delim("/analysis_PPanGGOLiN/Output_Cpr/partitions/shell.txt", col.names = "GC")
 Cpro_shell$PPanGGOLiN <- "shell"
 Cpro_partitions <- rbind(Cpro_persistent, Cpro_cloud, Cpro_shell)
 Cpro_partitions <- Cpro_partitions[grep("GC_", Cpro_partitions$GC),]
-write_delim(Cpro_partitions, "/Users/tommytran/Downloads/Output_Cpr/partitions/partitions.txt", delim = "\t")
+write_delim(Cpro_partitions, "/analysis_PPanGGOLiN/Output_Cpr/partitions/partitions.txt", delim = "\t")
 
-Ctub_persistent <- read.delim("/Users/tommytran/Downloads/Output_Ctu/partitions/persistent.txt", col.names = "GC")
+Ctub_persistent <- read.delim("/analysis_PPanGGOLiN/Output_Ctu/partitions/persistent.txt", col.names = "GC")
 Ctub_persistent$PPanGGOLiN <- "persistent"
-Ctub_cloud <- read.delim("/Users/tommytran/Downloads/Output_Ctu/partitions/cloud.txt", col.names = "GC")
+Ctub_cloud <- read.delim("/analysis_PPanGGOLiN/Output_Ctu/partitions/cloud.txt", col.names = "GC")
 Ctub_cloud$PPanGGOLiN <- "cloud"
-Ctub_shell <- read.delim("/Users/tommytran/Downloads/Output_Ctu/partitions/shell.txt", col.names = "GC")
+Ctub_shell <- read.delim("/analysis_PPanGGOLiN/Output_Ctu/partitions/shell.txt", col.names = "GC")
 Ctub_shell$PPanGGOLiN <- "shell"
 Ctub_partitions <- rbind(Ctub_persistent, Ctub_cloud, Ctub_shell)
 Ctub_partitions <- Ctub_partitions[grep("GC_", Ctub_partitions$GC),]
-write_delim(Ctub_partitions, "/Users/tommytran/Downloads/Output_Ctu/partitions/partitions.txt", delim = "\t")
+write_delim(Ctub_partitions, "/analysis_PPanGGOLiN/Output_Ctu/partitions/partitions.txt", delim = "\t")
 
-Cacc_persistent <- read.delim("/Users/tommytran/Downloads/Output_Cac/partitions/persistent.txt", col.names = "GC")
+Cacc_persistent <- read.delim("/analysis_PPanGGOLiN/Output_Cac/partitions/persistent.txt", col.names = "GC")
 Cacc_persistent$PPanGGOLiN <- "persistent"
-Cacc_cloud <- read.delim("/Users/tommytran/Downloads/Output_Cac/partitions/cloud.txt", col.names = "GC")
+Cacc_cloud <- read.delim("/analysis_PPanGGOLiN/Output_Cac/partitions/cloud.txt", col.names = "GC")
 Cacc_cloud$PPanGGOLiN <- "cloud"
-Cacc_shell <- read.delim("/Users/tommytran/Downloads/Output_Cac/partitions/shell.txt", col.names = "GC")
+Cacc_shell <- read.delim("/analysis_PPanGGOLiN/Output_Cac/partitions/shell.txt", col.names = "GC")
 Cacc_shell$PPanGGOLiN <- "shell"
 Cacc_partitions <- rbind(Cacc_persistent, Cacc_cloud, Cacc_shell)
 Cacc_partitions <- Cacc_partitions[grep("GC_", Cacc_partitions$GC),]
-write_delim(Cacc_partitions, "/Users/tommytran/Downloads/Output_Cac/partitions/partitions.txt", delim = "\t")
+write_delim(Cacc_partitions, "/analysis_PPanGGOLiN/Output_Cac/partitions/partitions.txt", delim = "\t")
 ```
 
-This will import the PPanGGOLiN partitions (from `partitions.txt`) as a
-collection of bins named **PPanGGOLiNpartitions** in each profile-db:
+This will import the PPanGGOLiN partitions (from `partitions.txt`) as a collection of bins named **PPanGGOLiNpartitions** in each profile-db:
 
 ```{bash, eval = FALSE}
 #conda activate anvio-7
@@ -328,8 +278,7 @@ anvi-import-collection "/analysis_Anvio7/Pangenomic_Results/Cacc/partitions_Cac.
                        -C "PPanGGOLiNpartitions" --bins-info "/analysis_Anvio7/main_outputs/PPanGGOLiN_bin_colors.txt"
 ```
 
-We can also import this data (from `partitions.txt`) as a PPanGGOLiN
-layer into in each profile-db:
+We can also import this data (from `partitions.txt`) as a PPanGGOLiN layer into in each profile-db:
 
 ```{bash, eval = FALSE}
 #conda activate anvio-7
@@ -345,8 +294,7 @@ anvi-import-misc-data "/analysis_Anvio7/Pangenomic_Results/Cacc/partitions_Cac.t
 
 ## Displaying the generated bin collections
 
-We can see the collections and bins created in a pangenomic database
-using the command `anvi-show-collections-and-bins`:
+We can see the collections and bins created in a pangenomic database using the command `anvi-show-collections-and-bins`:
 
 ```{bash, eval = FALSE}
 #conda activate anvio-7
