@@ -1,5 +1,5 @@
 ---
-title: "SupplementalMethods_anvi'o"
+title: "Supplemental Methods: anvi'o"
 author:
   - Tommy Tran, (KLemonLab) Tommy.Tran@bcm.edu
   - Ari Roberts, (KLemonLab) Ari.Roberts@bcm.edu
@@ -8,9 +8,6 @@ output:
   rmdformats::robobook:
     use_bookdown: true
     code_folding: show
-  github_document:
-    toc: true
-    toc_depth: 4
 bibliography: referencesAnvio.bib
 ---
 
@@ -18,20 +15,19 @@ bibliography: referencesAnvio.bib
 klippy::klippy(c('r', 'bash'))
 ```
 
-This notebook contains analyses using anvi'o version 7.1.2 [@Eren2021]. For more in-depth information about anvi'o go to their official online site here: <https://anvio.org/>
-
-We will use as input (`path_i`) the anvi'o contigs database files (`.db`) that were generated in [[SupplementalMethods_Prokka_Annotations]{.underline}](SupplementalMethods_Prokka_Annotations.html).
+This notebook contains analyses using anvi'o version 7.1 [@Eren2021]. For more in-depth information about anvi'o go to their official online site here: <https://anvio.org/>
 
 # Import functional annotations
 
+We will use as input (`path_i`) the anvi'o contigs database files (`.db`) that were generated in [[SupplementalMethods_Prokka_Annotations]{.underline}](SupplementalMethods_Prokka_Annotations.html).
+
 ## COG annotation
 
-First you need to download and set up the NCBI's Clusters of Orthologous Groups database using `anvi-setup-ncbi-cogs`: this is something you will do only once.
+First you need to download and set up the NCBI's Clusters of Orthologous Groups database using `anvi-setup-ncbi-cogs`. We used the COG20 version.
 
 Now the `anvi-run-ncbi-cogs` command can be used to annotate the .db genome files against the NCBI's COGs database [@Tatusov2001]: It uses DIAMOND [@Buchfink2015] "fast" as default, but it is recommended to use the "sensitive" option. This will take considerably much longer. Blastp can also be used instead of DIAMOND.
 
 ```{bash, eval = FALSE}
-#-7.1.2
 path_i="analysis_Anvio7/Contigs_db"
 
 for file in $path_i/*.db; do
@@ -41,12 +37,11 @@ done
 
 ## KEGG annotation
 
-First you need to download and set up the KEGG KOfam database using `anvi-setup-kegg-kofams`: this is something you will do only once.
+First you need to download and set up the KEGG KOfam database using `anvi-setup-kegg-kofams`. We used the KEGG snapshot provided by Anvio 7.1.
 
 The program `anvi-run-kegg-kofams` annotates genes in a given anvi'o contigs database with KEGG Orthology (KO) numbers via hits to the KEGG KOfam database [@Kanehisa2000].
 
 ```{bash, eval = FALSE}
-#-7.1.2
 path_i="analysis_Anvio7/Contigs_db"
 
 for file in $path_i/*.db; do
@@ -54,7 +49,7 @@ for file in $path_i/*.db; do
 done
 ```
 
-The option `--log-bitscores` records the bit scores values. They were saved to the main folder for the repo, so we move them to a new subfolder:
+The option `--log-bitscores` records the bit scores values. They were saved to the main folder for the repo, so we moved them to a new subfolder:
 
 ```{bash, eval = FALSE}
 mkdir "analysis_Anvio7/KEGGbitscores"
@@ -63,12 +58,11 @@ mv *_bitscores.txt analysis_Anvio7/KEGGbitscores/
 
 ## PFAM annotation
 
-First you need to download and set up the PFAM database using `anvi-setup-pfams`: this is something you will do only once.
+First you need to download and set up the PFAM database using `anvi-setup-pfams`. We used the XXXXXXX version.
 
 The program `anvi-run-kegg-pfam` annotates genes in a given anvi'o contigs database with the PFAM database [@Mistry2021].
 
 ```{bash, eval = FALSE}
-#-7.1.2
 path_i="analysis_Anvio7/Contigs_db"
 
 for file in $path_i/*.db; do
@@ -81,7 +75,6 @@ done
 When you run the following command the occurrence of bacterial single-copy genes across your contigs is added to your contigs database [@Eddy2011].
 
 ```{bash, eval = FALSE}
-#-7.1.2
 path_i="analysis_Anvio7/Contigs_db"
 
 for file in $path_i/*.db; do
@@ -94,7 +87,6 @@ done
 This generates basic stats on the annotations:
 
 ```{bash, eval = FALSE}
-#-7.1.2
 mkdir -p "analysis_Anvio7/Contigs_stats"
 
 path_i="analysis_Anvio7/Contigs_db"
@@ -122,9 +114,9 @@ Terminal output saved to `analysis_Anvio7/anvi-db-info_log.txt`.
 
 ## Generating an anvi'o genomes storage
 
-The program `anvi-gen-genomes-storage` requires you to provide names and locations of the genomes to be included in the genome storage database in a .txt file. We created the All_104_CorynesAnvio.txt file with the file names and paths. This file includes the name anvi'o will use internally to identify each genome. We added the prefix "RefSeq\_" to the reference genomes because some of them start with a digit and anvi'o only allow names that start with an ASCII letter. We made equiuvalent files for each of the four species
+The program `anvi-gen-genomes-storage` requires you to provide names and locations of the genomes to be included in the genome storage database in a `.txt` file. We created the All_104_CorynesAnvio.txt file with the file names and paths. This file includes the name anvi'o will use internally to identify each genome. We added the prefix "RefSeq\_" to the reference genomes because some of them start with a digit and anvi'o only allows names that start with an ASCII letter. We made equivalent files for each of the four species.
 
-We create 1 database with the 104 genomes that can be used to run the pangenomic analysis with all the strains at once or by selecting subsets of strains (i.e. by species, or by grouping related species together).
+We created a storage database with the 104 genomes that can be used to run the pangenomic analysis with all the strains at once or by selecting subsets of strains (i.e. by species, or by grouping related species together).
 
 ```{bash, eval = FALSE}
 mkdir -p "analysis_Anvio7/Pangenomic_Results"
@@ -138,15 +130,9 @@ This provides basic info on the generated genomes storage database:
 anvi-db-info "analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db"
 ```
 
-## Make Species Genome Lists
-
-We had to make new anvi'o environment with python 3.7 since the step below would not work unless we did that. This could be related to the updates with anvio 7.1
-
-```{bash, eval = FALSE}
-conda create -y --name anvio-7.1 python=3.7
-```
-
 ## Running the pangenomic analsyses
+
+We generated a `.txt` file for each of the four species including the list of genomes/paths for that group and run the pangenome analysis:
 
 ```{bash, eval = FALSE}
 anvi-pan-genome -g analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -G Cacc.txt -o analysis_Anvio7/Pangenomic_Results/Cacc -n PAN_Cacc --use-ncbi-blast --mcl-inflation 10  --num-threads 8
@@ -176,9 +162,17 @@ If you are using Windows and it cannot display the interactive page then try cop
 
 Once it opens in the browser, you can adjust image settings and click the "DRAW" icon to view it. For help using the interactive interface see <http://merenlab.org/2016/02/27/the-anvio-interactive-interface/>
 
+To manually reorder the layers to match phylogenomic trees per species, click and drag the names. The order names is inverse to the layers in the concentric diagram. When all the layers were re-ordered to match the phylogenomic tree we clicked the draw button and saved the svg file.
+
 ## Summarizing the updated pangenome files by bin collection
 
-We can create tables with a summary of the pangenomes using the program `anvi-summarize`:
+We can create tables with a summary of the pangenomes using the program `anvi-summarize`.
+
+You will need to know the collection name to use on the `-C` flag in the `anvi-summarize` command. This is an example of how to see the collections and bins you have for a pangenome db file from anvi'o.
+
+```{bash, eval=FALSE}
+anvi-show-collections-and-bins -p "/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cpro-PAN.db" --debug 
+```
 
 ```{bash, eval = FALSE}
 anvi-summarize -p "/analysis_Anvio7/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" \
@@ -204,12 +198,11 @@ anvi-summarize -p "/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" \
 
 The resulting summary folders contain a `gene_clusters_summary.txt.gz` file that links each gene to gene clusters, genomes, functions, layers, and bins selected from the interface.
 
-To manually reorder the layers to match phylogenomic trees per species, click and drag the names. The order names is inverse to the layers in the concentric diagram. When all the layers were re-ordered to match the phylogenomic tree we clicked the draw button and saved the svg file.
 
 ### *C. propinquum* pangenome
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
-|------------------|------------------|------------------|--------------------|
+|------------------|------------------|------------------|-------------------|
 | Core             | 1824/3108                     | `r round(100*(1824/3108),1)`% | 19                                   |
 | Single Copy Core | 1715/3108                     | `r round(100*(1715/3108),1)`% | 19                                   |
 | Multicopy Core   | 109/3108                      | `r round(100*(109/3108),1)`%  | 19                                   |
@@ -220,7 +213,7 @@ To manually reorder the layers to match phylogenomic trees per species, click an
 ### *C. pseudodiphtheriticum* pangenome
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
-|------------------|------------------|------------------|--------------------|
+|------------------|------------------|------------------|-------------------|
 | Core             | 1714/3590                     | `r round(100*(1714/3590),1)`% | 43                                   |
 | Single Copy Core | 1488/3590                     | `r round(100*(1488/3590),1)`% | 43                                   |
 | Multicopy Core   | 226/3590                      | `r round(100*(226/3590),1)`%  | 43                                   |
@@ -231,7 +224,7 @@ To manually reorder the layers to match phylogenomic trees per species, click an
 ### *C. pseudodiphtheriticum* pangenome after dropping Cps_090104
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
-|------------------|------------------|------------------|--------------------|
+|------------------|------------------|------------------|-------------------|
 | Core             | 1719/3550                     | `r round(100*(1719/3550),1)`% | 42                                   |
 | Single Copy Core | 1598/3550                     | `r round(100*(1598/3550),1)`% | 42                                   |
 | Multicopy Core   | 121/3550                      | `r round(100*(121/3550),1)`%  | 42                                   |
@@ -242,7 +235,7 @@ To manually reorder the layers to match phylogenomic trees per species, click an
 ### *C. accolens* pangenome
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
-|------------------|------------------|------------------|--------------------|
+|------------------|------------------|------------------|-------------------|
 | Core             | 1904/3427                     | `r round(100*(1904/3427),1)`% | 34                                   |
 | Single Copy Core | 1734/3427                     | `r round(100*(1734/3427),1)`% | 34                                   |
 | Multicopy Core   | 170/3427                      | `r round(100*(170/3427),1)`%  | 34                                   |
@@ -253,7 +246,7 @@ To manually reorder the layers to match phylogenomic trees per species, click an
 ### *C. accolens* pangenome after dropping Cac_49756
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
-|------------------|------------------|------------------|--------------------|
+|------------------|------------------|------------------|-------------------|
 | Core             | 1941/3307                     | `r round(100*(1941/3307),1)`% | 33                                   |
 | Single Copy Core | 1782/3307                     | `r round(100*(1782/3307),1)`% | 33                                   |
 | Multicopy Core   | 159/3307                      | `r round(100*(159/3307),1)`%  | 33                                   |
@@ -264,7 +257,7 @@ To manually reorder the layers to match phylogenomic trees per species, click an
 ### *C. tuberculostearicum* pangenome
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
-|------------------|------------------|------------------|--------------------|
+|------------------|------------------|------------------|-------------------|
 | Core             | 1915/2907                     | `r round(100*(1915/2907),1)`% | 8                                    |
 | Single Copy Core | 1860/2907                     | `r round(100*(1860/2907),1)`% | 8                                    |
 | Multicopy Core   | 55/2907                       | `r round(100*(55/2907),1)`%   | 8                                    |
@@ -273,12 +266,6 @@ To manually reorder the layers to match phylogenomic trees per species, click an
 | Cloud            | 671/2907                      | `r round(100*(671/2907),1)`%  | 1-2                                  |
 
 ## Finding GC Content
-
-You will need to know the collection to assign for the `-C` flag in the `anvi-summarize` command. This is an example of how to see the collections and bins you have for a pangenome db file from anvi'o.
-
-```{bash, eval=FALSE}
-anvi-show-collections-and-bins -p "/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cpro-PAN.db" --debug 
-```
 
 Find GC Content for *C. propinquum*:
 
@@ -304,11 +291,11 @@ Find GC Content for *C. tuberculostearicum*:
 anvi-summarize -g /analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -p /analysis_Anvio7/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db -C CorevsAccessory
 ```
 
-# KEGG Analysis Pipeline
+# KEGG Analysis
 
 We then used a workflow from anvi'o (<https://merenlab.org/tutorials/infant-gut/#chapter-v-metabolism-prediction>) that allowed us to estimate the completeness of KEGG modules.
 
-## Four *Corynebacterium* species. 
+## Four *Corynebacterium* species.
 
 We first did this in each of the four *Corynebacterium* pangenomes and in the combined pangenome for the 104 strains.
 
@@ -373,7 +360,7 @@ For this run, we follow the same protocol except we included 27 *D. pigrum* geno
 
 ```{bash, eval = FALSE}
 cd ./Documents/aqr_metabol_comp
--7.1.2
+-7.1
 anvi-estimate-metabolism -e genome_list_Coryne_Dpi.txt -O Coryne_Dpi --matrix-format
 
 anvi-matrix-to-newick Coryne_Dpi-completeness-MATRIX.txt
@@ -428,7 +415,7 @@ anvi-compute-metabolic-enrichment -M Coryne_Dpi_metabolism_modules.txt -G Coryne
 
 ```{bash, eval = FALSE}
 cd ./Documents/aqr_metabol_comp
--7.1.2
+-7.1
 anvi-estimate-metabolism -e genome_list_Cprop.txt -O Cprop --matrix-format
 
 anvi-matrix-to-newick Cprop-completeness-MATRIX.txt
@@ -481,7 +468,7 @@ anvi-compute-metabolic-enrichment -M Cprop_metabolism_modules.txt -G Cprop_geo_g
 
 ```{bash, eval = FALSE}
 cd ./Documents/aqr_metabol_comp
--7.1.2
+-7.1
 anvi-estimate-metabolism -e genome_list_Cpsd.txt -O Cpsd --matrix-format
 anvi-matrix-to-newick Cpsd-completeness-MATRIX.txt
 ```
@@ -533,7 +520,7 @@ anvi-compute-metabolic-enrichment -M Cpsd_metabolism_modules.txt -G Cpsd_geo_gro
 
 ```{bash, eval = FALSE}
 cd ./Documents/aqr_metabol_comp
--7.1.2
+-7.1
 anvi-estimate-metabolism -e genome_list_Cacc.txt -O Cacc --matrix-format
 
 anvi-matrix-to-newick Cacc-completeness-MATRIX.txt
@@ -586,7 +573,6 @@ anvi-compute-metabolic-enrichment -M Cacc_metabolism_modules.txt -G Cacc_geo_gro
 
 ```{bash, eval = FALSE}
 cd ./Documents/aqr_metabol_comp
--7.1.2
 anvi-estimate-metabolism -e genome_list_Ctub.txt -O Ctub --matrix-format
 anvi-matrix-to-newick Ctub-completeness-MATRIX.txt
 ```

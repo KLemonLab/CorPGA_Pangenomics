@@ -7,19 +7,6 @@ output:
   rmdformats::robobook:
     use_bookdown: true
     code_folding: show
-  github_document:
-    toc: true
-    toc_depth: 4
-params:
-  data: 
-    label: "Input dataset:"
-    value: summary.txt.gz
-    input: file
-  species:
-    label: "Species:"
-    value: ---
-    input: select
-    choices: [Cpse, Cpro, Ctub, Cacc]
 ---
 
 ```{r klippy, echo=FALSE, include=TRUE}

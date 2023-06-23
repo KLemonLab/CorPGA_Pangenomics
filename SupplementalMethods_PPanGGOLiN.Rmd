@@ -7,12 +7,6 @@ output:
   rmdformats::robobook:
     use_bookdown: true
     code_folding: show
-  github_document:
-    toc: true
-    toc_depth: 4
-editor_options: 
-  markdown: 
-    wrap: 72
 bibliography: referencesPPanGGOLiN.bib
 ---
 
@@ -21,28 +15,15 @@ klippy::klippy(c('r', 'bash'))
 ```
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
-```
-
-```{r, message = FALSE, echo = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, eval=FALSE) 
 library(tidyverse)
 library(knitr)
-
-knitr::opts_chunk$set(message = FALSE, eval=FALSE)
 ```
 
-# PPanGGOLiN PANGENOME ANALYSIS
+PPanGGOLiN v1.1.141 [@Gautreau2020] was used for this analysis.
 
-PPanGGOLiN v1.1.141 [@Gautreau2020] was used for his analysis.
 
-```{r, message = FALSE, echo = FALSE}
-library(tidyverse)
-library(knitr)
-
-knitr::opts_chunk$set(message = FALSE, eval=FALSE)
-```
-
-# Import Prokka annotations and Anvi'o 7 clusters
+# Import Prokka annotations and anvi'o 7 clusters into PPanGGOLiN
 
 In order to import the anvi'o clustering into PPanGGOLiN we need:
 
@@ -66,7 +47,7 @@ AnvioSummary_Cacc <- read.delim("/analysis_Anvio7/Pangenomic_Results/Cacc/Cac_PA
 ```
 
 Here we subset the info needed to generate the .tsv files. We clean up
-the "RefSeq\_" prefix that was added to the genome names to avoid Anvi'o
+the "RefSeq\_" prefix that was added to the genome names to avoid anvi'o
 complains about genome names starting with a number. We need to remove
 the prefix to match the info inside the new .gffs we are about to
 export:
@@ -261,13 +242,13 @@ ppanggolin info -p "/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5" --paramet
 ppanggolin info -p "/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5" --parameters --content --status
 ```
 
-# IMPORTING PARTITIONS INTO ANVIO
+# Import PPanGGOLiN Partitions into anvio
 
 The `pangenomeGraph.gexf` file can be opened with Gephi, and the Data
 Table exported as a `gephi_table.csv`. This can be used to easily
-explore the PPanGGOLiN output with the same gene IDs Anvi'o uses. The
+explore the PPanGGOLiN output with the same gene IDs anvi'o uses. The
 `matrix.csv` should be used with caution, since records PPanGGOLiN
-internal gene IDs, that are different from the Anvi'o ones.
+internal gene IDs, that are different from the anvi'o ones.
 
 ```{r, message=FALSE}
 Gephi <-  read.delim("analysis_PPanGGOLiN/Output_Cpse/Cpse_gephi_table.csv", ",", escape_double = FALSE, trim_ws = TRUE)
@@ -284,7 +265,7 @@ Gephi <-  read.delim("analysis_PPanGGOLiN/Output_Cacc/Cacc_gephi_table.csv", ","
 PPanGGOLiN generates a "partitions" folder as part of its output. We
 read the persistent, cloud and shell files from this output and add a
 column labeling them. We combine the three in one `partitions.txt` file
-that can be imported into Anvi'o:
+that can be imported into anvi'o:
 
 ```{r}
 Cpse_persistent <- read.delim("/Users/tommytran/Downloads/Output_Cps/partitions/persistent.txt", col.names = "GC")

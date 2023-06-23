@@ -7,16 +7,12 @@ output:
   rmdformats::robobook:
     use_bookdown: true
     code_folding: show
-  github_document:
-    toc: true
-    toc_depth: 4
 bibliography: referencesAnnotations.bib
 ---
 
 ```{r klippy, echo=FALSE, include=TRUE}
 klippy::klippy(c('r', 'bash'))
 ```
-
 
 We used [Prokka v1.14.6](https://github.com/tseemann/prokka) [@Seemann2014] to annotate 107 *Corynebacterium* strain genomes. We annotated the genomes in two different ways for proper compatibility and strain labeling with both GET_HOMOLOGUES and anvi'o.
 
