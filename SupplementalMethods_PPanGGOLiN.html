@@ -1738,20 +1738,19 @@ margin-left: 0 !important;
         </ul>
         <nav role="navigation" id="toc">
           <ul>
-          <li><a href="#ppanggolin-pangenome-analysis" id="toc-ppanggolin-pangenome-analysis"><span class="toc-section-number">1</span> PPanGGOLiN PANGENOME ANALYSIS</a></li>
-          <li><a href="#import-prokka-annotations-and-anvio-7-clusters" id="toc-import-prokka-annotations-and-anvio-7-clusters"><span class="toc-section-number">2</span> Import Prokka annotations and Anvi’o 7 clusters</a>
+          <li><a href="#import-prokka-annotations-and-anvio-7-clusters-into-ppanggolin" id="toc-import-prokka-annotations-and-anvio-7-clusters-into-ppanggolin"><span class="toc-section-number">1</span> Import Prokka annotations and anvi’o 7 clusters into PPanGGOLiN</a>
           <ul>
-          <li><a href="#graphing-and-partitioning" id="toc-graphing-and-partitioning"><span class="toc-section-number">2.1</span> Graphing and Partitioning</a></li>
-          <li><a href="#writing-outputs" id="toc-writing-outputs"><span class="toc-section-number">2.2</span> Writing outputs</a></li>
-          <li><a href="#rarefaction-curves" id="toc-rarefaction-curves"><span class="toc-section-number">2.3</span> Rarefaction curves</a></li>
-          <li><a href="#finding-regions-of-genome-plasticity" id="toc-finding-regions-of-genome-plasticity"><span class="toc-section-number">2.4</span> Finding Regions of Genome Plasticity</a></li>
-          <li><a href="#summary-of-used-parameters" id="toc-summary-of-used-parameters"><span class="toc-section-number">2.5</span> Summary of used parameters</a></li>
+          <li><a href="#graphing-and-partitioning" id="toc-graphing-and-partitioning"><span class="toc-section-number">1.1</span> Graphing and Partitioning</a></li>
+          <li><a href="#writing-outputs" id="toc-writing-outputs"><span class="toc-section-number">1.2</span> Writing outputs</a></li>
+          <li><a href="#rarefaction-curves" id="toc-rarefaction-curves"><span class="toc-section-number">1.3</span> Rarefaction curves</a></li>
+          <li><a href="#finding-regions-of-genome-plasticity" id="toc-finding-regions-of-genome-plasticity"><span class="toc-section-number">1.4</span> Finding Regions of Genome Plasticity</a></li>
+          <li><a href="#summary-of-used-parameters" id="toc-summary-of-used-parameters"><span class="toc-section-number">1.5</span> Summary of used parameters</a></li>
           </ul></li>
-          <li><a href="#importing-partitions-into-anvio" id="toc-importing-partitions-into-anvio"><span class="toc-section-number">3</span> IMPORTING PARTITIONS INTO ANVIO</a>
+          <li><a href="#import-ppanggolin-partitions-into-anvio" id="toc-import-ppanggolin-partitions-into-anvio"><span class="toc-section-number">2</span> Import PPanGGOLiN Partitions into anvio</a>
           <ul>
-          <li><a href="#persistent-vs.-accessory-based-on-ppanggolin" id="toc-persistent-vs.-accessory-based-on-ppanggolin"><span class="toc-section-number">3.1</span> Persistent vs. Accessory based on PPanGGOLiN</a></li>
-          <li><a href="#displaying-the-generated-bin-collections" id="toc-displaying-the-generated-bin-collections"><span class="toc-section-number">3.2</span> Displaying the generated bin collections</a></li>
-          <li><a href="#ppanggolin-pangenome-compartments" id="toc-ppanggolin-pangenome-compartments"><span class="toc-section-number">3.3</span> PPanGGOLiN Pangenome Compartments</a></li>
+          <li><a href="#persistent-vs.-accessory-based-on-ppanggolin" id="toc-persistent-vs.-accessory-based-on-ppanggolin"><span class="toc-section-number">2.1</span> Persistent vs. Accessory based on PPanGGOLiN</a></li>
+          <li><a href="#displaying-the-generated-bin-collections" id="toc-displaying-the-generated-bin-collections"><span class="toc-section-number">2.2</span> Displaying the generated bin collections</a></li>
+          <li><a href="#ppanggolin-pangenome-compartments" id="toc-ppanggolin-pangenome-compartments"><span class="toc-section-number">2.3</span> PPanGGOLiN Pangenome Compartments</a></li>
           </ul></li>
           </ul>
         </nav>
@@ -1790,12 +1789,9 @@ margin-left: 0 !important;
   addClassKlippyTo("pre.r, pre.bash");
   addKlippy('left', 'top', 'auto', '1', 'Copy code', 'Copied!');
 </script>
-<div id="ppanggolin-pangenome-analysis" class="section level1" number="1">
-<h1><span class="header-section-number">1</span> PPanGGOLiN PANGENOME ANALYSIS</h1>
-<p>PPanGGOLiN v1.1.141 <span class="citation">(Gautreau et al. 2020)</span> was used for his analysis.</p>
-</div>
-<div id="import-prokka-annotations-and-anvio-7-clusters" class="section level1" number="2">
-<h1><span class="header-section-number">2</span> Import Prokka annotations and Anvi’o 7 clusters</h1>
+<p>PPanGGOLiN v1.1.141 <span class="citation">(Gautreau et al. 2020)</span> was used for this analysis.</p>
+<div id="import-prokka-annotations-and-anvio-7-clusters-into-ppanggolin" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Import Prokka annotations and anvi’o 7 clusters into PPanGGOLiN</h1>
 <p>In order to import the anvi’o clustering into PPanGGOLiN we need:</p>
 <ol style="list-style-type: decimal">
 <li>A .tsv file listing in the first column the gene family names, and
@@ -1806,37 +1802,37 @@ the previous .tsv file.</li>
 </ol>
 <p>We read here the files generated using <code>anvi-summarize</code> that link each
 gene to gene clusters, genomes and functions:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>AnvioSummary_Cpse <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpsd/Cps_PAN_SUMMARY/PAN_Cpsd_gene_clusters_summary.txt.gz&quot;</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>AnvioSummary_Cpro <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/Cpr_PAN_SUMMARY/PAN_Cpro_gene_clusters_summary.txt.gz&quot;</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>AnvioSummary_Ctub <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/Ctu_PAN_SUMMARY/PAN_Ctub_gene_clusters_summary.txt.gz&quot;</span>)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>AnvioSummary_Cacc <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/Cac_PAN_SUMMARY/PAN_Cacc_gene_clusters_summary.txt.gz&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>AnvioSummary_Cpse <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cpsd/Cps_PAN_SUMMARY/PAN_Cpsd_gene_clusters_summary.txt.gz&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>AnvioSummary_Cpro <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cpro/Cpr_PAN_SUMMARY/PAN_Cpro_gene_clusters_summary.txt.gz&quot;</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>AnvioSummary_Ctub <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Ctub/Ctu_PAN_SUMMARY/PAN_Ctub_gene_clusters_summary.txt.gz&quot;</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>AnvioSummary_Cacc <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cacc/Cac_PAN_SUMMARY/PAN_Cacc_gene_clusters_summary.txt.gz&quot;</span>)</span></code></pre></div>
 <p>Here we subset the info needed to generate the .tsv files. We clean up
-the “RefSeq_” prefix that was added to the genome names to avoid Anvi’o
+the “RefSeq_” prefix that was added to the genome names to avoid anvi’o
 complains about genome names starting with a number. We need to remove
 the prefix to match the info inside the new .gffs we are about to
 export:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>AnvioClusters_Cpse <span class="ot">&lt;-</span> AnvioSummary_Cpse <span class="sc">%&gt;%</span> <span class="fu">unite</span>(new_id, genome_name<span class="sc">:</span>gene_callers_id, <span class="at">sep =</span> <span class="st">&quot;___&quot;</span>, <span class="at">remove =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">new_id =</span> <span class="fu">gsub</span>(<span class="st">&quot;RefSeq_&quot;</span>, <span class="st">&quot;&quot;</span>, new_id))</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>AnvioClusters_Cpse <span class="ot">&lt;-</span> <span class="fu">select</span>(AnvioClusters_Cpse, <span class="fu">c</span>(gene_cluster_id, new_id))</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>AnvioClusters_Cpro <span class="ot">&lt;-</span> AnvioSummary_Cpro <span class="sc">%&gt;%</span> <span class="fu">unite</span>(new_id, genome_name<span class="sc">:</span>gene_callers_id, <span class="at">sep =</span> <span class="st">&quot;___&quot;</span>, <span class="at">remove =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">new_id =</span> <span class="fu">gsub</span>(<span class="st">&quot;RefSeq_&quot;</span>, <span class="st">&quot;&quot;</span>, new_id))</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>AnvioClusters_Cpro <span class="ot">&lt;-</span> <span class="fu">select</span>(AnvioClusters_Cpro, <span class="fu">c</span>(gene_cluster_id, new_id))</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>AnvioClusters_Ctub <span class="ot">&lt;-</span> AnvioSummary_Ctub <span class="sc">%&gt;%</span> <span class="fu">unite</span>(new_id, genome_name<span class="sc">:</span>gene_callers_id, <span class="at">sep =</span> <span class="st">&quot;___&quot;</span>, <span class="at">remove =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">new_id =</span> <span class="fu">gsub</span>(<span class="st">&quot;RefSeq_&quot;</span>, <span class="st">&quot;&quot;</span>, new_id))</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>AnvioClusters_Ctub <span class="ot">&lt;-</span> <span class="fu">select</span>(AnvioClusters_Ctub, <span class="fu">c</span>(gene_cluster_id, new_id))</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>AnvioClusters_Cacc <span class="ot">&lt;-</span> AnvioSummary_Cacc <span class="sc">%&gt;%</span> <span class="fu">unite</span>(new_id, genome_name<span class="sc">:</span>gene_callers_id, <span class="at">sep =</span> <span class="st">&quot;___&quot;</span>, <span class="at">remove =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">new_id =</span> <span class="fu">gsub</span>(<span class="st">&quot;RefSeq_&quot;</span>, <span class="st">&quot;&quot;</span>, new_id))</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>AnvioClusters_Cacc <span class="ot">&lt;-</span> <span class="fu">select</span>(AnvioClusters_Cacc, <span class="fu">c</span>(gene_cluster_id, new_id))</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>AnvioClusters_Cpse <span class="ot">&lt;-</span> AnvioSummary_Cpse <span class="sc">%&gt;%</span> <span class="fu">unite</span>(new_id, genome_name<span class="sc">:</span>gene_callers_id, <span class="at">sep =</span> <span class="st">&quot;___&quot;</span>, <span class="at">remove =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">new_id =</span> <span class="fu">gsub</span>(<span class="st">&quot;RefSeq_&quot;</span>, <span class="st">&quot;&quot;</span>, new_id))</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>AnvioClusters_Cpse <span class="ot">&lt;-</span> <span class="fu">select</span>(AnvioClusters_Cpse, <span class="fu">c</span>(gene_cluster_id, new_id))</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>AnvioClusters_Cpro <span class="ot">&lt;-</span> AnvioSummary_Cpro <span class="sc">%&gt;%</span> <span class="fu">unite</span>(new_id, genome_name<span class="sc">:</span>gene_callers_id, <span class="at">sep =</span> <span class="st">&quot;___&quot;</span>, <span class="at">remove =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">new_id =</span> <span class="fu">gsub</span>(<span class="st">&quot;RefSeq_&quot;</span>, <span class="st">&quot;&quot;</span>, new_id))</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>AnvioClusters_Cpro <span class="ot">&lt;-</span> <span class="fu">select</span>(AnvioClusters_Cpro, <span class="fu">c</span>(gene_cluster_id, new_id))</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>AnvioClusters_Ctub <span class="ot">&lt;-</span> AnvioSummary_Ctub <span class="sc">%&gt;%</span> <span class="fu">unite</span>(new_id, genome_name<span class="sc">:</span>gene_callers_id, <span class="at">sep =</span> <span class="st">&quot;___&quot;</span>, <span class="at">remove =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">new_id =</span> <span class="fu">gsub</span>(<span class="st">&quot;RefSeq_&quot;</span>, <span class="st">&quot;&quot;</span>, new_id))</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>AnvioClusters_Ctub <span class="ot">&lt;-</span> <span class="fu">select</span>(AnvioClusters_Ctub, <span class="fu">c</span>(gene_cluster_id, new_id))</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>AnvioClusters_Cacc <span class="ot">&lt;-</span> AnvioSummary_Cacc <span class="sc">%&gt;%</span> <span class="fu">unite</span>(new_id, genome_name<span class="sc">:</span>gene_callers_id, <span class="at">sep =</span> <span class="st">&quot;___&quot;</span>, <span class="at">remove =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">new_id =</span> <span class="fu">gsub</span>(<span class="st">&quot;RefSeq_&quot;</span>, <span class="st">&quot;&quot;</span>, new_id))</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>AnvioClusters_Cacc <span class="ot">&lt;-</span> <span class="fu">select</span>(AnvioClusters_Cacc, <span class="fu">c</span>(gene_cluster_id, new_id))</span></code></pre></div>
 <p>Now we write those as .tsv files:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_delim</span>(AnvioClusters_Cpse, <span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpsd/Cps_PAN_SUMMARY.tsv&quot;</span>, <span class="at">col_names=</span><span class="cn">FALSE</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">write_delim</span>(AnvioClusters_Cpro, <span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/Cpr_PAN_SUMMARY.tsv&quot;</span>, <span class="at">col_names=</span><span class="cn">FALSE</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">write_delim</span>(AnvioClusters_Ctub, <span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/Ctu_PAN_SUMMARY.tsv&quot;</span>, <span class="at">col_names=</span><span class="cn">FALSE</span>)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">write_delim</span>(AnvioClusters_Cacc, <span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/Cac_PAN_SUMMARY.tsv&quot;</span>, <span class="at">col_names=</span><span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">write_delim</span>(AnvioClusters_Cpse, <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cpsd/Cps_PAN_SUMMARY.tsv&quot;</span>, <span class="at">col_names=</span><span class="cn">FALSE</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="fu">write_delim</span>(AnvioClusters_Cpro, <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cpro/Cpr_PAN_SUMMARY.tsv&quot;</span>, <span class="at">col_names=</span><span class="cn">FALSE</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="fu">write_delim</span>(AnvioClusters_Ctub, <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Ctub/Ctu_PAN_SUMMARY.tsv&quot;</span>, <span class="at">col_names=</span><span class="cn">FALSE</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="fu">write_delim</span>(AnvioClusters_Cacc, <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cacc/Cac_PAN_SUMMARY.tsv&quot;</span>, <span class="at">col_names=</span><span class="cn">FALSE</span>)</span></code></pre></div>
 <p><u><strong>IMPORTANT</strong></u><strong>:</strong> The gene_callers_id provided by anvi’o
 don’t match the original ones in the prokka annotation. The prokka
 annotated genomes were parsed into two text files, one for gene calls
@@ -1849,17 +1845,17 @@ generated only for the ORFs that will be imported into anvi’o.
 Fortunately, <code>anvi-get-sequences-for-gene-calls</code> can be used to export
 new .gff files with only the ORFs and these can be used for PPanGGOLiN,
 instead of the original prokka ones:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#conda activate anvio-7</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Exported_gffs&quot;</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="va">path_f</span><span class="op">=</span><span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Contigs_db&quot;</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="va">path_o</span><span class="op">=</span><span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Exported_gffs&quot;</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> file <span class="kw">in</span> <span class="va">$path_f</span>/<span class="pp">*</span>.db<span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="va">FILENAME</span><span class="op">=</span><span class="kw">`</span><span class="fu">basename</span> <span class="va">${file</span><span class="op">%</span>.<span class="pp">*</span><span class="va">}</span><span class="kw">`</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="ex">anvi-get-sequences-for-gene-calls</span> <span class="at">-c</span> <span class="va">$file</span> <span class="at">--export-gff3</span> <span class="at">-o</span> <span class="va">$path_o</span>/<span class="va">$FILENAME</span>.gff</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co">#conda activate anvio-7</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Exported_gffs&quot;</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="va">path_f</span><span class="op">=</span><span class="st">&quot;/analysis_Anvio7/Contigs_db&quot;</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="va">path_o</span><span class="op">=</span><span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Exported_gffs&quot;</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="cf">for</span> file <span class="kw">in</span> <span class="va">$path_f</span>/<span class="pp">*</span>.db<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>    <span class="va">FILENAME</span><span class="op">=</span><span class="kw">`</span><span class="fu">basename</span> <span class="va">${file</span><span class="op">%</span>.<span class="pp">*</span><span class="va">}</span><span class="kw">`</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>    <span class="ex">anvi-get-sequences-for-gene-calls</span> <span class="at">-c</span> <span class="va">$file</span> <span class="at">--export-gff3</span> <span class="at">-o</span> <span class="va">$path_o</span>/<span class="va">$FILENAME</span>.gff</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>      </span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
 <p>We create two tab delimited text files per species. Both of the text
 files will have a two column structure. The first column is the name to
 be utilized by PPanGGOLiNn for each genome per line, and the second
@@ -1869,28 +1865,28 @@ is for the anvi’o exported .gff and the other is for the reformatted
 anvi’o files, so we had to convert them all to .fasta for PPanGGOLiN to
 accept them. We need to create the text files to run the <code>annotate</code>
 subcommand.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#conda activate PPanGGOLiN</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> annotate <span class="at">--anno</span> <span class="st">&quot;/Users/tommytran/Downloads/Cac_gff.txt&quot;</span> <span class="at">--fasta</span> <span class="st">&quot;/Users/tommytran/Downloads/Cac_fasta_gff.txt&quot;</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Cac_anno_output&quot;</span> <span class="at">--basename</span> Cac <span class="at">-f</span> </span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> annotate <span class="at">--anno</span> <span class="st">&quot;/Users/tommytran/Downloads/Cpr_gff.txt&quot;</span> <span class="at">--fasta</span> <span class="st">&quot;/Users/tommytran/Downloads/Cpr_fasta_gff.txt&quot;</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Cpr_anno_output&quot;</span> <span class="at">--basename</span> Cpr <span class="at">-f</span> </span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> annotate <span class="at">--anno</span> <span class="st">&quot;/Users/tommytran/Downloads/Cps_gff.txt&quot;</span> <span class="at">--fasta</span> <span class="st">&quot;/Users/tommytran/Downloads/Cps_fasta_gff.txt&quot;</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Cps_anno_output&quot;</span> <span class="at">--basename</span> Cps <span class="at">-f</span> </span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> annotate <span class="at">--anno</span> <span class="st">&quot;/Users/tommytran/Downloads/Ctu_gff.txt&quot;</span> <span class="at">--fasta</span>  <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Ctu_anno_output&quot;</span> <span class="at">--basename</span> Ctu <span class="at">-f</span> </span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co">#conda activate PPanGGOLiN</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="ex">ppanggolin</span> annotate <span class="at">--anno</span> <span class="st">&quot;/Users/tommytran/Downloads/Cac_gff.txt&quot;</span> <span class="at">--fasta</span> <span class="st">&quot;/Users/tommytran/Downloads/Cac_fasta_gff.txt&quot;</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Cac_anno_output&quot;</span> <span class="at">--basename</span> Cac <span class="at">-f</span> </span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="ex">ppanggolin</span> annotate <span class="at">--anno</span> <span class="st">&quot;/Users/tommytran/Downloads/Cpr_gff.txt&quot;</span> <span class="at">--fasta</span> <span class="st">&quot;/Users/tommytran/Downloads/Cpr_fasta_gff.txt&quot;</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Cpr_anno_output&quot;</span> <span class="at">--basename</span> Cpr <span class="at">-f</span> </span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="ex">ppanggolin</span> annotate <span class="at">--anno</span> <span class="st">&quot;/Users/tommytran/Downloads/Cps_gff.txt&quot;</span> <span class="at">--fasta</span> <span class="st">&quot;/Users/tommytran/Downloads/Cps_fasta_gff.txt&quot;</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Cps_anno_output&quot;</span> <span class="at">--basename</span> Cps <span class="at">-f</span> </span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="ex">ppanggolin</span> annotate <span class="at">--anno</span> <span class="st">&quot;/Users/tommytran/Downloads/Ctu_gff.txt&quot;</span> <span class="at">--fasta</span>  <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Ctu_anno_output&quot;</span> <span class="at">--basename</span> Ctu <span class="at">-f</span> </span></code></pre></div>
 <p>For the <code>cluster</code> subcommand we use the .tsv files created before from
 the <code>anvi-summarize</code> output.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#conda activate PPanGGOLiN</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> cluster <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cac_anno_output/Cac.h5&quot;</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">--clusters</span> <span class="st">&quot;/Users/tommytran/Downloads/Cac_PAN_SUMMARY.tsv&quot;</span> <span class="at">--infer_singletons</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> cluster <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cps_anno_output/Cps.h5&quot;</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ex">--clusters</span> <span class="st">&quot;/Users/tommytran/Downloads/Cps_PAN_SUMMARY.tsv&quot;</span> <span class="at">--infer_singletons</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> cluster <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5&quot;</span> <span class="at">--clusters</span> <span class="st">&quot;/Users/tommytran/Downloads/Ctu_PAN_SUMMARY.tsv&quot;</span> <span class="at">--infer_singletons</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> cluster <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5&quot;</span> <span class="at">--clusters</span> <span class="st">&quot;/Users/tommytran/Downloads/Cpr_PAN_SUMMARY.tsv&quot;</span> <span class="at">--infer_singletons</span></span></code></pre></div>
-<div id="graphing-and-partitioning" class="section level2" number="2.1">
-<h2><span class="header-section-number">2.1</span> Graphing and Partitioning</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co">#conda activate PPanGGOLiN</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="ex">ppanggolin</span> cluster <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cac_anno_output/Cac.h5&quot;</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="ex">--clusters</span> <span class="st">&quot;/Users/tommytran/Downloads/Cac_PAN_SUMMARY.tsv&quot;</span> <span class="at">--infer_singletons</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="ex">ppanggolin</span> cluster <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cps_anno_output/Cps.h5&quot;</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="ex">--clusters</span> <span class="st">&quot;/Users/tommytran/Downloads/Cps_PAN_SUMMARY.tsv&quot;</span> <span class="at">--infer_singletons</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="ex">ppanggolin</span> cluster <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5&quot;</span> <span class="at">--clusters</span> <span class="st">&quot;/Users/tommytran/Downloads/Ctu_PAN_SUMMARY.tsv&quot;</span> <span class="at">--infer_singletons</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="ex">ppanggolin</span> cluster <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5&quot;</span> <span class="at">--clusters</span> <span class="st">&quot;/Users/tommytran/Downloads/Cpr_PAN_SUMMARY.tsv&quot;</span> <span class="at">--infer_singletons</span></span></code></pre></div>
+<div id="graphing-and-partitioning" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> Graphing and Partitioning</h2>
 <p>The <code>graph</code> subcommand has only a single other option, which is ‘-r’ or
 ‘–remove_high_copy_number’. If used, it will remove the gene families
 that are too duplicated in your genomes. This is useful if you want to
@@ -1898,187 +1894,187 @@ visualize your pangenome afterward and want to remove the biggest hubs
 to have a clearer view. It can also be used to limit the influence of
 very duplicated genes such as transposases or ABC transporters in the
 partition step.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#conda activate PPanGGOLiN</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> graph <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cac_anno_output/Cac.h5&quot;</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> graph <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cps_anno_output/Cps.h5&quot;</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> graph <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5&quot;</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> graph <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co">#conda activate PPanGGOLiN</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="ex">ppanggolin</span> graph <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cac_anno_output/Cac.h5&quot;</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="ex">ppanggolin</span> graph <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cps_anno_output/Cps.h5&quot;</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="ex">ppanggolin</span> graph <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5&quot;</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="ex">ppanggolin</span> graph <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5&quot;</span></span></code></pre></div>
 <p>We let the <code>partition</code> subcommand statistical criterion find the optimal
 number of partitions.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#conda activate PPanGGOLiN</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> partition <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cac_anno_output/Cac.h5&quot;</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> partition <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cps_anno_output/Cps.h5&quot;</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> partition <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5&quot;</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> partition <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co">#conda activate PPanGGOLiN</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="ex">ppanggolin</span> partition <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cac_anno_output/Cac.h5&quot;</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="ex">ppanggolin</span> partition <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cps_anno_output/Cps.h5&quot;</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="ex">ppanggolin</span> partition <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5&quot;</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="ex">ppanggolin</span> partition <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5&quot;</span></span></code></pre></div>
 </div>
-<div id="writing-outputs" class="section level2" number="2.2">
-<h2><span class="header-section-number">2.2</span> Writing outputs</h2>
+<div id="writing-outputs" class="section level2" number="1.2">
+<h2><span class="header-section-number">1.2</span> Writing outputs</h2>
 <p>For details on PPanGGOLiN outputs see:
 <a href="https://github.com/labgem/PPanGGOLiN/wiki/Outputs" class="uri">https://github.com/labgem/PPanGGOLiN/wiki/Outputs</a></p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#conda activate PPanGGOLiN</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> write <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cac_anno_output/Cac.h5&quot;</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Cac&quot;</span> <span class="at">--light_gexf</span> <span class="at">--gexf</span>  <span class="at">--csv</span> <span class="at">--Rtab</span> <span class="at">--stats</span> <span class="at">--partitions</span> <span class="at">--projection</span> <span class="at">--families_tsv</span> <span class="at">-f</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> write <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cps_anno_output/Cps.h5&quot;</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Cps&quot;</span> <span class="at">--light_gexf</span> <span class="at">--gexf</span>  <span class="at">--csv</span> <span class="at">--Rtab</span> <span class="at">--stats</span> <span class="at">--partitions</span> <span class="at">--projection</span> <span class="at">--families_tsv</span> <span class="at">-f</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> write <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5&quot;</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Ctu&quot;</span> <span class="at">--light_gexf</span> <span class="at">--gexf</span>  <span class="at">--csv</span> <span class="at">--Rtab</span> <span class="at">--stats</span> <span class="at">--partitions</span> <span class="at">--projection</span> <span class="at">--families_tsv</span> <span class="at">-f</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> write <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5&quot;</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Cpr&quot;</span> <span class="at">--light_gexf</span> <span class="at">--gexf</span>  <span class="at">--csv</span> <span class="at">--Rtab</span> <span class="at">--stats</span> <span class="at">--partitions</span> <span class="at">--projection</span> <span class="at">--families_tsv</span> <span class="at">-f</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co">#conda activate PPanGGOLiN</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="ex">ppanggolin</span> write <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cac_anno_output/Cac.h5&quot;</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Cac&quot;</span> <span class="at">--light_gexf</span> <span class="at">--gexf</span>  <span class="at">--csv</span> <span class="at">--Rtab</span> <span class="at">--stats</span> <span class="at">--partitions</span> <span class="at">--projection</span> <span class="at">--families_tsv</span> <span class="at">-f</span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="ex">ppanggolin</span> write <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cps_anno_output/Cps.h5&quot;</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Cps&quot;</span> <span class="at">--light_gexf</span> <span class="at">--gexf</span>  <span class="at">--csv</span> <span class="at">--Rtab</span> <span class="at">--stats</span> <span class="at">--partitions</span> <span class="at">--projection</span> <span class="at">--families_tsv</span> <span class="at">-f</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="ex">ppanggolin</span> write <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5&quot;</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Ctu&quot;</span> <span class="at">--light_gexf</span> <span class="at">--gexf</span>  <span class="at">--csv</span> <span class="at">--Rtab</span> <span class="at">--stats</span> <span class="at">--partitions</span> <span class="at">--projection</span> <span class="at">--families_tsv</span> <span class="at">-f</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="ex">ppanggolin</span> write <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5&quot;</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Cpr&quot;</span> <span class="at">--light_gexf</span> <span class="at">--gexf</span>  <span class="at">--csv</span> <span class="at">--Rtab</span> <span class="at">--stats</span> <span class="at">--partitions</span> <span class="at">--projection</span> <span class="at">--families_tsv</span> <span class="at">-f</span></span></code></pre></div>
 </div>
-<div id="rarefaction-curves" class="section level2" number="2.3">
-<h2><span class="header-section-number">2.3</span> Rarefaction curves</h2>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">#conda activate PPanGGOLiN</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> rarefaction <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cac_anno_output/Cac.h5&quot;</span> <span class="at">--force</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Cac_rarefaction&quot;</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> rarefaction <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cps_anno_output/Cps.h5&quot;</span> <span class="at">--force</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Cps_rarefaction&quot;</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> rarefaction <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5&quot;</span> <span class="at">--force</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Ctu_rarefaction&quot;</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> rarefaction <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5&quot;</span> <span class="at">--force</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Cpr_rarefaction&quot;</span></span></code></pre></div>
+<div id="rarefaction-curves" class="section level2" number="1.3">
+<h2><span class="header-section-number">1.3</span> Rarefaction curves</h2>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co">#conda activate PPanGGOLiN</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="ex">ppanggolin</span> rarefaction <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cac_anno_output/Cac.h5&quot;</span> <span class="at">--force</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Cac_rarefaction&quot;</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="ex">ppanggolin</span> rarefaction <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cps_anno_output/Cps.h5&quot;</span> <span class="at">--force</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Cps_rarefaction&quot;</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="ex">ppanggolin</span> rarefaction <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5&quot;</span> <span class="at">--force</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Ctu_rarefaction&quot;</span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="ex">ppanggolin</span> rarefaction <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5&quot;</span> <span class="at">--force</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Cpr_rarefaction&quot;</span></span></code></pre></div>
 </div>
-<div id="finding-regions-of-genome-plasticity" class="section level2" number="2.4">
-<h2><span class="header-section-number">2.4</span> Finding Regions of Genome Plasticity</h2>
+<div id="finding-regions-of-genome-plasticity" class="section level2" number="1.4">
+<h2><span class="header-section-number">1.4</span> Finding Regions of Genome Plasticity</h2>
 <p>For details on RGPs see:
 <a href="https://github.com/labgem/PPanGGOLiN/wiki/Regions-of-Genome-Plasticity" class="uri">https://github.com/labgem/PPanGGOLiN/wiki/Regions-of-Genome-Plasticity</a></p>
 <p>The spots can be labeled by:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#conda activate PPanGGOLiN</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> rgp <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cac_anno_output/Cac.h5&quot;</span> </span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> rgp <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cps_anno_output/Cps.h5&quot;</span> </span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> rgp <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5&quot;</span> </span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> rgp <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5&quot;</span></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> spot <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cac_anno_output/Cac.h5&quot;</span> <span class="at">--draw_hotspots</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Cac_spots/spots_ID&quot;</span> <span class="at">-f</span></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> spot <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cps_anno_output/Cps.h5&quot;</span> <span class="at">--draw_hotspots</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Cps_spots/spots_ID&quot;</span> <span class="at">-f</span></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> spot <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5&quot;</span> <span class="at">--draw_hotspots</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Ctu_spots/spots_ID&quot;</span> <span class="at">-f</span></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> spot <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5&quot;</span> <span class="at">--draw_hotspots</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Cpr_spots/spots_ID&quot;</span> <span class="at">-f</span></span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> write <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cac_anno_output/Cac.h5&quot;</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Cac_spots&quot;</span> <span class="at">--regions</span> <span class="at">--spots</span> <span class="at">-f</span></span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> write <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cps_anno_output/Cps.h5&quot;</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Cps_spots&quot;</span> <span class="at">--regions</span> <span class="at">--spots</span> <span class="at">-f</span></span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> write <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5&quot;</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Ctu_spots&quot;</span> <span class="at">--regions</span> <span class="at">--spots</span> <span class="at">-f</span></span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> write <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5&quot;</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Cpr_spots&quot;</span> <span class="at">--regions</span> <span class="at">--spots</span> <span class="at">-f</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co">#conda activate PPanGGOLiN</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="ex">ppanggolin</span> rgp <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cac_anno_output/Cac.h5&quot;</span> </span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="ex">ppanggolin</span> rgp <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cps_anno_output/Cps.h5&quot;</span> </span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="ex">ppanggolin</span> rgp <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5&quot;</span> </span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="ex">ppanggolin</span> rgp <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5&quot;</span></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="ex">ppanggolin</span> spot <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cac_anno_output/Cac.h5&quot;</span> <span class="at">--draw_hotspots</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Cac_spots/spots_ID&quot;</span> <span class="at">-f</span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="ex">ppanggolin</span> spot <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cps_anno_output/Cps.h5&quot;</span> <span class="at">--draw_hotspots</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Cps_spots/spots_ID&quot;</span> <span class="at">-f</span></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a><span class="ex">ppanggolin</span> spot <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5&quot;</span> <span class="at">--draw_hotspots</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Ctu_spots/spots_ID&quot;</span> <span class="at">-f</span></span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a><span class="ex">ppanggolin</span> spot <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5&quot;</span> <span class="at">--draw_hotspots</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Cpr_spots/spots_ID&quot;</span> <span class="at">-f</span></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a></span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a><span class="ex">ppanggolin</span> write <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cac_anno_output/Cac.h5&quot;</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Cac_spots&quot;</span> <span class="at">--regions</span> <span class="at">--spots</span> <span class="at">-f</span></span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a><span class="ex">ppanggolin</span> write <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cps_anno_output/Cps.h5&quot;</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Cps_spots&quot;</span> <span class="at">--regions</span> <span class="at">--spots</span> <span class="at">-f</span></span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a><span class="ex">ppanggolin</span> write <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5&quot;</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Ctu_spots&quot;</span> <span class="at">--regions</span> <span class="at">--spots</span> <span class="at">-f</span></span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a><span class="ex">ppanggolin</span> write <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5&quot;</span> <span class="at">-o</span> <span class="st">&quot;/Users/tommytran/Downloads/Output_Cpr_spots&quot;</span> <span class="at">--regions</span> <span class="at">--spots</span> <span class="at">-f</span></span></code></pre></div>
 </div>
-<div id="summary-of-used-parameters" class="section level2" number="2.5">
-<h2><span class="header-section-number">2.5</span> Summary of used parameters</h2>
+<div id="summary-of-used-parameters" class="section level2" number="1.5">
+<h2><span class="header-section-number">1.5</span> Summary of used parameters</h2>
 <p>The <code>info</code> subcommand indicates, for each steps of the analysis, the
 PPanGGOLiN parameters that were used and the source of the data if
 appropriate. This is useful for methods sections on manuscripts.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">#conda activate PPanGGOLiN</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> info <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cac_anno_output/Cac.h5&quot;</span> <span class="at">--parameters</span> <span class="at">--content</span> <span class="at">--status</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> info <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cps_anno_output/Cps.h5&quot;</span> <span class="at">--parameters</span> <span class="at">--content</span> <span class="at">--status</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> info <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5&quot;</span> <span class="at">--parameters</span> <span class="at">--content</span> <span class="at">--status</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="ex">ppanggolin</span> info <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5&quot;</span> <span class="at">--parameters</span> <span class="at">--content</span> <span class="at">--status</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co">#conda activate PPanGGOLiN</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="ex">ppanggolin</span> info <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cac_anno_output/Cac.h5&quot;</span> <span class="at">--parameters</span> <span class="at">--content</span> <span class="at">--status</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="ex">ppanggolin</span> info <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cps_anno_output/Cps.h5&quot;</span> <span class="at">--parameters</span> <span class="at">--content</span> <span class="at">--status</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="ex">ppanggolin</span> info <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Ctu_anno_output/Ctu.h5&quot;</span> <span class="at">--parameters</span> <span class="at">--content</span> <span class="at">--status</span></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="ex">ppanggolin</span> info <span class="at">-p</span> <span class="st">&quot;/Users/tommytran/Downloads/Cpr_anno_output/Cpr.h5&quot;</span> <span class="at">--parameters</span> <span class="at">--content</span> <span class="at">--status</span></span></code></pre></div>
 </div>
 </div>
-<div id="importing-partitions-into-anvio" class="section level1" number="3">
-<h1><span class="header-section-number">3</span> IMPORTING PARTITIONS INTO ANVIO</h1>
+<div id="import-ppanggolin-partitions-into-anvio" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Import PPanGGOLiN Partitions into anvio</h1>
 <p>The <code>pangenomeGraph.gexf</code> file can be opened with Gephi, and the Data
 Table exported as a <code>gephi_table.csv</code>. This can be used to easily
-explore the PPanGGOLiN output with the same gene IDs Anvi’o uses. The
+explore the PPanGGOLiN output with the same gene IDs anvi’o uses. The
 <code>matrix.csv</code> should be used with caution, since records PPanGGOLiN
-internal gene IDs, that are different from the Anvi’o ones.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>Gephi <span class="ot">&lt;-</span>  <span class="fu">read.delim</span>(<span class="st">&quot;analysis_PPanGGOLiN/Output_Cpse/Cpse_gephi_table.csv&quot;</span>, <span class="st">&quot;,&quot;</span>, <span class="at">escape_double =</span> <span class="cn">FALSE</span>, <span class="at">trim_ws =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>Gephi <span class="ot">&lt;-</span>  <span class="fu">read.delim</span>(<span class="st">&quot;analysis_PPanGGOLiN/Output_Cpro/Cpro_gephi_table.csv&quot;</span>, <span class="st">&quot;,&quot;</span>, <span class="at">escape_double =</span> <span class="cn">FALSE</span>, <span class="at">trim_ws =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>Gephi <span class="ot">&lt;-</span>  <span class="fu">read.delim</span>(<span class="st">&quot;analysis_PPanGGOLiN/Output_Ctub/Ctub_gephi_table.csv&quot;</span>, <span class="st">&quot;,&quot;</span>, <span class="at">escape_double =</span> <span class="cn">FALSE</span>, <span class="at">trim_ws =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>Gephi <span class="ot">&lt;-</span>  <span class="fu">read.delim</span>(<span class="st">&quot;analysis_PPanGGOLiN/Output_Cacc/Cacc_gephi_table.csv&quot;</span>, <span class="st">&quot;,&quot;</span>, <span class="at">escape_double =</span> <span class="cn">FALSE</span>, <span class="at">trim_ws =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<div id="persistent-vs.-accessory-based-on-ppanggolin" class="section level2" number="3.1">
-<h2><span class="header-section-number">3.1</span> Persistent vs. Accessory based on PPanGGOLiN</h2>
+internal gene IDs, that are different from the anvi’o ones.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>Gephi <span class="ot">&lt;-</span>  <span class="fu">read.delim</span>(<span class="st">&quot;analysis_PPanGGOLiN/Output_Cpse/Cpse_gephi_table.csv&quot;</span>, <span class="st">&quot;,&quot;</span>, <span class="at">escape_double =</span> <span class="cn">FALSE</span>, <span class="at">trim_ws =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>Gephi <span class="ot">&lt;-</span>  <span class="fu">read.delim</span>(<span class="st">&quot;analysis_PPanGGOLiN/Output_Cpro/Cpro_gephi_table.csv&quot;</span>, <span class="st">&quot;,&quot;</span>, <span class="at">escape_double =</span> <span class="cn">FALSE</span>, <span class="at">trim_ws =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>Gephi <span class="ot">&lt;-</span>  <span class="fu">read.delim</span>(<span class="st">&quot;analysis_PPanGGOLiN/Output_Ctub/Ctub_gephi_table.csv&quot;</span>, <span class="st">&quot;,&quot;</span>, <span class="at">escape_double =</span> <span class="cn">FALSE</span>, <span class="at">trim_ws =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a>Gephi <span class="ot">&lt;-</span>  <span class="fu">read.delim</span>(<span class="st">&quot;analysis_PPanGGOLiN/Output_Cacc/Cacc_gephi_table.csv&quot;</span>, <span class="st">&quot;,&quot;</span>, <span class="at">escape_double =</span> <span class="cn">FALSE</span>, <span class="at">trim_ws =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div id="persistent-vs.-accessory-based-on-ppanggolin" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Persistent vs. Accessory based on PPanGGOLiN</h2>
 <p>PPanGGOLiN generates a “partitions” folder as part of its output. We
 read the persistent, cloud and shell files from this output and add a
 column labeling them. We combine the three in one <code>partitions.txt</code> file
-that can be imported into Anvi’o:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>Cpse_persistent <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/Users/tommytran/Downloads/Output_Cps/partitions/persistent.txt&quot;</span>, <span class="at">col.names =</span> <span class="st">&quot;GC&quot;</span>)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>Cpse_persistent<span class="sc">$</span>PPanGGOLiN <span class="ot">&lt;-</span> <span class="st">&quot;persistent&quot;</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>Cpse_cloud <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/Users/tommytran/Downloads/Output_Cps/partitions/cloud.txt&quot;</span>, <span class="at">col.names =</span> <span class="st">&quot;GC&quot;</span>)</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>Cpse_cloud<span class="sc">$</span>PPanGGOLiN <span class="ot">&lt;-</span> <span class="st">&quot;cloud&quot;</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>Cpse_shell <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/Users/tommytran/Downloads/Output_Cps/partitions/shell.txt&quot;</span>, <span class="at">col.names =</span> <span class="st">&quot;GC&quot;</span>)</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>Cpse_shell<span class="sc">$</span>PPanGGOLiN <span class="ot">&lt;-</span> <span class="st">&quot;shell&quot;</span></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>Cpse_partitions <span class="ot">&lt;-</span> <span class="fu">rbind</span>(Cpse_persistent, Cpse_cloud, Cpse_shell)</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>Cpse_partitions <span class="ot">&lt;-</span> Cpse_partitions[<span class="fu">grep</span>(<span class="st">&quot;GC_00&quot;</span>, Cpse_partitions<span class="sc">$</span>GC),]</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="fu">write_delim</span>(Cpse_partitions, <span class="st">&quot;/Users/tommytran/Downloads/Output_Cps/partitions/partitions.txt&quot;</span>, <span class="at">delim =</span> <span class="st">&quot;</span><span class="sc">\t</span><span class="st">&quot;</span>)</span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>Cpro_persistent <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/Users/tommytran/Downloads/Output_Cpr/partitions/persistent.txt&quot;</span>, <span class="at">col.names =</span> <span class="st">&quot;GC&quot;</span>)</span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>Cpro_persistent<span class="sc">$</span>PPanGGOLiN <span class="ot">&lt;-</span> <span class="st">&quot;persistent&quot;</span></span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>Cpro_cloud <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/Users/tommytran/Downloads/Output_Cpr/partitions/cloud.txt&quot;</span>, <span class="at">col.names =</span> <span class="st">&quot;GC&quot;</span>)</span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>Cpro_cloud<span class="sc">$</span>PPanGGOLiN <span class="ot">&lt;-</span> <span class="st">&quot;cloud&quot;</span></span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>Cpro_shell <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/Users/tommytran/Downloads/Output_Cpr/partitions/shell.txt&quot;</span>, <span class="at">col.names =</span> <span class="st">&quot;GC&quot;</span>)</span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>Cpro_shell<span class="sc">$</span>PPanGGOLiN <span class="ot">&lt;-</span> <span class="st">&quot;shell&quot;</span></span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>Cpro_partitions <span class="ot">&lt;-</span> <span class="fu">rbind</span>(Cpro_persistent, Cpro_cloud, Cpro_shell)</span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>Cpro_partitions <span class="ot">&lt;-</span> Cpro_partitions[<span class="fu">grep</span>(<span class="st">&quot;GC_&quot;</span>, Cpro_partitions<span class="sc">$</span>GC),]</span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="fu">write_delim</span>(Cpro_partitions, <span class="st">&quot;/Users/tommytran/Downloads/Output_Cpr/partitions/partitions.txt&quot;</span>, <span class="at">delim =</span> <span class="st">&quot;</span><span class="sc">\t</span><span class="st">&quot;</span>)</span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>Ctub_persistent <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/Users/tommytran/Downloads/Output_Ctu/partitions/persistent.txt&quot;</span>, <span class="at">col.names =</span> <span class="st">&quot;GC&quot;</span>)</span>
-<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>Ctub_persistent<span class="sc">$</span>PPanGGOLiN <span class="ot">&lt;-</span> <span class="st">&quot;persistent&quot;</span></span>
-<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>Ctub_cloud <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/Users/tommytran/Downloads/Output_Ctu/partitions/cloud.txt&quot;</span>, <span class="at">col.names =</span> <span class="st">&quot;GC&quot;</span>)</span>
-<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>Ctub_cloud<span class="sc">$</span>PPanGGOLiN <span class="ot">&lt;-</span> <span class="st">&quot;cloud&quot;</span></span>
-<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>Ctub_shell <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/Users/tommytran/Downloads/Output_Ctu/partitions/shell.txt&quot;</span>, <span class="at">col.names =</span> <span class="st">&quot;GC&quot;</span>)</span>
-<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>Ctub_shell<span class="sc">$</span>PPanGGOLiN <span class="ot">&lt;-</span> <span class="st">&quot;shell&quot;</span></span>
-<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>Ctub_partitions <span class="ot">&lt;-</span> <span class="fu">rbind</span>(Ctub_persistent, Ctub_cloud, Ctub_shell)</span>
-<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>Ctub_partitions <span class="ot">&lt;-</span> Ctub_partitions[<span class="fu">grep</span>(<span class="st">&quot;GC_&quot;</span>, Ctub_partitions<span class="sc">$</span>GC),]</span>
-<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a><span class="fu">write_delim</span>(Ctub_partitions, <span class="st">&quot;/Users/tommytran/Downloads/Output_Ctu/partitions/partitions.txt&quot;</span>, <span class="at">delim =</span> <span class="st">&quot;</span><span class="sc">\t</span><span class="st">&quot;</span>)</span>
-<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>Cacc_persistent <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/Users/tommytran/Downloads/Output_Cac/partitions/persistent.txt&quot;</span>, <span class="at">col.names =</span> <span class="st">&quot;GC&quot;</span>)</span>
-<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>Cacc_persistent<span class="sc">$</span>PPanGGOLiN <span class="ot">&lt;-</span> <span class="st">&quot;persistent&quot;</span></span>
-<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>Cacc_cloud <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/Users/tommytran/Downloads/Output_Cac/partitions/cloud.txt&quot;</span>, <span class="at">col.names =</span> <span class="st">&quot;GC&quot;</span>)</span>
-<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>Cacc_cloud<span class="sc">$</span>PPanGGOLiN <span class="ot">&lt;-</span> <span class="st">&quot;cloud&quot;</span></span>
-<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>Cacc_shell <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/Users/tommytran/Downloads/Output_Cac/partitions/shell.txt&quot;</span>, <span class="at">col.names =</span> <span class="st">&quot;GC&quot;</span>)</span>
-<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>Cacc_shell<span class="sc">$</span>PPanGGOLiN <span class="ot">&lt;-</span> <span class="st">&quot;shell&quot;</span></span>
-<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>Cacc_partitions <span class="ot">&lt;-</span> <span class="fu">rbind</span>(Cacc_persistent, Cacc_cloud, Cacc_shell)</span>
-<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>Cacc_partitions <span class="ot">&lt;-</span> Cacc_partitions[<span class="fu">grep</span>(<span class="st">&quot;GC_&quot;</span>, Cacc_partitions<span class="sc">$</span>GC),]</span>
-<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a><span class="fu">write_delim</span>(Cacc_partitions, <span class="st">&quot;/Users/tommytran/Downloads/Output_Cac/partitions/partitions.txt&quot;</span>, <span class="at">delim =</span> <span class="st">&quot;</span><span class="sc">\t</span><span class="st">&quot;</span>)</span></code></pre></div>
+that can be imported into anvi’o:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>Cpse_persistent <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/Users/tommytran/Downloads/Output_Cps/partitions/persistent.txt&quot;</span>, <span class="at">col.names =</span> <span class="st">&quot;GC&quot;</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>Cpse_persistent<span class="sc">$</span>PPanGGOLiN <span class="ot">&lt;-</span> <span class="st">&quot;persistent&quot;</span></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>Cpse_cloud <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/Users/tommytran/Downloads/Output_Cps/partitions/cloud.txt&quot;</span>, <span class="at">col.names =</span> <span class="st">&quot;GC&quot;</span>)</span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>Cpse_cloud<span class="sc">$</span>PPanGGOLiN <span class="ot">&lt;-</span> <span class="st">&quot;cloud&quot;</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>Cpse_shell <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/Users/tommytran/Downloads/Output_Cps/partitions/shell.txt&quot;</span>, <span class="at">col.names =</span> <span class="st">&quot;GC&quot;</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>Cpse_shell<span class="sc">$</span>PPanGGOLiN <span class="ot">&lt;-</span> <span class="st">&quot;shell&quot;</span></span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>Cpse_partitions <span class="ot">&lt;-</span> <span class="fu">rbind</span>(Cpse_persistent, Cpse_cloud, Cpse_shell)</span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>Cpse_partitions <span class="ot">&lt;-</span> Cpse_partitions[<span class="fu">grep</span>(<span class="st">&quot;GC_00&quot;</span>, Cpse_partitions<span class="sc">$</span>GC),]</span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a><span class="fu">write_delim</span>(Cpse_partitions, <span class="st">&quot;/Users/tommytran/Downloads/Output_Cps/partitions/partitions.txt&quot;</span>, <span class="at">delim =</span> <span class="st">&quot;</span><span class="sc">\t</span><span class="st">&quot;</span>)</span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a></span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a>Cpro_persistent <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/Users/tommytran/Downloads/Output_Cpr/partitions/persistent.txt&quot;</span>, <span class="at">col.names =</span> <span class="st">&quot;GC&quot;</span>)</span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a>Cpro_persistent<span class="sc">$</span>PPanGGOLiN <span class="ot">&lt;-</span> <span class="st">&quot;persistent&quot;</span></span>
+<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a>Cpro_cloud <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/Users/tommytran/Downloads/Output_Cpr/partitions/cloud.txt&quot;</span>, <span class="at">col.names =</span> <span class="st">&quot;GC&quot;</span>)</span>
+<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a>Cpro_cloud<span class="sc">$</span>PPanGGOLiN <span class="ot">&lt;-</span> <span class="st">&quot;cloud&quot;</span></span>
+<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a>Cpro_shell <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/Users/tommytran/Downloads/Output_Cpr/partitions/shell.txt&quot;</span>, <span class="at">col.names =</span> <span class="st">&quot;GC&quot;</span>)</span>
+<span id="cb14-16"><a href="#cb14-16" tabindex="-1"></a>Cpro_shell<span class="sc">$</span>PPanGGOLiN <span class="ot">&lt;-</span> <span class="st">&quot;shell&quot;</span></span>
+<span id="cb14-17"><a href="#cb14-17" tabindex="-1"></a>Cpro_partitions <span class="ot">&lt;-</span> <span class="fu">rbind</span>(Cpro_persistent, Cpro_cloud, Cpro_shell)</span>
+<span id="cb14-18"><a href="#cb14-18" tabindex="-1"></a>Cpro_partitions <span class="ot">&lt;-</span> Cpro_partitions[<span class="fu">grep</span>(<span class="st">&quot;GC_&quot;</span>, Cpro_partitions<span class="sc">$</span>GC),]</span>
+<span id="cb14-19"><a href="#cb14-19" tabindex="-1"></a><span class="fu">write_delim</span>(Cpro_partitions, <span class="st">&quot;/Users/tommytran/Downloads/Output_Cpr/partitions/partitions.txt&quot;</span>, <span class="at">delim =</span> <span class="st">&quot;</span><span class="sc">\t</span><span class="st">&quot;</span>)</span>
+<span id="cb14-20"><a href="#cb14-20" tabindex="-1"></a></span>
+<span id="cb14-21"><a href="#cb14-21" tabindex="-1"></a>Ctub_persistent <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/Users/tommytran/Downloads/Output_Ctu/partitions/persistent.txt&quot;</span>, <span class="at">col.names =</span> <span class="st">&quot;GC&quot;</span>)</span>
+<span id="cb14-22"><a href="#cb14-22" tabindex="-1"></a>Ctub_persistent<span class="sc">$</span>PPanGGOLiN <span class="ot">&lt;-</span> <span class="st">&quot;persistent&quot;</span></span>
+<span id="cb14-23"><a href="#cb14-23" tabindex="-1"></a>Ctub_cloud <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/Users/tommytran/Downloads/Output_Ctu/partitions/cloud.txt&quot;</span>, <span class="at">col.names =</span> <span class="st">&quot;GC&quot;</span>)</span>
+<span id="cb14-24"><a href="#cb14-24" tabindex="-1"></a>Ctub_cloud<span class="sc">$</span>PPanGGOLiN <span class="ot">&lt;-</span> <span class="st">&quot;cloud&quot;</span></span>
+<span id="cb14-25"><a href="#cb14-25" tabindex="-1"></a>Ctub_shell <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/Users/tommytran/Downloads/Output_Ctu/partitions/shell.txt&quot;</span>, <span class="at">col.names =</span> <span class="st">&quot;GC&quot;</span>)</span>
+<span id="cb14-26"><a href="#cb14-26" tabindex="-1"></a>Ctub_shell<span class="sc">$</span>PPanGGOLiN <span class="ot">&lt;-</span> <span class="st">&quot;shell&quot;</span></span>
+<span id="cb14-27"><a href="#cb14-27" tabindex="-1"></a>Ctub_partitions <span class="ot">&lt;-</span> <span class="fu">rbind</span>(Ctub_persistent, Ctub_cloud, Ctub_shell)</span>
+<span id="cb14-28"><a href="#cb14-28" tabindex="-1"></a>Ctub_partitions <span class="ot">&lt;-</span> Ctub_partitions[<span class="fu">grep</span>(<span class="st">&quot;GC_&quot;</span>, Ctub_partitions<span class="sc">$</span>GC),]</span>
+<span id="cb14-29"><a href="#cb14-29" tabindex="-1"></a><span class="fu">write_delim</span>(Ctub_partitions, <span class="st">&quot;/Users/tommytran/Downloads/Output_Ctu/partitions/partitions.txt&quot;</span>, <span class="at">delim =</span> <span class="st">&quot;</span><span class="sc">\t</span><span class="st">&quot;</span>)</span>
+<span id="cb14-30"><a href="#cb14-30" tabindex="-1"></a></span>
+<span id="cb14-31"><a href="#cb14-31" tabindex="-1"></a>Cacc_persistent <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/Users/tommytran/Downloads/Output_Cac/partitions/persistent.txt&quot;</span>, <span class="at">col.names =</span> <span class="st">&quot;GC&quot;</span>)</span>
+<span id="cb14-32"><a href="#cb14-32" tabindex="-1"></a>Cacc_persistent<span class="sc">$</span>PPanGGOLiN <span class="ot">&lt;-</span> <span class="st">&quot;persistent&quot;</span></span>
+<span id="cb14-33"><a href="#cb14-33" tabindex="-1"></a>Cacc_cloud <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/Users/tommytran/Downloads/Output_Cac/partitions/cloud.txt&quot;</span>, <span class="at">col.names =</span> <span class="st">&quot;GC&quot;</span>)</span>
+<span id="cb14-34"><a href="#cb14-34" tabindex="-1"></a>Cacc_cloud<span class="sc">$</span>PPanGGOLiN <span class="ot">&lt;-</span> <span class="st">&quot;cloud&quot;</span></span>
+<span id="cb14-35"><a href="#cb14-35" tabindex="-1"></a>Cacc_shell <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">&quot;/Users/tommytran/Downloads/Output_Cac/partitions/shell.txt&quot;</span>, <span class="at">col.names =</span> <span class="st">&quot;GC&quot;</span>)</span>
+<span id="cb14-36"><a href="#cb14-36" tabindex="-1"></a>Cacc_shell<span class="sc">$</span>PPanGGOLiN <span class="ot">&lt;-</span> <span class="st">&quot;shell&quot;</span></span>
+<span id="cb14-37"><a href="#cb14-37" tabindex="-1"></a>Cacc_partitions <span class="ot">&lt;-</span> <span class="fu">rbind</span>(Cacc_persistent, Cacc_cloud, Cacc_shell)</span>
+<span id="cb14-38"><a href="#cb14-38" tabindex="-1"></a>Cacc_partitions <span class="ot">&lt;-</span> Cacc_partitions[<span class="fu">grep</span>(<span class="st">&quot;GC_&quot;</span>, Cacc_partitions<span class="sc">$</span>GC),]</span>
+<span id="cb14-39"><a href="#cb14-39" tabindex="-1"></a><span class="fu">write_delim</span>(Cacc_partitions, <span class="st">&quot;/Users/tommytran/Downloads/Output_Cac/partitions/partitions.txt&quot;</span>, <span class="at">delim =</span> <span class="st">&quot;</span><span class="sc">\t</span><span class="st">&quot;</span>)</span></code></pre></div>
 <p>This will import the PPanGGOLiN partitions (from <code>partitions.txt</code>) as a
 collection of bins named <strong>PPanGGOLiNpartitions</strong> in each profile-db:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">#conda activate anvio-7</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="ex">anvi-import-collection</span> <span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpsd/partitions_Cps.txt&quot;</span> <span class="dt">\</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">-p</span> <span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db&quot;</span> <span class="dt">\</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>                       <span class="at">-C</span> <span class="st">&quot;PPanGGOLiNpartitions&quot;</span> <span class="at">--bins-info</span> <span class="st">&quot;/Users/klemonlab/Documents/GitHub/Coryne_Pangenomics_2021/main_outputs/Anvio7/PPanGGOLiN_bin_colors.txt&quot;</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="ex">anvi-import-collection</span> <span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/partitions_Cpr.txt&quot;</span> <span class="dt">\</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>                       <span class="at">-p</span> <span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db&quot;</span> <span class="dt">\</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>                       <span class="at">-C</span> <span class="st">&quot;PPanGGOLiNpartitions&quot;</span> <span class="at">--bins-info</span> <span class="st">&quot;/Users/klemonlab/Documents/GitHub/Coryne_Pangenomics_2021/main_outputs/Anvio7/PPanGGOLiN_bin_colors.txt&quot;</span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="ex">anvi-import-collection</span> <span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/partitions_Ctu.txt&quot;</span> <span class="dt">\</span></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>                       <span class="at">-p</span> <span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db&quot;</span> <span class="dt">\</span></span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>                       <span class="at">-C</span> <span class="st">&quot;PPanGGOLiNpartitions&quot;</span> <span class="at">--bins-info</span> <span class="st">&quot;/Users/klemonlab/Documents/GitHub/Coryne_Pangenomics_2021/main_outputs/Anvio7/PPanGGOLiN_bin_colors.txt&quot;</span></span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="ex">anvi-import-collection</span> <span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/partitions_Cac.txt&quot;</span> <span class="dt">\</span></span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>                       <span class="at">-p</span> <span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db&quot;</span> <span class="dt">\</span></span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>                       <span class="at">-C</span> <span class="st">&quot;PPanGGOLiNpartitions&quot;</span> <span class="at">--bins-info</span> <span class="st">&quot;/Users/klemonlab/Documents/GitHub/Coryne_Pangenomics_2021/main_outputs/Anvio7/PPanGGOLiN_bin_colors.txt&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co">#conda activate anvio-7</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="ex">anvi-import-collection</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cpsd/partitions_Cps.txt&quot;</span> <span class="dt">\</span></span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>                       <span class="at">-p</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db&quot;</span> <span class="dt">\</span></span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>                       <span class="at">-C</span> <span class="st">&quot;PPanGGOLiNpartitions&quot;</span> <span class="at">--bins-info</span> <span class="st">&quot;/analysis_Anvio7/main_outputs/PPanGGOLiN_bin_colors.txt&quot;</span></span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a><span class="ex">anvi-import-collection</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cpro/partitions_Cpr.txt&quot;</span> <span class="dt">\</span></span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a>                       <span class="at">-p</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db&quot;</span> <span class="dt">\</span></span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a>                       <span class="at">-C</span> <span class="st">&quot;PPanGGOLiNpartitions&quot;</span> <span class="at">--bins-info</span> <span class="st">&quot;/analysis_Anvio7/main_outputs/PPanGGOLiN_bin_colors.txt&quot;</span></span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a><span class="ex">anvi-import-collection</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Ctub/partitions_Ctu.txt&quot;</span> <span class="dt">\</span></span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a>                       <span class="at">-p</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db&quot;</span> <span class="dt">\</span></span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a>                       <span class="at">-C</span> <span class="st">&quot;PPanGGOLiNpartitions&quot;</span> <span class="at">--bins-info</span> <span class="st">&quot;/analysis_Anvio7/main_outputs/PPanGGOLiN_bin_colors.txt&quot;</span></span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a><span class="ex">anvi-import-collection</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cacc/partitions_Cac.txt&quot;</span> <span class="dt">\</span></span>
+<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a>                       <span class="at">-p</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db&quot;</span> <span class="dt">\</span></span>
+<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a>                       <span class="at">-C</span> <span class="st">&quot;PPanGGOLiNpartitions&quot;</span> <span class="at">--bins-info</span> <span class="st">&quot;/analysis_Anvio7/main_outputs/PPanGGOLiN_bin_colors.txt&quot;</span></span></code></pre></div>
 <p>We can also import this data (from <code>partitions.txt</code>) as a PPanGGOLiN
 layer into in each profile-db:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">#conda activate anvio-7</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="ex">anvi-import-misc-data</span> <span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpsd/partitions_Cps.txt&quot;</span> <span class="dt">\</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">-p</span> <span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db&quot;</span> <span class="at">-t</span> items</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="ex">anvi-import-misc-data</span> <span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/partitions_Cpr.txt&quot;</span> <span class="dt">\</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>                       <span class="at">-p</span> <span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db&quot;</span> <span class="at">-t</span> items</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="ex">anvi-import-misc-data</span> <span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/partitions_Ctu.txt&quot;</span> <span class="dt">\</span></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>                       <span class="at">-p</span> <span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db&quot;</span> <span class="at">-t</span> items</span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="ex">anvi-import-misc-data</span> <span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/partitions_Cac.txt&quot;</span> <span class="dt">\</span></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>                       <span class="at">-p</span> <span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db&quot;</span> <span class="at">-t</span> items                    </span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co">#conda activate anvio-7</span></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="ex">anvi-import-misc-data</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cpsd/partitions_Cps.txt&quot;</span> <span class="dt">\</span></span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>                       <span class="at">-p</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db&quot;</span> <span class="at">-t</span> items</span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="ex">anvi-import-misc-data</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cpro/partitions_Cpr.txt&quot;</span> <span class="dt">\</span></span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>                       <span class="at">-p</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db&quot;</span> <span class="at">-t</span> items</span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a><span class="ex">anvi-import-misc-data</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Ctub/partitions_Ctu.txt&quot;</span> <span class="dt">\</span></span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a>                       <span class="at">-p</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db&quot;</span> <span class="at">-t</span> items</span>
+<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a><span class="ex">anvi-import-misc-data</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cacc/partitions_Cac.txt&quot;</span> <span class="dt">\</span></span>
+<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a>                       <span class="at">-p</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db&quot;</span> <span class="at">-t</span> items                    </span></code></pre></div>
 </div>
-<div id="displaying-the-generated-bin-collections" class="section level2" number="3.2">
-<h2><span class="header-section-number">3.2</span> Displaying the generated bin collections</h2>
+<div id="displaying-the-generated-bin-collections" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Displaying the generated bin collections</h2>
 <p>We can see the collections and bins created in a pangenomic database
 using the command <code>anvi-show-collections-and-bins</code>:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">#conda activate anvio-7</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ex">anvi-show-collections-and-bins</span> <span class="at">-p</span> <span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db&quot;</span> <span class="at">--debug</span> </span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="ex">anvi-show-collections-and-bins</span> <span class="at">-p</span> <span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db&quot;</span> <span class="at">--debug</span> </span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="ex">anvi-show-collections-and-bins</span> <span class="at">-p</span> <span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db&quot;</span> <span class="at">--debug</span> </span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="ex">anvi-show-collections-and-bins</span> <span class="at">-p</span> <span class="st">&quot;/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db&quot;</span> <span class="at">--debug</span> </span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co">#conda activate anvio-7</span></span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="ex">anvi-show-collections-and-bins</span> <span class="at">-p</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db&quot;</span> <span class="at">--debug</span> </span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="ex">anvi-show-collections-and-bins</span> <span class="at">-p</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db&quot;</span> <span class="at">--debug</span> </span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a><span class="ex">anvi-show-collections-and-bins</span> <span class="at">-p</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db&quot;</span> <span class="at">--debug</span> </span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a><span class="ex">anvi-show-collections-and-bins</span> <span class="at">-p</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db&quot;</span> <span class="at">--debug</span> </span></code></pre></div>
 </div>
-<div id="ppanggolin-pangenome-compartments" class="section level2" number="3.3">
-<h2><span class="header-section-number">3.3</span> PPanGGOLiN Pangenome Compartments</h2>
-<div id="c.-propinquum-pangenome" class="section level3" number="3.3.1">
-<h3><span class="header-section-number">3.3.1</span> <em>C. propinquum</em> pangenome</h3>
+<div id="ppanggolin-pangenome-compartments" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> PPanGGOLiN Pangenome Compartments</h2>
+<div id="c.-propinquum-pangenome" class="section level3" number="2.3.1">
+<h3><span class="header-section-number">2.3.1</span> <em>C. propinquum</em> pangenome</h3>
 <table>
 <colgroup>
-<col width="25%" />
-<col width="37%" />
-<col width="37%" />
+<col width="26%" />
+<col width="36%" />
+<col width="36%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -2111,13 +2107,13 @@ using the command <code>anvi-show-collections-and-bins</code>:</p>
 </tbody>
 </table>
 </div>
-<div id="c.-pseudodiphtheriticum-pangenome" class="section level3" number="3.3.2">
-<h3><span class="header-section-number">3.3.2</span> <em>C. pseudodiphtheriticum</em> pangenome</h3>
+<div id="c.-pseudodiphtheriticum-pangenome" class="section level3" number="2.3.2">
+<h3><span class="header-section-number">2.3.2</span> <em>C. pseudodiphtheriticum</em> pangenome</h3>
 <table>
 <colgroup>
-<col width="25%" />
-<col width="37%" />
-<col width="37%" />
+<col width="26%" />
+<col width="36%" />
+<col width="36%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -2150,13 +2146,13 @@ using the command <code>anvi-show-collections-and-bins</code>:</p>
 </tbody>
 </table>
 </div>
-<div id="c.-accolens-pangenome" class="section level3" number="3.3.3">
-<h3><span class="header-section-number">3.3.3</span> <em>C. accolens</em> pangenome</h3>
+<div id="c.-accolens-pangenome" class="section level3" number="2.3.3">
+<h3><span class="header-section-number">2.3.3</span> <em>C. accolens</em> pangenome</h3>
 <table>
 <colgroup>
-<col width="25%" />
-<col width="37%" />
-<col width="37%" />
+<col width="26%" />
+<col width="36%" />
+<col width="36%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -2189,13 +2185,13 @@ using the command <code>anvi-show-collections-and-bins</code>:</p>
 </tbody>
 </table>
 </div>
-<div id="c.-tuberculostearicum-pangenome" class="section level3" number="3.3.4">
-<h3><span class="header-section-number">3.3.4</span> <em>C. tuberculostearicum</em> pangenome</h3>
+<div id="c.-tuberculostearicum-pangenome" class="section level3" number="2.3.4">
+<h3><span class="header-section-number">2.3.4</span> <em>C. tuberculostearicum</em> pangenome</h3>
 <table>
 <colgroup>
-<col width="25%" />
-<col width="37%" />
-<col width="37%" />
+<col width="26%" />
+<col width="36%" />
+<col width="36%" />
 </colgroup>
 <thead>
 <tr class="header">

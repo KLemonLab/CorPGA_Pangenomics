@@ -1,5 +1,5 @@
 ---
-title: "SupplementalMethods_anvi'o"
+title: "Supplemental Methods: anvi'o"
 author:
   - Tommy Tran, (KLemonLab) Tommy.Tran@bcm.edu
   - Ari Roberts, (KLemonLab) Ari.Roberts@bcm.edu
@@ -8,9 +8,6 @@ output:
   rmdformats::robobook:
     use_bookdown: true
     code_folding: show
-  github_document:
-    toc: true
-    toc_depth: 4
 bibliography: referencesAnvio.bib
 ---
 
@@ -18,22 +15,19 @@ bibliography: referencesAnvio.bib
 klippy::klippy(c('r', 'bash'))
 ```
 
-
-
-This notebook contains analyses using anvi'o version 7.1.2 [@Eren2021]. For more in-depth information about anvi'o go to their official online site here: <https://anvio.org/>
-
-We will use as input (`path_i`) the anvi'o contigs database files (`.db`) that were generated in [[SupplementalMethods_Prokka_Annotations]{.underline}](SupplementalMethods_Prokka_Annotations.html).
+This notebook contains analyses using anvi'o version 7.1 [@Eren2021]. For more in-depth information about anvi'o go to their official online site here: <https://anvio.org/>
 
 # Import functional annotations
 
+We will use as input (`path_i`) the anvi'o contigs database files (`.db`) that were generated in [[SupplementalMethods_Prokka_Annotations]{.underline}](SupplementalMethods_Prokka_Annotations.html).
+
 ## COG annotation
 
-First you need to download and set up the NCBI's Clusters of Orthologous Groups database using `anvi-setup-ncbi-cogs`: this is something you will do only once.
+First you need to download and set up the NCBI's Clusters of Orthologous Groups database using `anvi-setup-ncbi-cogs`. We used the COG20 version.
 
 Now the `anvi-run-ncbi-cogs` command can be used to annotate the .db genome files against the NCBI's COGs database [@Tatusov2001]: It uses DIAMOND [@Buchfink2015] "fast" as default, but it is recommended to use the "sensitive" option. This will take considerably much longer. Blastp can also be used instead of DIAMOND.
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1.2
 path_i="analysis_Anvio7/Contigs_db"
 
 for file in $path_i/*.db; do
@@ -43,12 +37,11 @@ done
 
 ## KEGG annotation
 
-First you need to download and set up the KEGG KOfam database using `anvi-setup-kegg-kofams`: this is something you will do only once.
+First you need to download and set up the KEGG KOfam database using `anvi-setup-kegg-kofams`. We used the KEGG snapshot provided by Anvio 7.1.
 
-The program `anvi-run-kegg-kofams` annotates genes in a given anvi'o contigs database with KEGG Orthology (KO) numbers via hits to the KEGG KOfam database [@Kanehisa2000]. 
+The program `anvi-run-kegg-kofams` annotates genes in a given anvi'o contigs database with KEGG Orthology (KO) numbers via hits to the KEGG KOfam database [@Kanehisa2000].
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1.2
 path_i="analysis_Anvio7/Contigs_db"
 
 for file in $path_i/*.db; do
@@ -56,7 +49,7 @@ for file in $path_i/*.db; do
 done
 ```
 
-The option `--log-bitscores` records the bit scores values. They were saved to the main folder for the repo, so we move them to a new subfolder:
+The option `--log-bitscores` records the bit scores values. They were saved to the main folder for the repo, so we moved them to a new subfolder:
 
 ```{bash, eval = FALSE}
 mkdir "analysis_Anvio7/KEGGbitscores"
@@ -65,12 +58,11 @@ mv *_bitscores.txt analysis_Anvio7/KEGGbitscores/
 
 ## PFAM annotation
 
-First you need to download and set up the PFAM database using `anvi-setup-pfams`: this is something you will do only once.
+First you need to download and set up the PFAM database using `anvi-setup-pfams`. We used the XXXXXXX version.
 
 The program `anvi-run-kegg-pfam` annotates genes in a given anvi'o contigs database with the PFAM database [@Mistry2021].
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1.2
 path_i="analysis_Anvio7/Contigs_db"
 
 for file in $path_i/*.db; do
@@ -83,7 +75,6 @@ done
 When you run the following command the occurrence of bacterial single-copy genes across your contigs is added to your contigs database [@Eddy2011].
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1.2
 path_i="analysis_Anvio7/Contigs_db"
 
 for file in $path_i/*.db; do
@@ -96,7 +87,6 @@ done
 This generates basic stats on the annotations:
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1.2
 mkdir -p "analysis_Anvio7/Contigs_stats"
 
 path_i="analysis_Anvio7/Contigs_db"
@@ -111,7 +101,6 @@ done
 This provides basic info on the contigs databases:
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1.2
 path_i="analysis_Anvio7/Contigs_db"
 
 for file in $path_i/*.db; do
@@ -125,15 +114,14 @@ Terminal output saved to `analysis_Anvio7/anvi-db-info_log.txt`.
 
 ## Generating an anvi'o genomes storage
 
-The program `anvi-gen-genomes-storage` requires you to provide names and locations of the genomes to be included in the genome storage database in a .txt file. We created the All_107_CorynesAnvio.txt file with the renamed file names and paths based on the info on `GENOMES/METADATA_107taxa.csv`. This file includes the name anvi'o will use internally to identify each genome. We added the prefix "RefSeq\_" to the reference genomes because some of them start with a digit and anvi'o only allow names that start with an ASCII letter.
+The program `anvi-gen-genomes-storage` requires you to provide names and locations of the genomes to be included in the genome storage database in a `.txt` file. We created the All_104_CorynesAnvio.txt file with the file names and paths. This file includes the name anvi'o will use internally to identify each genome. We added the prefix "RefSeq\_" to the reference genomes because some of them start with a digit and anvi'o only allows names that start with an ASCII letter. We made equivalent files for each of the four species.
 
-We create 1 database with the 107 genomes that can be used to run the pangenomic analysis with all the strains at once or by selecting subsets of strains (i.e. by species, or by grouping related species together).
+We created a storage database with the 104 genomes that can be used to run the pangenomic analysis with all the strains at once or by selecting subsets of strains (i.e. by species, or by grouping related species together).
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1
 mkdir -p "analysis_Anvio7/Pangenomic_Results"
 
-anvi-gen-genomes-storage -e "analysis_Anvio7/All_107_CorynesAnvio.txt" -o "analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db" --gene-caller Prodigal
+anvi-gen-genomes-storage -e "analysis_Anvio7/All_104_CorynesAnvio.txt" -o "analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db" --gene-caller Prodigal
 ```
 
 This provides basic info on the generated genomes storage database:
@@ -142,17 +130,11 @@ This provides basic info on the generated genomes storage database:
 anvi-db-info "analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db"
 ```
 
-## Make Species Genome Lists
-
-We had to make new anvi'o environment with python 3.7 since the step below would not work unless we did that. This could be related to the updates with anvio 7.1 
-```{bash, eval = FALSE}
-conda create -y --name anvio-7.1.2 python=3.7
-```
-
 ## Running the pangenomic analsyses
 
+We generated a `.txt` file for each of the four species including the list of genomes/paths for that group and run the pangenome analysis:
+
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1
 anvi-pan-genome -g analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -G Cacc.txt -o analysis_Anvio7/Pangenomic_Results/Cacc -n PAN_Cacc --use-ncbi-blast --mcl-inflation 10  --num-threads 8
 
 anvi-pan-genome -g analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -G Cpro.txt -o analysis_Anvio7/Pangenomic_Results/Cpro -n PAN_Cpro --use-ncbi-blast --mcl-inflation 10  --num-threads 8
@@ -167,85 +149,60 @@ anvi-pan-genome -g analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -G Cpsd.
 This will display the pangenome in your default internet browser. Anvi'o says google chrome is the most compatible with the anvi''o interactive interface. You need to pick one of the `-p` inputs for each PAN.db file:
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7
-anvi-display-pan -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db"
+anvi-display-pan -p "/analysis_Anvio7/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" -g "/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db"
 
-anvi-display-pan -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db" -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db"
+anvi-display-pan -p "/analysis_Anvio7/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db" -g "/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db"
 
-anvi-display-pan -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db"
+anvi-display-pan -p "/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" -g "/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db"
 
-anvi-display-pan -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db" -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db"
+anvi-display-pan -p "/analysis_Anvio7/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db" -g "/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db"
 ```
 
 If you are using Windows and it cannot display the interactive page then try copy and pasting either 127.0.0.1:8080 or <http://localhost:8080/> into your browser. Do not use sudo in the front of the command either.
 
 Once it opens in the browser, you can adjust image settings and click the "DRAW" icon to view it. For help using the interactive interface see <http://merenlab.org/2016/02/27/the-anvio-interactive-interface/>
 
+To manually reorder the layers to match phylogenomic trees per species, click and drag the names. The order names is inverse to the layers in the concentric diagram. When all the layers were re-ordered to match the phylogenomic tree we clicked the draw button and saved the svg file.
+
 ## Summarizing the updated pangenome files by bin collection
 
-We can create tables with a summary of the pangenomes using the program `anvi-summarize`:
+We can create tables with a summary of the pangenomes using the program `anvi-summarize`.
+
+You will need to know the collection name to use on the `-C` flag in the `anvi-summarize` command. This is an example of how to see the collections and bins you have for a pangenome db file from anvi'o.
+
+```{bash, eval=FALSE}
+anvi-show-collections-and-bins -p "/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cpro-PAN.db" --debug 
+```
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7
-anvi-summarize -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" \
-               -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db" \
-               -o "/Users/klemonlab/Downloads/Cps_PAN_SUMMARY" \
+anvi-summarize -p "/analysis_Anvio7/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" \
+               -g "/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db" \
+               -o "/analysis_Anvio7/Cps_PAN_SUMMARY" \
                -C CorevsAccessory
                
-anvi-summarize -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db" \
-               -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db" \
-               -o "/Users/klemonlab/Downloads/Cpr_PAN_SUMMARY" \
+anvi-summarize -p "analysis_Anvio7/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db" \
+               -g "/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db" \
+               -o "/analysis_Anvio7/Cpr_PAN_SUMMARY" \
                -C CorevsAccessory
                
-anvi-summarize -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db" \
-               -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db" \
-               -o "/Users/klemonlab/Downloads/Ctu_PAN_SUMMARY" \
+anvi-summarize -p "/analysis_Anvio7/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db" \
+               -g "/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db" \
+               -o "/analysis_Anvio7/Ctu_PAN_SUMMARY" \
                -C CorevsAccessory
                
-anvi-summarize -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" \
-               -g "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db" \
-               -o "/Users/klemonlab/Downloads/Cac_PAN_SUMMARY" \
+anvi-summarize -p "/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" \
+               -g "/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db" \
+               -o "/analysis_Anvio7/Cac_PAN_SUMMARY" \
                -C CorevsAccessory
 ```
 
 The resulting summary folders contain a `gene_clusters_summary.txt.gz` file that links each gene to gene clusters, genomes, functions, layers, and bins selected from the interface.
 
-For consistency with other parts of the analysis the colors used for each species are:
-
--   "red" or "#FF0000" for Cpsd
--   "darkorange" or "#FF8C00" for Cpro
--   "darkblue" or "#0000ff" for Ctub
--   "darkviolet" or "#9400D3" for Cacc
--   "deeppink" or "#FF1493" for Cmac
-
-## Manually Reorder the Layers to Match Phylogenomic Trees per Species
-
-Click and drag the names. The order names is inverse to the layers in the concentric diagram. When all the layers were re-ordered to match the phylogenomic tree we clicked the draw button and saved the svg file.
-
-Darker Hex color assignments for PANGGOLiN
-
-persistant - 5e0000
-
-shell - 7400a6
-
-cloud - 054ca8
-
-Hex color assignments for GET_HOMOGOLOUES:
-
-Core - d18f24
-
-SC_Core - a30303
-
-Soft_Core - fc4635
-
-Shell - c64dfa
-
-Cloud - 358bfc
 
 ### *C. propinquum* pangenome
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
-|-----------------|-----------------|-----------------|---------------------|
+|------------------|------------------|------------------|-------------------|
 | Core             | 1824/3108                     | `r round(100*(1824/3108),1)`% | 19                                   |
 | Single Copy Core | 1715/3108                     | `r round(100*(1715/3108),1)`% | 19                                   |
 | Multicopy Core   | 109/3108                      | `r round(100*(109/3108),1)`%  | 19                                   |
@@ -256,7 +213,7 @@ Cloud - 358bfc
 ### *C. pseudodiphtheriticum* pangenome
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
-|-----------------|-----------------|-----------------|---------------------|
+|------------------|------------------|------------------|-------------------|
 | Core             | 1714/3590                     | `r round(100*(1714/3590),1)`% | 43                                   |
 | Single Copy Core | 1488/3590                     | `r round(100*(1488/3590),1)`% | 43                                   |
 | Multicopy Core   | 226/3590                      | `r round(100*(226/3590),1)`%  | 43                                   |
@@ -267,18 +224,18 @@ Cloud - 358bfc
 ### *C. pseudodiphtheriticum* pangenome after dropping Cps_090104
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
-|-----------------|-----------------|-----------------|---------------------|
+|------------------|------------------|------------------|-------------------|
 | Core             | 1719/3550                     | `r round(100*(1719/3550),1)`% | 42                                   |
 | Single Copy Core | 1598/3550                     | `r round(100*(1598/3550),1)`% | 42                                   |
 | Multicopy Core   | 121/3550                      | `r round(100*(121/3550),1)`%  | 42                                   |
 | Soft Core        | 40/3550                       | `r round(100*(40/3550),1)`%   | 39-41                                |
 | Shell            | 967/3550                      | `r round(100*(967/3550),1)`%  | 3-38                                 |
-| Cloud            | 824/3550                      | `r round(100*(824/3550),1)`%  | 1-2         
+| Cloud            | 824/3550                      | `r round(100*(824/3550),1)`%  | 1-2                                  |
 
 ### *C. accolens* pangenome
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
-|-----------------|-----------------|-----------------|---------------------|
+|------------------|------------------|------------------|-------------------|
 | Core             | 1904/3427                     | `r round(100*(1904/3427),1)`% | 34                                   |
 | Single Copy Core | 1734/3427                     | `r round(100*(1734/3427),1)`% | 34                                   |
 | Multicopy Core   | 170/3427                      | `r round(100*(170/3427),1)`%  | 34                                   |
@@ -289,18 +246,18 @@ Cloud - 358bfc
 ### *C. accolens* pangenome after dropping Cac_49756
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
-|-----------------|-----------------|-----------------|---------------------|
+|------------------|------------------|------------------|-------------------|
 | Core             | 1941/3307                     | `r round(100*(1941/3307),1)`% | 33                                   |
 | Single Copy Core | 1782/3307                     | `r round(100*(1782/3307),1)`% | 33                                   |
 | Multicopy Core   | 159/3307                      | `r round(100*(159/3307),1)`%  | 33                                   |
 | Soft Core        | 41/3307                       | `r round(100*(41/3307),1)`%   | 31-32                                |
-| Shell            | 673/3307                      | `r round(100*(673/33307),1)`%  | 3-30                                 |
+| Shell            | 673/3307                      | `r round(100*(673/33307),1)`% | 3-30                                 |
 | Cloud            | 652/3307                      | `r round(100*(652/3307),1)`%  | 1-2                                  |
 
 ### *C. tuberculostearicum* pangenome
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
-|-----------------|-----------------|-----------------|---------------------|
+|------------------|------------------|------------------|-------------------|
 | Core             | 1915/2907                     | `r round(100*(1915/2907),1)`% | 8                                    |
 | Single Copy Core | 1860/2907                     | `r round(100*(1860/2907),1)`% | 8                                    |
 | Multicopy Core   | 55/2907                       | `r round(100*(55/2907),1)`%   | 8                                    |
@@ -308,47 +265,44 @@ Cloud - 358bfc
 | Shell            | 270/2907                      | `r round(100*(270/2907),1)`%  | 3-6                                  |
 | Cloud            | 671/2907                      | `r round(100*(671/2907),1)`%  | 1-2                                  |
 
-# Finding GC Content
-
-You will need to know the collection to assign for the `-C` flag in the `anvi-summarize` command. This is an example of how to see the collections and bins you have for a pangenome db file from anvi'o.
-
-```{bash, eval=FALSE}
-anvi-show-collections-and-bins -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cpro-PAN.db" --debug 
-```
+## Finding GC Content
 
 Find GC Content for *C. propinquum*:
 
 ```{bash, eval=FALSE}
-# conda activate Anvio
-anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db -C CorevsAccessory
+anvi-summarize -g /analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -p /analysis_Anvio7/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db -C CorevsAccessory
 ```
 
 Find GC Content for *C. pseudodiphtheriticum*:
 
 ```{bash, eval=FALSE}
-# conda activate Anvio
-anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Cpse/PAN_Cpse-PAN.db -C CorevsAccessory
+anvi-summarize -g /analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -p /analysis_Anvio7/Pangenomic_Results/Cpse/PAN_Cpse-PAN.db -C CorevsAccessory
 ```
 
 Find GC Content for *C. accolens*:
 
 ```{bash, eval=FALSE}
-# conda activate Anvio
-anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db -C CorevsAccessory
+anvi-summarize -g /analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -p /analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db -C CorevsAccessory
 ```
 
 Find GC Content for *C. tuberculostearicum*:
 
 ```{bash, eval=FALSE}
-# conda activate Anvio
-anvi-summarize -g /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -p /Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db -C CorevsAccessory
+anvi-summarize -g /analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -p /analysis_Anvio7/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db -C CorevsAccessory
 ```
 
-# anvi'o KEGG Analysis Pipeline
+# KEGG Analysis
+
+We then used a workflow from anvi'o (<https://merenlab.org/tutorials/infant-gut/#chapter-v-metabolism-prediction>) that allowed us to estimate the completeness of KEGG modules.
+
+## Four *Corynebacterium* species.
+
+We first did this in each of the four *Corynebacterium* pangenomes and in the combined pangenome for the 104 strains.
+
+First we made a text document that was a list of the genome files excluding *C. macingleyi*. This was used as input for the estimate metabolism step. It contains two columns, the first column, labeled "Name", is the name of the strain genome, the second column, labeled "Contigs_db_path", is the file name and location of the genome database file.
 
 ```{bash, eval = FALSE}
-cd ./Documents/CorPGA_rerun_aqr/analysis_Anvio7 # go to anvi'o environment
-conda activate anvio-7.1.2
+cd ./analysis_Anvio7
 
 anvi-estimate-metabolism -e genome_list_Coryne_No_Mac.txt -O Coryne_No_Mac --matrix-format
 
@@ -356,11 +310,13 @@ anvi-matrix-to-newick Coryne_No_Mac-completeness-MATRIX.txt
 ```
 
 Dry run to get the profile db:
+
 ```{bash, eval = FALSE}
 anvi-interactive -d Coryne_No_Mac-completeness-MATRIX.txt -p Coryne_No_Mac_metabolism_PROFILE.db --manual-mode --dry-run
 ```
 
-Run for reals:
+Run :
+
 ```{bash, eval = FALSE}
 anvi-interactive --manual-mode -d Coryne_No_Mac-completeness-MATRIX.txt -t Coryne_No_Mac-completeness-MATRIX.txt.newick -p Coryne_No_Mac_metabolism_PROFILE.db --title "Coryne_No_Mac Metabolism Heatmap"
 
@@ -377,11 +333,13 @@ anvi-import-misc-data Coryne_No_Mac_modules_info.txt -p Coryne_No_Mac_metabolism
 ```
 
 To painlessly make your interactive visualizations look like the ones in the screenshots, you can import the following state file into your profile database:
+
 ```{bash, eval = FALSE}
 anvi-import-state -p Coryne_No_Mac_metabolism_PROFILE.db -n default -s Coryne_No_Mac_metabolism_state.json
 ```
 
 And then we can run the visualization command yet again to see the heatmap with labels:
+
 ```{bash, eval = FALSE}
 anvi-interactive --manual-mode -d Coryne_No_Mac-completeness-MATRIX.txt -t Coryne_No_Mac-completeness-MATRIX.txt.newick -p Coryne_No_Mac_metabolism_PROFILE.db --title "Coryne_No_Mac Metabolism Heatmap"
 
@@ -389,28 +347,33 @@ anvi-estimate-metabolism -e genome_list_Coryne_No_Mac.txt -O Coryne_No_Mac_metab
 ```
 
 Need to use compute-metabolic-enrichment in anvio 7.1:
+
 ```{bash, eval = FALSE}
 anvi-compute-metabolic-enrichment -M Coryne_No_Mac_metabolism_modules.txt -G Coryne_No_Mac_species_groups.txt -o Coryne_No_Mac_enriched_modules.txt
 
 anvi-compute-metabolic-enrichment -M Coryne_No_Mac_metabolism_modules.txt -G Coryne_No_Mac_collection_groups.txt -o Coryne_No_Mac_enriched_coll_modules.txt
 ```
 
-# *Corynebacterium* species vs *Dolosigranulum pigrum*
+## *Corynebacterium* species vs *Dolosigranulum pigrum*
+
+For this run, we follow the same protocol except we included 27 *D. pigrum* genomes and included them in the genome list.
 
 ```{bash, eval = FALSE}
 cd ./Documents/aqr_metabol_comp
-conda activate anvio-7.1.2
+-7.1
 anvi-estimate-metabolism -e genome_list_Coryne_Dpi.txt -O Coryne_Dpi --matrix-format
 
 anvi-matrix-to-newick Coryne_Dpi-completeness-MATRIX.txt
 ```
 
 Dry run to get the profile db:
+
 ```{bash, eval = FALSE}
 anvi-interactive -d Coryne_Dpi-completeness-MATRIX.txt -p Coryne_Dpi_metabolism_PROFILE.db --manual-mode --dry-run
 ```
 
-Run for reals:
+Run :
+
 ```{bash, eval = FALSE}
 anvi-interactive --manual-mode -d Coryne_Dpi-completeness-MATRIX.txt -t Coryne_Dpi-completeness-MATRIX.txt.newick -p Coryne_Dpi_metabolism_PROFILE.db --title "Coryne_Dpi Metabolism Heatmap"
 
@@ -427,11 +390,13 @@ anvi-import-misc-data Coryne_Dpi_modules_info.txt -p Coryne_Dpi_metabolism_PROFI
 ```
 
 To painlessly make your interactive visualizations look like the ones in the screenshots, you can import the following state file into your profile database:
+
 ```{bash, eval = FALSE}
 anvi-import-state -p Coryne_Dpi_metabolism_PROFILE.db -n default -s Coryne_Dpi_metabolism_state.json
 ```
 
 And then we can run the visualization command yet again to see the heatmap with labels:
+
 ```{bash, eval = FALSE}
 anvi-interactive --manual-mode -d Coryne_Dpi-completeness-MATRIX.txt -t Coryne_Dpi-completeness-MATRIX.txt.newick -p Coryne_Dpi_metabolism_PROFILE.db --title "Coryne_Dpi Metabolism Heatmap"
 
@@ -439,27 +404,31 @@ anvi-estimate-metabolism -e genome_list_Coryne_Dpi.txt -O Coryne_Dpi_metabolism 
 ```
 
 Need to use compute-metabolic-enrichment in anvio 7.1:
+
 ```{bash, eval = FALSE}
 anvi-compute-metabolic-enrichment -M Coryne_Dpi_metabolism_modules.txt -G Coryne_Dpi_species_groups.txt -o Coryne_Dpi_enriched_modules.txt
 ```
 
-# Intra-Species Geographic Comparison
+## Intra-Species Geographic Comparison
 
-## *C. propinquum*
+### *C. propinquum*
+
 ```{bash, eval = FALSE}
 cd ./Documents/aqr_metabol_comp
-conda activate anvio-7.1.2
+-7.1
 anvi-estimate-metabolism -e genome_list_Cprop.txt -O Cprop --matrix-format
 
 anvi-matrix-to-newick Cprop-completeness-MATRIX.txt
 ```
 
 Dry run to get the profile db:
+
 ```{bash, eval = FALSE}
 anvi-interactive -d Cprop-completeness-MATRIX.txt -p Cprop_metabolism_PROFILE.db --manual-mode --dry-run
 ```
 
-Run for reals:
+Run :
+
 ```{bash, eval = FALSE}
 anvi-interactive --manual-mode -d Cprop-completeness-MATRIX.txt -t Cprop-completeness-MATRIX.txt.newick -p Cprop_metabolism_PROFILE.db --title "Cprop Metabolism Heatmap"
 
@@ -476,11 +445,13 @@ anvi-import-misc-data Cprop_modules_info.txt -p Cprop_metabolism_PROFILE.db -t i
 ```
 
 To painlessly make your interactive visualizations look like the ones in the screenshots, you can import the following state file into your profile database:
+
 ```{bash, eval = FALSE}
 anvi-import-state -p Cprop_metabolism_PROFILE.db -n default -s Cprop_metabolism_state.json
 ```
 
 And then we can run the visualization command yet again to see the heatmap with labels:
+
 ```{bash, eval = FALSE}
 anvi-interactive --manual-mode -d Cprop-completeness-MATRIX.txt -t Cprop-completeness-MATRIX.txt.newick -p Cprop_metabolism_PROFILE.db --title "Cprop Metabolism Heatmap"
 
@@ -488,24 +459,28 @@ anvi-estimate-metabolism -e genome_list_Cprop.txt -O Cprop_metabolism --kegg-out
 ```
 
 Need to use compute-metabolic-enrichment in anvio 7.1:
+
 ```{bash, eval = FALSE}
 anvi-compute-metabolic-enrichment -M Cprop_metabolism_modules.txt -G Cprop_geo_groups.txt -o Cprop_enriched_modules.txt
 ```
 
-## *C. pseudodiphtheriticum*
+### *C. pseudodiphtheriticum*
+
 ```{bash, eval = FALSE}
 cd ./Documents/aqr_metabol_comp
-conda activate anvio-7.1.2
+-7.1
 anvi-estimate-metabolism -e genome_list_Cpsd.txt -O Cpsd --matrix-format
 anvi-matrix-to-newick Cpsd-completeness-MATRIX.txt
 ```
 
 Dry run to get the profile db:
+
 ```{bash, eval = FALSE}
 anvi-interactive -d Cpsd-completeness-MATRIX.txt -p Cpsd_metabolism_PROFILE.db --manual-mode --dry-run
 ```
 
-Run for reals:
+Run :
+
 ```{bash, eval = FALSE}
 anvi-interactive --manual-mode -d Cpsd-completeness-MATRIX.txt -t Cpsd-completeness-MATRIX.txt.newick -p Cpsd_metabolism_PROFILE.db --title "Cpsd Metabolism Heatmap"
 
@@ -522,11 +497,13 @@ anvi-import-misc-data Cpsd_modules_info.txt -p Cpsd_metabolism_PROFILE.db -t ite
 ```
 
 To painlessly make your interactive visualizations look like the ones in the screenshots, you can import the following state file into your profile database:
+
 ```{bash, eval = FALSE}
 anvi-import-state -p Cpsd_metabolism_PROFILE.db -n default -s Cpsd_metabolism_state.json
 ```
 
 And then we can run the visualization command yet again to see the heatmap with labels:
+
 ```{bash, eval = FALSE}
 anvi-interactive --manual-mode -d Cpsd-completeness-MATRIX.txt -t Cpsd-completeness-MATRIX.txt.newick -p Cpsd_metabolism_PROFILE.db --title "Cpsd Metabolism Heatmap"
 
@@ -534,25 +511,29 @@ anvi-estimate-metabolism -e genome_list_Cpsd.txt -O Cpsd_metabolism --kegg-outpu
 ```
 
 Need to use compute-metabolic-enrichment in anvio 7.1:
+
 ```{bash, eval = FALSE}
 anvi-compute-metabolic-enrichment -M Cpsd_metabolism_modules.txt -G Cpsd_geo_groups.txt -o Cpsd_enriched_modules.txt
 ```
 
-## *C. accolens*
+### *C. accolens*
+
 ```{bash, eval = FALSE}
 cd ./Documents/aqr_metabol_comp
-conda activate anvio-7.1.2
+-7.1
 anvi-estimate-metabolism -e genome_list_Cacc.txt -O Cacc --matrix-format
 
 anvi-matrix-to-newick Cacc-completeness-MATRIX.txt
 ```
 
 Dry run to get the profile db:
+
 ```{bash, eval = FALSE}
 anvi-interactive -d Cacc-completeness-MATRIX.txt -p Cacc_metabolism_PROFILE.db --manual-mode --dry-run
 ```
 
-Run for reals:
+Runs:
+
 ```{bash, eval = FALSE}
 anvi-interactive --manual-mode -d Cacc-completeness-MATRIX.txt -t Cacc-completeness-MATRIX.txt.newick -p Cacc_metabolism_PROFILE.db --title "Cacc Metabolism Heatmap"
 
@@ -569,11 +550,13 @@ anvi-import-misc-data Cacc_modules_info.txt -p Cacc_metabolism_PROFILE.db -t ite
 ```
 
 To painlessly make your interactive visualizations look like the ones in the screenshots, you can import the following state file into your profile database:
+
 ```{bash, eval = FALSE}
 anvi-import-state -p Cacc_metabolism_PROFILE.db -n default -s Cacc_metabolism_state.json
 ```
 
 And then we can run the visualization command yet again to see the heatmap with labels:
+
 ```{bash, eval = FALSE}
 anvi-interactive --manual-mode -d Cacc-completeness-MATRIX.txt -t Cacc-completeness-MATRIX.txt.newick -p Cacc_metabolism_PROFILE.db --title "Cacc Metabolism Heatmap"
 
@@ -581,19 +564,21 @@ anvi-estimate-metabolism -e genome_list_Cacc.txt -O Cacc_metabolism --kegg-outpu
 ```
 
 Need to use compute-metabolic-enrichment in anvio 7.1:
+
 ```{bash, eval = FALSE}
 anvi-compute-metabolic-enrichment -M Cacc_metabolism_modules.txt -G Cacc_geo_groups.txt -o Cacc_enriched_modules.txt
 ```
 
-## *C. tuberculostearicum*
+### *C. tuberculostearicum*
+
 ```{bash, eval = FALSE}
 cd ./Documents/aqr_metabol_comp
-conda activate anvio-7.1.2
 anvi-estimate-metabolism -e genome_list_Ctub.txt -O Ctub --matrix-format
 anvi-matrix-to-newick Ctub-completeness-MATRIX.txt
 ```
 
 Dry run to get the profile db:
+
 ```{bash, eval = FALSE}
 anvi-interactive -d Ctub-completeness-MATRIX.txt -p Ctub_metabolism_PROFILE.db --manual-mode --dry-run
 anvi-interactive --manual-mode -d Ctub-completeness-MATRIX.txt -t Ctub-completeness-MATRIX.txt.newick -p Ctub_metabolism_PROFILE.db --title "Ctub Metabolism Heatmap"
@@ -611,11 +596,13 @@ anvi-import-misc-data Ctub_modules_info.txt -p Ctub_metabolism_PROFILE.db -t ite
 ```
 
 To painlessly make your interactive visualizations look like the ones in the screenshots, you can import the following state file into your profile database:
+
 ```{bash, eval = FALSE}
 anvi-import-state -p Ctub_metabolism_PROFILE.db -n default -s Ctub_metabolism_state.json
 ```
 
 And then we can run the visualization command yet again to see the heatmap with labels:
+
 ```{bash, eval = FALSE}
 anvi-interactive --manual-mode -d Ctub-completeness-MATRIX.txt -t Ctub-completeness-MATRIX.txt.newick -p Ctub_metabolism_PROFILE.db --title "Ctub Metabolism Heatmap"
 
@@ -623,22 +610,26 @@ anvi-estimate-metabolism -e genome_list_Ctub.txt -O Ctub_metabolism --kegg-outpu
 ```
 
 Need to use compute-metabolic-enrichment in anvio 7.1:
+
 ```{bash, eval = FALSE}
 anvi-compute-metabolic-enrichment -M Ctub_metabolism_modules.txt -G Ctub_geo_groups.txt -o Ctub_enriched_modules.txt
 ```
 
-# Generate a Distribution Plot
+## Generate a Distribution Plot (Figure 5)
+
+We took the text file outputs with metabolism_modules and converted them into xlsx files before reading them into R.
+
 ```{R, eval = FALSE}
 # read in libraries
 library(readxl)
 library(ggplot2)
  
-# read in module files of each species
-cacc <- read_excel("/Users/klemonlab/Documents/aqr_metabol_comp/Cacc_metabolism_modules.xlsx")
-cpro <- read_excel("/Users/klemonlab/Documents/aqr_metabol_comp/Cprop_metabolism_modules.xlsx")
-cpsd <- read_excel("/Users/klemonlab/Documents/aqr_metabol_comp/Cpsd_metabolism_modules.xlsx")
-ctub <- read_excel("/Users/klemonlab/Documents/aqr_metabol_comp/Ctub_metabolism_modules.xlsx")
-dpig <- read_excel("/Users/klemonlab/Documents/aqr_metabol_comp/Pigrum_metabolism_modules.xlsx")
+# read in module files of each species independent KEGG run after saving text file outputs as xlsx files
+cacc <- read_excel("Cacc_metabolism_modules.xlsx")
+cpro <- read_excel("Cprop_metabolism_modules.xlsx")
+cpsd <- read_excel("Cpsd_metabolism_modules.xlsx")
+ctub <- read_excel("Ctub_metabolism_modules.xlsx")
+dpig <- read_excel("Pigrum_metabolism_modules.xlsx")
 
 # remove warning column
 cacc_2 <- subset(cacc, select = -c(db_name, warnings))
@@ -668,7 +659,6 @@ combo <- rbind(cacc_filt, cpro_filt, cpsd_filt, ctub_filt, dpig_filt)
 # Generate a bar graph of distribution 
 
 x axis is species and y axis is # of complete modules to make up a module category
-```{R, eval = FALSE}
 # filter out repeated modules here
 cacc_filt2 <- unique(subset(cacc_filt, select = c(kegg_module, module_name, module_class, module_category, module_subcategory, species)))
 cpro_filt2 <- unique(subset(cpro_filt, select = c(kegg_module, module_name, module_class, module_category, module_subcategory, species)))
@@ -682,6 +672,7 @@ write_xlsx(combo2, "combo2.xlsx")
 
 plot3 = ggplot(combo2) + geom_bar(aes(fill = module_category, x = factor(species, level = c("C. propinquum", "C. pseudodiphtheriticum", "C. accolens", "C. tuberculostearicum", "D. pigrum"))))+ scale_fill_brewer(palette = "Set2") + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black")) + theme(legend.position = "bottom") + theme(aspect.ratio = 1) 
 ```
+
 <img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
 
 ------------------------------------------------------------------------
