@@ -105,18 +105,11 @@ conda install -c conda-forge -c bioconda -c defaults prokka
 
 Then check if you have prokka installed by running the command `prokka -v`
 
-# Install anvi'o v7
+# Install anvi'o v7.1
 
 Follow instructions here: <https://merenlab.org/2016/06/26/installation-v2/#3-install-anvio>
 
 > If you are using Windows WSL2 Linux through Ubuntu 20.04 LTS and get to the step of doing the `anvi-self-test`, and the html site cannot be reached. Then try and use 127.0.0.1:8080 or <http://localhost:8080/> to get the interactive display to work.
-
-## Updating anvi'o from GitHub
-
-```{bash, eval=FALSE}
-conda activate anvio-7
-pip install --upgrade git+git://github.com/merenlab/anvio.git
-```
 
 ## anvi'o Help
 
