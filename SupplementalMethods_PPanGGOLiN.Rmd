@@ -20,7 +20,7 @@ bibliography: referencesPPanGGOLiN.bib
 klippy::klippy(c('r', 'bash'))
 ```
 
-```{r setup, include=FALSE} 
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 ```
 
@@ -56,13 +56,13 @@ We read here the files generated using `anvi-summarize` that link each
 gene to gene clusters, genomes and functions:
 
 ```{r}
-AnvioSummary_Cpse <- read.delim("/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpsd/Cps_PAN_SUMMARY/PAN_Cpsd_gene_clusters_summary.txt.gz")
+AnvioSummary_Cpse <- read.delim("/analysis_Anvio7/Pangenomic_Results/Cpsd/Cps_PAN_SUMMARY/PAN_Cpsd_gene_clusters_summary.txt.gz")
 
-AnvioSummary_Cpro <- read.delim("/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/Cpr_PAN_SUMMARY/PAN_Cpro_gene_clusters_summary.txt.gz")
+AnvioSummary_Cpro <- read.delim("/analysis_Anvio7/Pangenomic_Results/Cpro/Cpr_PAN_SUMMARY/PAN_Cpro_gene_clusters_summary.txt.gz")
 
-AnvioSummary_Ctub <- read.delim("/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/Ctu_PAN_SUMMARY/PAN_Ctub_gene_clusters_summary.txt.gz")
+AnvioSummary_Ctub <- read.delim("/analysis_Anvio7/Pangenomic_Results/Ctub/Ctu_PAN_SUMMARY/PAN_Ctub_gene_clusters_summary.txt.gz")
 
-AnvioSummary_Cacc <- read.delim("/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/Cac_PAN_SUMMARY/PAN_Cacc_gene_clusters_summary.txt.gz")
+AnvioSummary_Cacc <- read.delim("/analysis_Anvio7/Pangenomic_Results/Cacc/Cac_PAN_SUMMARY/PAN_Cacc_gene_clusters_summary.txt.gz")
 ```
 
 Here we subset the info needed to generate the .tsv files. We clean up
@@ -88,13 +88,13 @@ AnvioClusters_Cacc <- select(AnvioClusters_Cacc, c(gene_cluster_id, new_id))
 Now we write those as .tsv files:
 
 ```{r, eval=FALSE}
-write_delim(AnvioClusters_Cpse, "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpsd/Cps_PAN_SUMMARY.tsv", col_names=FALSE)
+write_delim(AnvioClusters_Cpse, "/analysis_Anvio7/Pangenomic_Results/Cpsd/Cps_PAN_SUMMARY.tsv", col_names=FALSE)
 
-write_delim(AnvioClusters_Cpro, "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/Cpr_PAN_SUMMARY.tsv", col_names=FALSE)
+write_delim(AnvioClusters_Cpro, "/analysis_Anvio7/Pangenomic_Results/Cpro/Cpr_PAN_SUMMARY.tsv", col_names=FALSE)
 
-write_delim(AnvioClusters_Ctub, "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/Ctu_PAN_SUMMARY.tsv", col_names=FALSE)
+write_delim(AnvioClusters_Ctub, "/analysis_Anvio7/Pangenomic_Results/Ctub/Ctu_PAN_SUMMARY.tsv", col_names=FALSE)
 
-write_delim(AnvioClusters_Cacc, "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/Cac_PAN_SUMMARY.tsv", col_names=FALSE)
+write_delim(AnvioClusters_Cacc, "/analysis_Anvio7/Pangenomic_Results/Cacc/Cac_PAN_SUMMARY.tsv", col_names=FALSE)
 ```
 
 [**IMPORTANT**]{.underline}**:** The gene_callers_id provided by anvi'o
@@ -112,10 +112,10 @@ instead of the original prokka ones:
 
 ```{bash, eval=FALSE}
 #conda activate anvio-7
-mkdir -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Exported_gffs"
+mkdir -p "/analysis_Anvio7/Pangenomic_Results/Exported_gffs"
 
-path_f="/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Contigs_db"
-path_o="/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Exported_gffs"
+path_f="/analysis_Anvio7/Contigs_db"
+path_o="/analysis_Anvio7/Pangenomic_Results/Exported_gffs"
 
 for file in $path_f/*.db; do
     FILENAME=`basename ${file%.*}`
@@ -333,18 +333,18 @@ collection of bins named **PPanGGOLiNpartitions** in each profile-db:
 
 ```{bash, eval = FALSE}
 #conda activate anvio-7
-anvi-import-collection "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpsd/partitions_Cps.txt" \
-                       -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" \
-                       -C "PPanGGOLiNpartitions" --bins-info "/Users/klemonlab/Documents/GitHub/Coryne_Pangenomics_2021/main_outputs/Anvio7/PPanGGOLiN_bin_colors.txt"
-anvi-import-collection "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/partitions_Cpr.txt" \
-                       -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db" \
-                       -C "PPanGGOLiNpartitions" --bins-info "/Users/klemonlab/Documents/GitHub/Coryne_Pangenomics_2021/main_outputs/Anvio7/PPanGGOLiN_bin_colors.txt"
-anvi-import-collection "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/partitions_Ctu.txt" \
-                       -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db" \
-                       -C "PPanGGOLiNpartitions" --bins-info "/Users/klemonlab/Documents/GitHub/Coryne_Pangenomics_2021/main_outputs/Anvio7/PPanGGOLiN_bin_colors.txt"
-anvi-import-collection "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/partitions_Cac.txt" \
-                       -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" \
-                       -C "PPanGGOLiNpartitions" --bins-info "/Users/klemonlab/Documents/GitHub/Coryne_Pangenomics_2021/main_outputs/Anvio7/PPanGGOLiN_bin_colors.txt"
+anvi-import-collection "/analysis_Anvio7/Pangenomic_Results/Cpsd/partitions_Cps.txt" \
+                       -p "/analysis_Anvio7/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" \
+                       -C "PPanGGOLiNpartitions" --bins-info "/analysis_Anvio7/main_outputs/PPanGGOLiN_bin_colors.txt"
+anvi-import-collection "/analysis_Anvio7/Pangenomic_Results/Cpro/partitions_Cpr.txt" \
+                       -p "/analysis_Anvio7/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db" \
+                       -C "PPanGGOLiNpartitions" --bins-info "/analysis_Anvio7/main_outputs/PPanGGOLiN_bin_colors.txt"
+anvi-import-collection "/analysis_Anvio7/Pangenomic_Results/Ctub/partitions_Ctu.txt" \
+                       -p "/analysis_Anvio7/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db" \
+                       -C "PPanGGOLiNpartitions" --bins-info "/analysis_Anvio7/main_outputs/PPanGGOLiN_bin_colors.txt"
+anvi-import-collection "/analysis_Anvio7/Pangenomic_Results/Cacc/partitions_Cac.txt" \
+                       -p "/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" \
+                       -C "PPanGGOLiNpartitions" --bins-info "/analysis_Anvio7/main_outputs/PPanGGOLiN_bin_colors.txt"
 ```
 
 We can also import this data (from `partitions.txt`) as a PPanGGOLiN
@@ -352,14 +352,14 @@ layer into in each profile-db:
 
 ```{bash, eval = FALSE}
 #conda activate anvio-7
-anvi-import-misc-data "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpsd/partitions_Cps.txt" \
-                       -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" -t items
-anvi-import-misc-data "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/partitions_Cpr.txt" \
-                       -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db" -t items
-anvi-import-misc-data "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/partitions_Ctu.txt" \
-                       -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db" -t items
-anvi-import-misc-data "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/partitions_Cac.txt" \
-                       -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" -t items                    
+anvi-import-misc-data "/analysis_Anvio7/Pangenomic_Results/Cpsd/partitions_Cps.txt" \
+                       -p "/analysis_Anvio7/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" -t items
+anvi-import-misc-data "/analysis_Anvio7/Pangenomic_Results/Cpro/partitions_Cpr.txt" \
+                       -p "/analysis_Anvio7/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db" -t items
+anvi-import-misc-data "/analysis_Anvio7/Pangenomic_Results/Ctub/partitions_Ctu.txt" \
+                       -p "/analysis_Anvio7/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db" -t items
+anvi-import-misc-data "/analysis_Anvio7/Pangenomic_Results/Cacc/partitions_Cac.txt" \
+                       -p "/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" -t items                    
 ```
 
 ## Displaying the generated bin collections
@@ -369,13 +369,13 @@ using the command `anvi-show-collections-and-bins`:
 
 ```{bash, eval = FALSE}
 #conda activate anvio-7
-anvi-show-collections-and-bins -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" --debug 
+anvi-show-collections-and-bins -p "/analysis_Anvio7/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" --debug 
 
-anvi-show-collections-and-bins -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db" --debug 
+anvi-show-collections-and-bins -p "/analysis_Anvio7/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db" --debug 
 
-anvi-show-collections-and-bins -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db" --debug 
+anvi-show-collections-and-bins -p "/analysis_Anvio7/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db" --debug 
 
-anvi-show-collections-and-bins -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/analysis_Anvio7_1/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" --debug 
+anvi-show-collections-and-bins -p "/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" --debug 
 ```
 
 ## PPanGGOLiN Pangenome Compartments
@@ -383,7 +383,7 @@ anvi-show-collections-and-bins -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/a
 ### *C. propinquum* pangenome
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    |
-|------------------|---------------------------|---------------------------|
+|-------------------|---------------------------|---------------------------|
 | Persistent       | 1945/3108                     | `r round(100*(1945/3108),1)`% |
 | Shell            | 323/3108                      | `r round(100*(323/3108),1)`%  |
 | Cloud            | 837/3108                      | `r round(100*(837/3108),1)`%  |
@@ -392,7 +392,7 @@ anvi-show-collections-and-bins -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/a
 ### *C. pseudodiphtheriticum* pangenome
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    |
-|------------------|---------------------------|---------------------------|
+|-------------------|---------------------------|---------------------------|
 | Persistent       | 1771/3590                     | `r round(100*(1771/3590),1)`% |
 | Shell            | 392/3590                      | `r round(100*(392/3590),1)`%  |
 | Cloud            | 1424/3590                     | `r round(100*(1424/3590),1)`% |
@@ -401,7 +401,7 @@ anvi-show-collections-and-bins -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/a
 ### *C. accolens* pangenome
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    |
-|------------------|---------------------------|---------------------------|
+|-------------------|---------------------------|---------------------------|
 | Persistent       | 2011/3427                     | `r round(100*(2011/3427),1)`% |
 | Shell            | 301/3427                      | `r round(100*(301/3427),1)`%  |
 | Cloud            | 1113/3427                     | `r round(100*(1113/3427),1)`% |
@@ -410,7 +410,7 @@ anvi-show-collections-and-bins -p "/Users/klemonlab/Documents/CorPGA_rerun_aqr/a
 ### *C. tuberculostearicum* pangenome
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    |
-|------------------|---------------------------|---------------------------|
+|-------------------|---------------------------|---------------------------|
 | Persistent       | 1991/2907                     | `r round(100*(1991/2907),1)`% |
 | Shell            | 147/2907                      | `r round(100*(147/2907),1)`%  |
 | Cloud            | 766/2907                      | `r round(100*(766/2907),1)`%  |
