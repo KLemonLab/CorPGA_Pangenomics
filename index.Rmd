@@ -4,28 +4,25 @@ date: 'KLemonLab'
 output:
   prettydoc::html_pretty:
     theme: cayman
-  github_document:
-    toc: true
-    toc_depth: 4
 ---
 
 # "Metabolic capabilities are highly conserved among human nasal-associated *Corynebacterium* species" Supplemental Methods
 
 ## This repository includes:
 
--   Data availability: The raw `.fasta` files for initial input are provided in the [[Github repository]{.underline}](https://github.com/KLemonLab/CorPGA_Pangenomics/tree/main/Strain_genomes).
+-   The raw `.fasta` files for initial input, provided [[here]{.underline}](https://github.com/KLemonLab/CorPGA_Pangenomics/tree/main/Strain_genomes).
 
 -   Supplemental methods for program [[installations]{.underline}](SupplementalMethods_Installations.html).
 
--   Supplemental methods and output files for [[Prokka v1.14.6 annotation]{.underline}](SupplementalMethods_Prokka_Annotations.html) of 107 *Corynebacterium* strain genomes.
+-   Supplemental methods for [[Prokka v1.14.6 annotation]{.underline}](SupplementalMethods_Prokka_Annotations.html) of 107 *Corynebacterium* strain genomes.
 
--   Supplemental methods and output files of pangenome analyses performed with [[GET_HOMOLOGUES, GET_PHYLOMARKERS and IQ-TREE2]{.underline}](SupplementalMethods_GET_HOMOLOGUES.html).
+-   Supplemental methods of pangenome analyses performed with [[GET_HOMOLOGUES, GET_PHYLOMARKERS and IQ-TREE2]{.underline}](SupplementalMethods_GET_HOMOLOGUES.html).
 
--   Supplemental methods and output files for the [[anvi'o v7 pangenomic and metabolic analysis]{.underline}](SupplementalMethods_Anvio.html).
+-   Supplemental methods for the [[anvi'o v7 pangenomic and metabolic analysis]{.underline}](SupplementalMethods_Anvio.html).
 
--   Supplemental methods and output files of COG anvi'o annotated gene clusters assignments to the persistent or accessory genome with [[PPanGGOLiN analysis]{.underline}](SupplementalMethods_PPanGGOLiN.html).
+-   Supplemental methods of COG anvi'o annotated gene clusters assignments to the persistent or accessory genome with [[PPanGGOLiN analysis]{.underline}](SupplementalMethods_PPanGGOLiN.html).
 
--   Supplemental methods and output files for [[COG annotations and functional enrichment analysis]{.underline}](SupplementalMethods_COGS.html).
+-   Supplemental methods for [[COG annotations and functional enrichment analysis]{.underline}](SupplementalMethods_COGS.html).
 
 <img src="images/klemonlab_photo.jpg" align="left" width="200" height="90"/>
 
