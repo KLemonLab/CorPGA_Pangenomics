@@ -4,6 +4,8 @@ https://klemonlab.github.io/CorPGA_Pangenomics/
 
 ## This repository includes:
 
+-   Link to bioRxiv: https://www.biorxiv.org/content/10.1101/2023.06.05.543719v1.full
+
 -   The raw `.fasta` files for initial input, provided [here](https://github.com/KLemonLab/CorPGA_Pangenomics/tree/main/Strain_genomes).
 
 -   Supplemental methods for program [installations](https://klemonlab.github.io/CorPGA_Pangenomics/SupplementalMethods_Installations.html).
