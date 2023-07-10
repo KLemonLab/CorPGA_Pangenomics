@@ -198,7 +198,6 @@ anvi-summarize -p "/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" \
 
 The resulting summary folders contain a `gene_clusters_summary.txt.gz` file that links each gene to gene clusters, genomes, functions, layers, and bins selected from the interface.
 
-
 ### *C. propinquum* pangenome
 
 | Pangenome Matrix | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
@@ -291,7 +290,7 @@ Find GC Content for *C. tuberculostearicum*:
 anvi-summarize -g /analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db -p /analysis_Anvio7/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db -C CorevsAccessory
 ```
 
-# KEGG Analysis
+# KEGG Enrichment Analysis
 
 We then used a workflow from anvi'o (<https://merenlab.org/tutorials/infant-gut/#chapter-v-metabolism-prediction>) that allowed us to estimate the completeness of KEGG modules.
 
@@ -299,12 +298,12 @@ We then used a workflow from anvi'o (<https://merenlab.org/tutorials/infant-gut/
 
 We first did this in each of the four *Corynebacterium* pangenomes and in the combined pangenome for the 104 strains.
 
-First we made a text document that was a list of the genome files excluding *C. macingleyi*. This was used as input for the estimate metabolism step. It contains two columns, the first column, labeled "Name", is the name of the strain genome, the second column, labeled "Contigs_db_path", is the file name and location of the genome database file.
+First we used the same text document that was a list of the genome files excluding *C. macingleyi*. This was used as input for the estimate metabolism step. It contains two columns, the first column, labeled "Name", is the name of the strain genome, the second column, labeled "Contigs_db_path", is the file name and location of the genome database file.
 
 ```{bash, eval = FALSE}
 cd ./analysis_Anvio7
 
-anvi-estimate-metabolism -e genome_list_Coryne_No_Mac.txt -O Coryne_No_Mac --matrix-format
+anvi-estimate-metabolism -e All_104_CorynesAnvio.txt -O Coryne_No_Mac --matrix-format
 
 anvi-matrix-to-newick Coryne_No_Mac-completeness-MATRIX.txt
 ```
@@ -343,7 +342,7 @@ And then we can run the visualization command yet again to see the heatmap with 
 ```{bash, eval = FALSE}
 anvi-interactive --manual-mode -d Coryne_No_Mac-completeness-MATRIX.txt -t Coryne_No_Mac-completeness-MATRIX.txt.newick -p Coryne_No_Mac_metabolism_PROFILE.db --title "Coryne_No_Mac Metabolism Heatmap"
 
-anvi-estimate-metabolism -e genome_list_Coryne_No_Mac.txt -O Coryne_No_Mac_metabolism --kegg-output-modes modules,kofam_hits
+anvi-estimate-metabolism -e All_104_CorynesAnvio.txt -O Coryne_No_Mac_metabolism --kegg-output-modes modules,kofam_hits
 ```
 
 Need to use compute-metabolic-enrichment in anvio 7.1:
@@ -356,7 +355,7 @@ anvi-compute-metabolic-enrichment -M Coryne_No_Mac_metabolism_modules.txt -G Cor
 
 ## *Corynebacterium* species vs *Dolosigranulum pigrum*
 
-For this run, we follow the same protocol except we included 27 *D. pigrum* genomes and included them in the genome list.
+For this run, we follow the same protocol except we included 27 *D. pigrum* genomes and included them in the genome list. We will compare the five species.
 
 ```{bash, eval = FALSE}
 cd ./Documents/aqr_metabol_comp
@@ -411,6 +410,8 @@ anvi-compute-metabolic-enrichment -M Coryne_Dpi_metabolism_modules.txt -G Coryne
 
 ## Intra-Species Geographic Comparison
 
+We re-ran the same code but within each of the four *Corynebacterium* species. Instead of comparing metabolic capabilities of species we compared the geographic origin of the each genome: North America or Botswana. We made new categorization text files for each species accordingly as well as text files for each of the species groupings for their genome file locations.
+
 ### *C. propinquum*
 
 ```{bash, eval = FALSE}
@@ -457,8 +458,6 @@ anvi-interactive --manual-mode -d Cprop-completeness-MATRIX.txt -t Cprop-complet
 
 anvi-estimate-metabolism -e genome_list_Cprop.txt -O Cprop_metabolism --kegg-output-modes modules,kofam_hits
 ```
-
-Need to use compute-metabolic-enrichment in anvio 7.1:
 
 ```{bash, eval = FALSE}
 anvi-compute-metabolic-enrichment -M Cprop_metabolism_modules.txt -G Cprop_geo_groups.txt -o Cprop_enriched_modules.txt
@@ -510,8 +509,6 @@ anvi-interactive --manual-mode -d Cpsd-completeness-MATRIX.txt -t Cpsd-completen
 anvi-estimate-metabolism -e genome_list_Cpsd.txt -O Cpsd_metabolism --kegg-output-modes modules,kofam_hits
 ```
 
-Need to use compute-metabolic-enrichment in anvio 7.1:
-
 ```{bash, eval = FALSE}
 anvi-compute-metabolic-enrichment -M Cpsd_metabolism_modules.txt -G Cpsd_geo_groups.txt -o Cpsd_enriched_modules.txt
 ```
@@ -562,8 +559,6 @@ anvi-interactive --manual-mode -d Cacc-completeness-MATRIX.txt -t Cacc-completen
 anvi-estimate-metabolism -e genome_list_Cacc.txt -O Cacc_metabolism --kegg-output-modes modules,kofam_hits
 ```
 
-Need to use compute-metabolic-enrichment in anvio 7.1:
-
 ```{bash, eval = FALSE}
 anvi-compute-metabolic-enrichment -M Cacc_metabolism_modules.txt -G Cacc_geo_groups.txt -o Cacc_enriched_modules.txt
 ```
@@ -608,15 +603,13 @@ anvi-interactive --manual-mode -d Ctub-completeness-MATRIX.txt -t Ctub-completen
 anvi-estimate-metabolism -e genome_list_Ctub.txt -O Ctub_metabolism --kegg-output-modes modules,kofam_hits
 ```
 
-Need to use compute-metabolic-enrichment in anvio 7.1:
-
 ```{bash, eval = FALSE}
 anvi-compute-metabolic-enrichment -M Ctub_metabolism_modules.txt -G Ctub_geo_groups.txt -o Ctub_enriched_modules.txt
 ```
 
 ## Generate the Distribution Plot in Figure 5
 
-We took the text file outputs with metabolism_modules and converted them into xlsx files before reading them into R.
+We took the text file outputs with metabolism_modules from the previous steps on individiual species runs, including one for d pigrum, and converted them into xlsx files before reading them into R.
 
 ```{R, eval = FALSE}
 # read in libraries
