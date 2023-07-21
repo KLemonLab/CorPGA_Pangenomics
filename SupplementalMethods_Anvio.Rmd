@@ -177,22 +177,22 @@ anvi-show-collections-and-bins -p "/analysis_Anvio7/Pangenomic_Results/Cac/PAN_C
 ```{bash, eval = FALSE}
 anvi-summarize -p "/analysis_Anvio7/Pangenomic_Results/Cps/PAN_Cps-PAN.db" \
                -g "/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db" \
-               -o "/analysis_Anvio7/Cps_PAN_SUMMARY" \
+               -o "/analysis_Anvio7" \
                -C CorevsAccessory
                
 anvi-summarize -p "analysis_Anvio7/Pangenomic_Results/Cpr/PAN_Cpr-PAN.db" \
                -g "/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db" \
-               -o "/analysis_Anvio7/Cpr_PAN_SUMMARY" \
+               -o "/analysis_Anvio7" \
                -C CorevsAccessory
                
 anvi-summarize -p "/analysis_Anvio7/Pangenomic_Results/Ctu/PAN_Ctu-PAN.db" \
                -g "/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db" \
-               -o "/analysis_Anvio7/Ctu_PAN_SUMMARY" \
+               -o "/analysis_Anvio7" \
                -C CorevsAccessory
                
 anvi-summarize -p "/analysis_Anvio7/Pangenomic_Results/Cac/PAN_Cac-PAN.db" \
                -g "/analysis_Anvio7/Pangenomic_Results/Coryne-GENOMES.db" \
-               -o "/analysis_Anvio7/Cac_PAN_SUMMARY" \
+               -o "/analysis_Anvio7" \
                -C CorevsAccessory
 ```
 

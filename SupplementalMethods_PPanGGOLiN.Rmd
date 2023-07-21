@@ -32,13 +32,13 @@ In order to import the anvi'o clustering into PPanGGOLiN we need:
 We read here the files generated using `anvi-summarize` that link each gene to gene clusters, genomes and functions:
 
 ```{r}
-AnvioSummary_Cps <- read.delim("/analysis_Anvio7/Pangenomic_Results/Cps_PAN_SUMMARY/PAN_Cps_gene_clusters_summary.txt.gz")
+AnvioSummary_Cps <- read.delim("/analysis_Anvio7/PAN_Cps_gene_clusters_summary.txt.gz")
 
-AnvioSummary_Cpr <- read.delim("/analysis_Anvio7/Pangenomic_Results/Cpr_PAN_SUMMARY/PAN_Cpr_gene_clusters_summary.txt.gz")
+AnvioSummary_Cpr <- read.delim("/analysis_Anvio7/PAN_Cpr_gene_clusters_summary.txt.gz")
 
-AnvioSummary_Ctu <- read.delim("/analysis_Anvio7/Pangenomic_Results/Ctu_PAN_SUMMARY/PAN_Ctu_gene_clusters_summary.txt.gz")
+AnvioSummary_Ctu <- read.delim("/analysis_Anvio7/PAN_Ctu_gene_clusters_summary.txt.gz")
 
-AnvioSummary_Cac <- read.delim("/analysis_Anvio7/Pangenomic_Results/Cac_PAN_SUMMARY/PAN_Cac_gene_clusters_summary.txt.gz")
+AnvioSummary_Cac <- read.delim("/analysis_Anvio7/PAN_Cac_gene_clusters_summary.txt.gz")
 ```
 
 Here we subset the info needed to generate the .tsv files. We clean up the "RefSeq\_" prefix that was added to the genome names to avoid anvi'o complains about genome names starting with a number. We need to remove the prefix to match the info inside the new .gffs we are about to export:
