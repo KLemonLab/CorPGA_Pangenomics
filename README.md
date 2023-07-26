@@ -18,7 +18,15 @@ https://klemonlab.github.io/CorPGA_Pangenomics/
 
 -   Supplemental methods of COG anvi'o annotated gene clusters assignments to the persistent or accessory genome with [PPanGGOLiN analysis](https://klemonlab.github.io/CorPGA_Pangenomics/SupplementalMethods_PPanGGOLiN.html).
 
--   Supplemental methods for [COG annotations and functional enrichment analysis](https://klemonlab.github.io/CorPGA_Pangenomics/SupplementalMethods_COGS.html).
+-   Supplemental methods for COG annotations based on PPanGGOLiN partitions:
+
+    -   [Corynebacterium propinquum](https://klemonlab.github.io/CorPGA_Pangenomics/SupplementalMethods_COGS_Cpr.html)
+
+    -   [Corynebacterium pseudodiphtheriticum](https://klemonlab.github.io/CorPGA_Pangenomics/SupplementalMethods_COGS_Cps.html)
+    
+    -   [Corynebacterium accolens](https://klemonlab.github.io/CorPGA_Pangenomics/SupplementalMethods_COGS_Cac.html)
+    
+    -   [Corynebacterium tuberculostearicum](https://klemonlab.github.io/CorPGA_Pangenomics/SupplementalMethods_COGS_Ctu.html)
 
 [Lemon Lab](https://www.bcm.edu/research/faculty-labs/katherine-lemon-lab)
 

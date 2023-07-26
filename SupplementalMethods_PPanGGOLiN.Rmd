@@ -32,41 +32,41 @@ In order to import the anvi'o clustering into PPanGGOLiN we need:
 We read here the files generated using `anvi-summarize` that link each gene to gene clusters, genomes and functions:
 
 ```{r}
-AnvioSummary_Cpse <- read.delim("/analysis_Anvio7/Pangenomic_Results/Cpsd/Cps_PAN_SUMMARY/PAN_Cpsd_gene_clusters_summary.txt.gz")
+AnvioSummary_Cps <- read.delim("/analysis_Anvio7/PAN_Cps_gene_clusters_summary.txt.gz")
 
-AnvioSummary_Cpro <- read.delim("/analysis_Anvio7/Pangenomic_Results/Cpro/Cpr_PAN_SUMMARY/PAN_Cpro_gene_clusters_summary.txt.gz")
+AnvioSummary_Cpr <- read.delim("/analysis_Anvio7/PAN_Cpr_gene_clusters_summary.txt.gz")
 
-AnvioSummary_Ctub <- read.delim("/analysis_Anvio7/Pangenomic_Results/Ctub/Ctu_PAN_SUMMARY/PAN_Ctub_gene_clusters_summary.txt.gz")
+AnvioSummary_Ctu <- read.delim("/analysis_Anvio7/PAN_Ctu_gene_clusters_summary.txt.gz")
 
-AnvioSummary_Cacc <- read.delim("/analysis_Anvio7/Pangenomic_Results/Cacc/Cac_PAN_SUMMARY/PAN_Cacc_gene_clusters_summary.txt.gz")
+AnvioSummary_Cac <- read.delim("/analysis_Anvio7/PAN_Cac_gene_clusters_summary.txt.gz")
 ```
 
 Here we subset the info needed to generate the .tsv files. We clean up the "RefSeq\_" prefix that was added to the genome names to avoid anvi'o complains about genome names starting with a number. We need to remove the prefix to match the info inside the new .gffs we are about to export:
 
 ```{r}
-AnvioClusters_Cpse <- AnvioSummary_Cpse %>% unite(new_id, genome_name:gene_callers_id, sep = "___", remove = FALSE) %>% mutate(new_id = gsub("RefSeq_", "", new_id))
-AnvioClusters_Cpse <- select(AnvioClusters_Cpse, c(gene_cluster_id, new_id))
+AnvioClusters_Cps <- AnvioSummary_Cps %>% unite(new_id, genome_name:gene_callers_id, sep = "___", remove = FALSE) %>% mutate(new_id = gsub("RefSeq_", "", new_id))
+AnvioClusters_Cps <- select(AnvioClusters_Cps, c(gene_cluster_id, new_id))
 
-AnvioClusters_Cpro <- AnvioSummary_Cpro %>% unite(new_id, genome_name:gene_callers_id, sep = "___", remove = FALSE) %>% mutate(new_id = gsub("RefSeq_", "", new_id))
-AnvioClusters_Cpro <- select(AnvioClusters_Cpro, c(gene_cluster_id, new_id))
+AnvioClusters_Cpr <- AnvioSummary_Cpr %>% unite(new_id, genome_name:gene_callers_id, sep = "___", remove = FALSE) %>% mutate(new_id = gsub("RefSeq_", "", new_id))
+AnvioClusters_Cpr <- select(AnvioClusters_Cpr, c(gene_cluster_id, new_id))
 
-AnvioClusters_Ctub <- AnvioSummary_Ctub %>% unite(new_id, genome_name:gene_callers_id, sep = "___", remove = FALSE) %>% mutate(new_id = gsub("RefSeq_", "", new_id))
-AnvioClusters_Ctub <- select(AnvioClusters_Ctub, c(gene_cluster_id, new_id))
+AnvioClusters_Ctu <- AnvioSummary_Ctu %>% unite(new_id, genome_name:gene_callers_id, sep = "___", remove = FALSE) %>% mutate(new_id = gsub("RefSeq_", "", new_id))
+AnvioClusters_Ctu <- select(AnvioClusters_Ctu, c(gene_cluster_id, new_id))
 
-AnvioClusters_Cacc <- AnvioSummary_Cacc %>% unite(new_id, genome_name:gene_callers_id, sep = "___", remove = FALSE) %>% mutate(new_id = gsub("RefSeq_", "", new_id))
-AnvioClusters_Cacc <- select(AnvioClusters_Cacc, c(gene_cluster_id, new_id))
+AnvioClusters_Cac <- AnvioSummary_Cac %>% unite(new_id, genome_name:gene_callers_id, sep = "___", remove = FALSE) %>% mutate(new_id = gsub("RefSeq_", "", new_id))
+AnvioClusters_Cac <- select(AnvioClusters_Cac, c(gene_cluster_id, new_id))
 ```
 
 Now we write those as .tsv files:
 
 ```{r, eval=FALSE}
-write_delim(AnvioClusters_Cpse, "/analysis_PPanGGOLiN/Cps_PAN_SUMMARY.tsv", col_names=FALSE)
+write_delim(AnvioClusters_Cps, "/analysis_PPanGGOLiN/Cps_PAN_SUMMARY.tsv", col_names=FALSE)
 
-write_delim(AnvioClusters_Cpro, "/analysis_PPanGGOLiN/Cpr_PAN_SUMMARY.tsv", col_names=FALSE)
+write_delim(AnvioClusters_Cpr, "/analysis_PPanGGOLiN/Cpr_PAN_SUMMARY.tsv", col_names=FALSE)
 
-write_delim(AnvioClusters_Ctub, "/analysis_PPanGGOLiN/Ctu_PAN_SUMMARY.tsv", col_names=FALSE)
+write_delim(AnvioClusters_Ctu, "/analysis_PPanGGOLiN/Ctu_PAN_SUMMARY.tsv", col_names=FALSE)
 
-write_delim(AnvioClusters_Cacc, "/analysis_PPanGGOLiN/Cac_PAN_SUMMARY.tsv", col_names=FALSE)
+write_delim(AnvioClusters_Cac, "/analysis_PPanGGOLiN/Cac_PAN_SUMMARY.tsv", col_names=FALSE)
 ```
 
 [**IMPORTANT**]{.underline}**:** The gene_callers_id provided by anvi'o don't match the original ones in the prokka annotation. The prokka annotated genomes were parsed into two text files, one for gene calls and one for annotations, with the script `gff_parser.py`. By default prokka annotates also tRNAs, rRNAs and CRISPR regions. However, `gff_parser.py` will only utilize open reading frames reported by Prodigal in the prokka output in order to be compatible with the pangenomic anvi'o pipeline. While parsing new gene_callers_id are generated only for the ORFs that will be imported into anvi'o. Fortunately, `anvi-get-sequences-for-gene-calls` can be used to export new .gff files with only the ORFs and these can be used for PPanGGOLiN, instead of the original prokka ones:
@@ -205,13 +205,13 @@ ppanggolin info -p "/analysis_PPanGGOLiN/Cpr_anno_output/Cpr.h5" --parameters --
 The `pangenomeGraph.gexf` file can be opened with Gephi, and the Data Table exported as a `gephi_table.csv`. This can be used to easily explore the PPanGGOLiN output with the same gene IDs anvi'o uses. The `matrix.csv` should be used with caution, since records PPanGGOLiN internal gene IDs, that are different from the anvi'o ones.
 
 ```{r, message=FALSE}
-Gephi <-  read.delim("analysis_PPanGGOLiN/Output_Cpse/Cpse_gephi_table.csv", ",", escape_double = FALSE, trim_ws = TRUE)
+Gephi <-  read.delim("analysis_PPanGGOLiN/Output_Cps/Cps_gephi_table.csv", ",", escape_double = FALSE, trim_ws = TRUE)
 
-Gephi <-  read.delim("analysis_PPanGGOLiN/Output_Cpro/Cpro_gephi_table.csv", ",", escape_double = FALSE, trim_ws = TRUE)
+Gephi <-  read.delim("analysis_PPanGGOLiN/Output_Cpr/Cpr_gephi_table.csv", ",", escape_double = FALSE, trim_ws = TRUE)
 
-Gephi <-  read.delim("analysis_PPanGGOLiN/Output_Ctub/Ctub_gephi_table.csv", ",", escape_double = FALSE, trim_ws = TRUE)
+Gephi <-  read.delim("analysis_PPanGGOLiN/Output_Ctu/Ctu_gephi_table.csv", ",", escape_double = FALSE, trim_ws = TRUE)
 
-Gephi <-  read.delim("analysis_PPanGGOLiN/Output_Cacc/Cacc_gephi_table.csv", ",", escape_double = FALSE, trim_ws = TRUE)
+Gephi <-  read.delim("analysis_PPanGGOLiN/Output_Cac/Cac_gephi_table.csv", ",", escape_double = FALSE, trim_ws = TRUE)
 ```
 
 ## Persistent vs. Accessory based on PPanGGOLiN
@@ -219,62 +219,62 @@ Gephi <-  read.delim("analysis_PPanGGOLiN/Output_Cacc/Cacc_gephi_table.csv", ","
 PPanGGOLiN generates a "partitions" folder as part of its output. We read the persistent, cloud and shell files from this output and add a column labeling them. We combine the three in one `partitions.txt` file that can be imported into anvi'o:
 
 ```{r}
-Cpse_persistent <- read.delim("/analysis_PPanGGOLiN/Output_Cps/partitions/persistent.txt", col.names = "GC")
-Cpse_persistent$PPanGGOLiN <- "persistent"
-Cpse_cloud <- read.delim("/analysis_PPanGGOLiN/Output_Cps/partitions/cloud.txt", col.names = "GC")
-Cpse_cloud$PPanGGOLiN <- "cloud"
-Cpse_shell <- read.delim("/analysis_PPanGGOLiN/Output_Cps/partitions/shell.txt", col.names = "GC")
-Cpse_shell$PPanGGOLiN <- "shell"
-Cpse_partitions <- rbind(Cpse_persistent, Cpse_cloud, Cpse_shell)
-Cpse_partitions <- Cpse_partitions[grep("GC_00", Cpse_partitions$GC),]
-write_delim(Cpse_partitions, "/analysis_PPanGGOLiN/Output_Cps/partitions/partitions.txt", delim = "\t")
+Cps_persistent <- read.delim("/analysis_PPanGGOLiN/Output_Cps/partitions/persistent.txt", col.names = "GC")
+Cps_persistent$PPanGGOLiN <- "persistent"
+Cps_cloud <- read.delim("/analysis_PPanGGOLiN/Output_Cps/partitions/cloud.txt", col.names = "GC")
+Cps_cloud$PPanGGOLiN <- "cloud"
+Cps_shell <- read.delim("/analysis_PPanGGOLiN/Output_Cps/partitions/shell.txt", col.names = "GC")
+Cps_shell$PPanGGOLiN <- "shell"
+Cps_partitions <- rbind(Cps_persistent, Cps_cloud, Cps_shell)
+Cps_partitions <- Cps_partitions[grep("GC_00", Cps_partitions$GC),]
+write_delim(Cps_partitions, "/analysis_PPanGGOLiN/Output_Cps/partitions/partitions.txt", delim = "\t")
 
-Cpro_persistent <- read.delim("/analysis_PPanGGOLiN/Output_Cpr/partitions/persistent.txt", col.names = "GC")
-Cpro_persistent$PPanGGOLiN <- "persistent"
-Cpro_cloud <- read.delim("/analysis_PPanGGOLiN/Output_Cpr/partitions/cloud.txt", col.names = "GC")
-Cpro_cloud$PPanGGOLiN <- "cloud"
-Cpro_shell <- read.delim("/analysis_PPanGGOLiN/Output_Cpr/partitions/shell.txt", col.names = "GC")
-Cpro_shell$PPanGGOLiN <- "shell"
-Cpro_partitions <- rbind(Cpro_persistent, Cpro_cloud, Cpro_shell)
-Cpro_partitions <- Cpro_partitions[grep("GC_", Cpro_partitions$GC),]
-write_delim(Cpro_partitions, "/analysis_PPanGGOLiN/Output_Cpr/partitions/partitions.txt", delim = "\t")
+Cpr_persistent <- read.delim("/analysis_PPanGGOLiN/Output_Cpr/partitions/persistent.txt", col.names = "GC")
+Cpr_persistent$PPanGGOLiN <- "persistent"
+Cpr_cloud <- read.delim("/analysis_PPanGGOLiN/Output_Cpr/partitions/cloud.txt", col.names = "GC")
+Cpr_cloud$PPanGGOLiN <- "cloud"
+Cpr_shell <- read.delim("/analysis_PPanGGOLiN/Output_Cpr/partitions/shell.txt", col.names = "GC")
+Cpr_shell$PPanGGOLiN <- "shell"
+Cpr_partitions <- rbind(Cpr_persistent, Cpr_cloud, Cpr_shell)
+Cpr_partitions <- Cpr_partitions[grep("GC_", Cpr_partitions$GC),]
+write_delim(Cpr_partitions, "/analysis_PPanGGOLiN/Output_Cpr/partitions/partitions.txt", delim = "\t")
 
-Ctub_persistent <- read.delim("/analysis_PPanGGOLiN/Output_Ctu/partitions/persistent.txt", col.names = "GC")
-Ctub_persistent$PPanGGOLiN <- "persistent"
-Ctub_cloud <- read.delim("/analysis_PPanGGOLiN/Output_Ctu/partitions/cloud.txt", col.names = "GC")
-Ctub_cloud$PPanGGOLiN <- "cloud"
-Ctub_shell <- read.delim("/analysis_PPanGGOLiN/Output_Ctu/partitions/shell.txt", col.names = "GC")
-Ctub_shell$PPanGGOLiN <- "shell"
-Ctub_partitions <- rbind(Ctub_persistent, Ctub_cloud, Ctub_shell)
-Ctub_partitions <- Ctub_partitions[grep("GC_", Ctub_partitions$GC),]
-write_delim(Ctub_partitions, "/analysis_PPanGGOLiN/Output_Ctu/partitions/partitions.txt", delim = "\t")
+Ctu_persistent <- read.delim("/analysis_PPanGGOLiN/Output_Ctu/partitions/persistent.txt", col.names = "GC")
+Ctu_persistent$PPanGGOLiN <- "persistent"
+Ctu_cloud <- read.delim("/analysis_PPanGGOLiN/Output_Ctu/partitions/cloud.txt", col.names = "GC")
+Ctu_cloud$PPanGGOLiN <- "cloud"
+Ctu_shell <- read.delim("/analysis_PPanGGOLiN/Output_Ctu/partitions/shell.txt", col.names = "GC")
+Ctu_shell$PPanGGOLiN <- "shell"
+Ctu_partitions <- rbind(Ctu_persistent, Ctu_cloud, Ctu_shell)
+Ctu_partitions <- Ctu_partitions[grep("GC_", Ctu_partitions$GC),]
+write_delim(Ctu_partitions, "/analysis_PPanGGOLiN/Output_Ctu/partitions/partitions.txt", delim = "\t")
 
-Cacc_persistent <- read.delim("/analysis_PPanGGOLiN/Output_Cac/partitions/persistent.txt", col.names = "GC")
-Cacc_persistent$PPanGGOLiN <- "persistent"
-Cacc_cloud <- read.delim("/analysis_PPanGGOLiN/Output_Cac/partitions/cloud.txt", col.names = "GC")
-Cacc_cloud$PPanGGOLiN <- "cloud"
-Cacc_shell <- read.delim("/analysis_PPanGGOLiN/Output_Cac/partitions/shell.txt", col.names = "GC")
-Cacc_shell$PPanGGOLiN <- "shell"
-Cacc_partitions <- rbind(Cacc_persistent, Cacc_cloud, Cacc_shell)
-Cacc_partitions <- Cacc_partitions[grep("GC_", Cacc_partitions$GC),]
-write_delim(Cacc_partitions, "/analysis_PPanGGOLiN/Output_Cac/partitions/partitions.txt", delim = "\t")
+Cac_persistent <- read.delim("/analysis_PPanGGOLiN/Output_Cac/partitions/persistent.txt", col.names = "GC")
+Cac_persistent$PPanGGOLiN <- "persistent"
+Cac_cloud <- read.delim("/analysis_PPanGGOLiN/Output_Cac/partitions/cloud.txt", col.names = "GC")
+Cac_cloud$PPanGGOLiN <- "cloud"
+Cac_shell <- read.delim("/analysis_PPanGGOLiN/Output_Cac/partitions/shell.txt", col.names = "GC")
+Cac_shell$PPanGGOLiN <- "shell"
+Cac_partitions <- rbind(Cac_persistent, Cac_cloud, Cac_shell)
+Cac_partitions <- Cac_partitions[grep("GC_", Cac_partitions$GC),]
+write_delim(Cac_partitions, "/analysis_PPanGGOLiN/Output_Cac/partitions/partitions.txt", delim = "\t")
 ```
 
 This will import the PPanGGOLiN partitions (from `partitions.txt`) as a collection of bins named **PPanGGOLiNpartitions** in each profile-db:
 
 ```{bash, eval = FALSE}
 #conda activate anvio-7
-anvi-import-collection "/analysis_Anvio7/Pangenomic_Results/Cpsd/partitions_Cps.txt" \
-                       -p "/analysis_Anvio7/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" \
+anvi-import-collection "/analysis_Anvio7/Pangenomic_Results/Cps/partitions_Cps.txt" \
+                       -p "/analysis_Anvio7/Pangenomic_Results/Cps/PAN_Cps-PAN.db" \
                        -C "PPanGGOLiNpartitions" --bins-info "/analysis_Anvio7/main_outputs/PPanGGOLiN_bin_colors.txt"
-anvi-import-collection "/analysis_Anvio7/Pangenomic_Results/Cpro/partitions_Cpr.txt" \
-                       -p "/analysis_Anvio7/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db" \
+anvi-import-collection "/analysis_Anvio7/Pangenomic_Results/Cpr/partitions_Cpr.txt" \
+                       -p "/analysis_Anvio7/Pangenomic_Results/Cpr/PAN_Cpr-PAN.db" \
                        -C "PPanGGOLiNpartitions" --bins-info "/analysis_Anvio7/main_outputs/PPanGGOLiN_bin_colors.txt"
-anvi-import-collection "/analysis_Anvio7/Pangenomic_Results/Ctub/partitions_Ctu.txt" \
-                       -p "/analysis_Anvio7/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db" \
+anvi-import-collection "/analysis_Anvio7/Pangenomic_Results/Ctu/partitions_Ctu.txt" \
+                       -p "/analysis_Anvio7/Pangenomic_Results/Ctu/PAN_Ctu-PAN.db" \
                        -C "PPanGGOLiNpartitions" --bins-info "/analysis_Anvio7/main_outputs/PPanGGOLiN_bin_colors.txt"
-anvi-import-collection "/analysis_Anvio7/Pangenomic_Results/Cacc/partitions_Cac.txt" \
-                       -p "/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" \
+anvi-import-collection "/analysis_Anvio7/Pangenomic_Results/Cac/partitions_Cac.txt" \
+                       -p "/analysis_Anvio7/Pangenomic_Results/Cac/PAN_Cac-PAN.db" \
                        -C "PPanGGOLiNpartitions" --bins-info "/analysis_Anvio7/main_outputs/PPanGGOLiN_bin_colors.txt"
 ```
 
@@ -282,14 +282,14 @@ We can also import this data (from `partitions.txt`) as a PPanGGOLiN layer into 
 
 ```{bash, eval = FALSE}
 #conda activate anvio-7
-anvi-import-misc-data "/analysis_Anvio7/Pangenomic_Results/Cpsd/partitions_Cps.txt" \
-                       -p "/analysis_Anvio7/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" -t items
-anvi-import-misc-data "/analysis_Anvio7/Pangenomic_Results/Cpro/partitions_Cpr.txt" \
-                       -p "/analysis_Anvio7/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db" -t items
-anvi-import-misc-data "/analysis_Anvio7/Pangenomic_Results/Ctub/partitions_Ctu.txt" \
-                       -p "/analysis_Anvio7/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db" -t items
-anvi-import-misc-data "/analysis_Anvio7/Pangenomic_Results/Cacc/partitions_Cac.txt" \
-                       -p "/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" -t items                    
+anvi-import-misc-data "/analysis_Anvio7/Pangenomic_Results/Cps/partitions_Cps.txt" \
+                       -p "/analysis_Anvio7/Pangenomic_Results/Cps/PAN_Cps-PAN.db" -t items
+anvi-import-misc-data "/analysis_Anvio7/Pangenomic_Results/Cpr/partitions_Cpr.txt" \
+                       -p "/analysis_Anvio7/Pangenomic_Results/Cpr/PAN_Cpr-PAN.db" -t items
+anvi-import-misc-data "/analysis_Anvio7/Pangenomic_Results/Ctu/partitions_Ctu.txt" \
+                       -p "/analysis_Anvio7/Pangenomic_Results/Ctu/PAN_Ctu-PAN.db" -t items
+anvi-import-misc-data "/analysis_Anvio7/Pangenomic_Results/Cac/partitions_Cac.txt" \
+                       -p "/analysis_Anvio7/Pangenomic_Results/Cac/PAN_Cac-PAN.db" -t items                    
 ```
 
 ## Displaying the generated bin collections
@@ -298,13 +298,13 @@ We can see the collections and bins created in a pangenomic database using the c
 
 ```{bash, eval = FALSE}
 #conda activate anvio-7
-anvi-show-collections-and-bins -p "/analysis_Anvio7/Pangenomic_Results/Cpsd/PAN_Cpsd-PAN.db" --debug 
+anvi-show-collections-and-bins -p "/analysis_Anvio7/Pangenomic_Results/Cps/PAN_Cps-PAN.db" --debug 
 
-anvi-show-collections-and-bins -p "/analysis_Anvio7/Pangenomic_Results/Cpro/PAN_Cpro-PAN.db" --debug 
+anvi-show-collections-and-bins -p "/analysis_Anvio7/Pangenomic_Results/Cpr/PAN_Cpr-PAN.db" --debug 
 
-anvi-show-collections-and-bins -p "/analysis_Anvio7/Pangenomic_Results/Ctub/PAN_Ctub-PAN.db" --debug 
+anvi-show-collections-and-bins -p "/analysis_Anvio7/Pangenomic_Results/Ctu/PAN_Ctu-PAN.db" --debug 
 
-anvi-show-collections-and-bins -p "/analysis_Anvio7/Pangenomic_Results/Cacc/PAN_Cacc-PAN.db" --debug 
+anvi-show-collections-and-bins -p "/analysis_Anvio7/Pangenomic_Results/Cac/PAN_Cac-PAN.db" --debug 
 ```
 
 ## PPanGGOLiN Pangenome Compartments

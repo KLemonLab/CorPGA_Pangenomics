@@ -10,7 +10,7 @@ output:
 
 ## This repository includes:
 
--   Link to bioRxiv: https://www.biorxiv.org/content/10.1101/2023.06.05.543719v1.full
+-   Link to bioRxiv: <https://www.biorxiv.org/content/10.1101/2023.06.05.543719v1.full>
 
 -   The raw `.fasta` files for initial input, provided [[here]{.underline}](https://github.com/KLemonLab/CorPGA_Pangenomics/tree/main/Strain_genomes).
 
@@ -24,7 +24,18 @@ output:
 
 -   Supplemental methods of COG anvi'o annotated gene clusters assignments to the persistent or accessory genome with [[PPanGGOLiN analysis]{.underline}](SupplementalMethods_PPanGGOLiN.html).
 
--   Supplemental methods for [[COG annotations and functional enrichment analysis]{.underline}](SupplementalMethods_COGS.html).
+-   Supplemental methods for COG annotations based on PPanGGOLiN partitions:
+
+    -   [Corynebacterium propinquum](SupplementalMethods_COGS_Cpr.html)
+
+    -   [Corynebacterium pseudodiphtheriticum](SupplementalMethods_COGS_Cps.html)
+    
+    -   [Corynebacterium accolens](SupplementalMethods_COGS_Cac.html)
+    
+    -   [Corynebacterium tuberculostearicum](SupplementalMethods_COGS_Ctu.html)
+
+
+
 
 <img src="images/klemonlab_photo.jpg" align="left" width="200" height="90"/>
 
