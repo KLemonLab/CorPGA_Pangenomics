@@ -26,13 +26,13 @@ output:
 
 -   Supplemental methods for COG annotations based on PPanGGOLiN partitions:
 
-    -   [Corynebacterium propinquum](SupplementalMethods_COGS_Cpr.html)
+    -   [*Corynebacterium propinquum*](SupplementalMethods_COGS_Cpr.html)
 
-    -   [Corynebacterium pseudodiphtheriticum](SupplementalMethods_COGS_Cps.html)
+    -   [*Corynebacterium pseudodiphtheriticum*](SupplementalMethods_COGS_Cps.html)
     
-    -   [Corynebacterium accolens](SupplementalMethods_COGS_Cac.html)
+    -   [*Corynebacterium accolens*](SupplementalMethods_COGS_Cac.html)
     
-    -   [Corynebacterium tuberculostearicum](SupplementalMethods_COGS_Ctu.html)
+    -   [*Corynebacterium tuberculostearicum*](SupplementalMethods_COGS_Ctu.html)
 
 
 
