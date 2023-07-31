@@ -20,13 +20,13 @@ https://klemonlab.github.io/CorPGA_Pangenomics/
 
 -   Supplemental methods for COG annotations based on PPanGGOLiN partitions:
 
-    -   [Corynebacterium propinquum](https://klemonlab.github.io/CorPGA_Pangenomics/SupplementalMethods_COGS_Cpr.html)
+    -   [*Corynebacterium propinquum*](https://klemonlab.github.io/CorPGA_Pangenomics/SupplementalMethods_COGS_Cpr.html)
 
-    -   [Corynebacterium pseudodiphtheriticum](https://klemonlab.github.io/CorPGA_Pangenomics/SupplementalMethods_COGS_Cps.html)
+    -   [*Corynebacterium pseudodiphtheriticum*](https://klemonlab.github.io/CorPGA_Pangenomics/SupplementalMethods_COGS_Cps.html)
     
-    -   [Corynebacterium accolens](https://klemonlab.github.io/CorPGA_Pangenomics/SupplementalMethods_COGS_Cac.html)
+    -   [*Corynebacterium accolens*](https://klemonlab.github.io/CorPGA_Pangenomics/SupplementalMethods_COGS_Cac.html)
     
-    -   [Corynebacterium tuberculostearicum](https://klemonlab.github.io/CorPGA_Pangenomics/SupplementalMethods_COGS_Ctu.html)
+    -   [*Corynebacterium tuberculostearicum*](https://klemonlab.github.io/CorPGA_Pangenomics/SupplementalMethods_COGS_Ctu.html)
 
 [Lemon Lab](https://www.bcm.edu/research/faculty-labs/katherine-lemon-lab)
 
