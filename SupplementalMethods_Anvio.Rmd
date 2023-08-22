@@ -39,7 +39,7 @@ done
 
 First you need to download and set up the KEGG KOfam database using `anvi-setup-kegg-kofams`. We used the KEGG snapshot provided by Anvio 7.1.
 
-The program `anvi-run-kegg-kofams` annotates genes in a given anvi'o contigs database with KEGG Orthology (KO) numbers via hits to the KEGG KOfam database [@Kanehisa2000].
+The program `anvi-run-kegg-kofams` annotates genes in a given anvi'o contigs database with KEGG Orthology (KO) numbers via hits to the KEGG KOfam database (release 102.0) [@Kanehisa2000].
 
 ```{bash, eval = FALSE}
 path_i="analysis_Anvio7/Contigs_db"
@@ -58,7 +58,7 @@ mv *_bitscores.txt analysis_Anvio7/KEGGbitscores/
 
 ## PFAM annotation
 
-First you need to download and set up the PFAM database using `anvi-setup-pfams`. We used the XXXXXXX version.
+First you need to download and set up the PFAM database using `anvi-setup-pfams`. We used the 35.0 version.
 
 The program `anvi-run-kegg-pfam` annotates genes in a given anvi'o contigs database with the PFAM database [@Mistry2021].
 
