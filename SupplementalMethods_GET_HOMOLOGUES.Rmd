@@ -261,6 +261,81 @@ The `-p` flag performs edge-linked proportional partition model [@Chernomor2016]
 
 This will create a `.treefile` file with the best fit maximum likelyhood (ML) tree. This `.treefile` can be viewed and edited through [iTol annotation editor](https://itoleditor.letunic.com/) [@Letunic2021] on Google Chrome browser. In iTol the tree can be scaled and assigned strain names from the `tree_labels.list` file created from GET_PHYLOMARKERS. After scaling and assigning strain names the `.svg` version can be exported from iTol and further edited in Adobe Illustrator.
 
+# Conservative Core and Phylogeny of 73 *Corynebacterium* Genomes
+
+## Running BDBH, COGS, & OMCL with 73 *Corynebacterium* Genomes
+
+71 *Corynebacterium* genomes clustered with BDBH, COGS, and OMCL:
+
+```{bash, eval=FALSE}
+cd get_homologues
+
+# Cluster with BDBH
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT/THT_CorPGA/CorPGA_Coryne_genus_tree/gbk_reduced" -n 8 -t 71 -C 90
+
+# cluster with COGS
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT/THT_CorPGA/CorPGA_Coryne_genus_tree/gbk" -n 8 -t 0 -C 90 -G
+
+# cluster with OMCL
+./get_homologues.pl -d "/Users/klemonlab/Desktop/THT/THT_CorPGA/CorPGA_Coryne_genus_tree/gbk" -n 8 -t 0 -C 90 -M
+```
+
+## Creating a Conservative Core Venn Diagram of 73 *Corynebacterium* genomes
+
+```{bash, eval=FALSE}
+cd get_homologues
+
+# Creates a conservative core with the output of faa files
+./compare_clusters.pl -o "/Users/klemonlab/Desktop/THT/THT_CorPGA/CorPGA_Coryne_genus_tree/intersection" \
+                      -d "/Users/klemonlab/Desktop/THT/THT_CorPGA/CorPGA_Coryne_genus_tree/3x_clusters/CcaspiumDSM44850_f0_73taxa_algBDBH_e0_C90_","/Users/klemonlab/Desktop/THT/THT_CorPGA/CorPGA_Coryne_genus_tree/3x_clusters/CcaspiumDSM44850_f0_0taxa_algCOG_e0_C90_","/Users/klemonlab/Desktop/THT/THT_CorPGA/CorPGA_Coryne_genus_tree/3x_clusters/CcaspiumDSM44850_f0_0taxa_algOMCL_e0_C90_" \
+                      -t 73
+                      
+# Creates a conservative core with the output of fna files from the additional `-n` flag
+./compare_clusters.pl -o "/Users/klemonlab/Desktop/THT/THT_CorPGA/CorPGA_Coryne_genus_tree/intersection" \
+                      -d "/Users/klemonlab/Desktop/THT/THT_CorPGA/CorPGA_Coryne_genus_tree/3x_clusters/CcaspiumDSM44850_f0_73taxa_algBDBH_e0_C90_","/Users/klemonlab/Desktop/THT/THT_CorPGA/CorPGA_Coryne_genus_tree/3x_clusters/CcaspiumDSM44850_f0_0taxa_algCOG_e0_C90_","/Users/klemonlab/Desktop/THT/THT_CorPGA/CorPGA_Coryne_genus_tree/3x_clusters/CcaspiumDSM44850_f0_0taxa_algOMCL_e0_C90_" \
+                      -t 73 \
+                      -n
+```
+
+## Generate a Phylogenomic Tree for all *Corynebacterium* genomes from the Conservative Core
+
+```{bash, eval=FALSE}
+# Create a new directory to hold the faa and fna files
+cd "/Users/klemonlab/Desktop/THT/THT_CorPGA/CorPGA_Coryne_genus_tree/intersection"
+mkdir -p "analysis_GH/All_gbk_faa_fna" 
+
+# Go to the output folder from creating the Venn diagram intersection
+cd "/analysis_GH/All_gbk_venn"
+
+# Move all .faa files to the new directory
+mv *.faa "/analysis_GH/All_gbk_faa_fna"
+
+# Move all .fna files to the new directory
+mv *.fna "/analysis_GH/All_gbk_faa_fna"
+```
+
+Now we use GET_PHYLOMARKERS version 2.2.9.1 [@Vinuesa2018] to generate a concatenated alignment file for each single copy core gene cluster.
+
+Concatenate and align the `.faa` and `.fna` files to generate codon alignment files:
+
+```{bash, eval=FALSE}
+# Go to directory holding all the .fna and .faa files only
+cd "/analysis_GH/All_gbk_faa_fna" 
+
+# Run the get_phylomarkers master script
+/Users/username/get_phylomarkers/run_get_phylomarkers_pipeline.sh -R 1 -t DNA -k 0.7 -m 0.7
+```
+
+Run IQ-TREE v2.1.3 [@Minh2020] with the codon alignment folder containing `.fasta` files:
+
+```{bash, eval=FALSE}
+# Go to IQTREE2
+cd IQ-TREE2
+
+# Run iqtree2
+bin/iqtree2 -p "/Users/klemonlab/Desktop/THT/THT_CorPGA/CorPGA_Coryne_genus_tree/intersection/faa_fna_only/get_phylomarkers_run_AIR1tDNA_k0.7_m0.7_Tmedium_29Aug23/codon_alignments" --prefix Coryne_genus_CorPGA -alrt 1000 -B 1000 -T 8
+```
+
 # *Corynebacterium* Species Specific Phylogenomic Trees with Outgroup
 
 The goal of this analysis is to be able to create phylogenetic trees for each of the four *Corynebacterium* species plus an outgroup using all the gene clusters common to each species, including those not shared by each corresponding outgroup genome.
