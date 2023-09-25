@@ -20,7 +20,7 @@ More information about Prokka can be found here: <https://github.com/tseemann/pr
 
 # Prokka annotation for GET_HOMOLOGUES
 
-This step annotates all the .fasta files in the selected input folder (`path_i`) and places the all the output annotated files in the output folder (`path_o`). Output files headers get updated with --genus 'Corynebacterium' --species 'sp' and --strain based on the file name. We used default parameters, including gene recognition and translation initiation site identification with Prodigal [@Hyatt2010].
+This step annotates all the .fasta files in the selected input folder (`path_i`) and places all the output annotated files in the output folder (`path_o`). Output files headers get updated with --genus 'Corynebacterium' --species 'sp' and --strain based on the file name. We used default parameters, including gene recognition and translation initiation site identification with Prodigal [@Hyatt2010].
 
 ```{bash, eval=FALSE}
 mkdir -p "analysis_GH/Prokka_out"
@@ -42,7 +42,7 @@ More information about importing Prokka annotations into anvi'o can be found her
 Before the annotation step with Prokka we need to reformat the .fasta files using `anvi-script-reformat-fasta`. This script creates .fasta files with simplified deflines and also by using --seq-type NT prevents downstream errors with "characters that are not any of A, C, T, G, N, a, c, t, g, n."
 
 ```{bash, eval=FALSE}
-#conda activate anvio-7
+#conda activate anvio-7.1
 mkdir -p "analysis_Anvio7/Reformatted"
 path_i="Strain_genomes"
 path_o="analysis_Anvio7/Reformatted"
@@ -65,7 +65,7 @@ path_o="analysis_Anvio7/Prokka_out"
 
 for file in $path_i/*.f*; do
     FILENAME=`basename ${file%.*}`
-    prokka --prefix $FILENAME --outdir $path_o --genus 'Corynebacterium' --species 'sp' --strain $FILENAME --centre X --compliant --cpus 0 --force $file;
+    prokka --prefix $FILENAME --outdir $path_o --genus 'Corynebacterium' --species 'sp' --strain $FILENAME --cpus 0 --force $file;
 done
 ```
 
@@ -74,7 +74,7 @@ done
 This step is to parse Prokka annotated genomes to import both the external Prodigal gene calls and functions independently into anvi'o. The input (`path_i`) is the annotation in GFF3 format and outputs (`path_o`) are tab-delimited text files, one for gene calls (`calls_*.txt`) and one for annotations (`annot_*.txt`). This is done with the script `gff_parser.py` described in this [tutorial](https://merenlab.org/2017/05/18/working-with-prokka/).
 
 ```{bash, eval = FALSE}
-conda activate anvio-7.1
+#conda activate anvio-7.1
 mkdir -p "analysis_Anvio7/Parsed_prokka"
 path_i="analysis_Anvio7/Prokka_out"
 path_o="analysis_Anvio7/Parsed_prokka"
@@ -90,7 +90,7 @@ done
 In this step the reformatted fasta files (`path_i`) and the external gene calls (`calls_*.txt`) from Prokka (`path_e`) get imported to generate anvi’o contigs databases (`path_o`). Initially we got a lot of early stop codon errors. Therefore, we add the –ignore-internal-stop-codons flag.
 
 ```{bash, eval = FALSE}
-conda activate anvio-7.1
+#conda activate anvio-7.1
 mkdir -p "analysis_Anvio7/Contigs_db"
 path_i="analysis_Anvio7/Reformatted"
 path_e="analysis_Anvio7/Parsed_prokka"
@@ -111,7 +111,7 @@ done
 Finally, the external functional annotations (`annot_*.txt`) from Prokka (`path_e`) get imported into the Anvi’o contigs databases (`path_i`).
 
 ```{bash, eval = FALSE}
-conda activate anvio-7.1
+#conda activate anvio-7.1
 path_i="analysis_Anvio7/Contigs_db"
 path_e="analysis_Anvio7/Parsed_prokka"
 
