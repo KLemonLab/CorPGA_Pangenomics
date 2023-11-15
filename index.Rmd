@@ -24,7 +24,7 @@ output:
 
 -   Supplemental methods of COG anvi'o annotated gene clusters assignments to the persistent or accessory genome with [[PPanGGOLiN analysis]{.underline}](SupplementalMethods_PPanGGOLiN.html).
 
--   Supplemental methods for COG annotations based on PPanGGOLiN partitions:
+-   Supplemental methods for COG functional analysis based on PPanGGOLiN partitions:
 
     -   [*Corynebacterium propinquum*](SupplementalMethods_COGS_Cpr.html)
 
