@@ -78,14 +78,17 @@ done < "$csv_file"
 This step is to parse Prokka annotated genomes to import both the external Prodigal gene calls and functions independently into anvi'o. The input (`path_i`) is the annotation in GFF3 format and outputs (`path_o`) are tab-delimited text files, one for gene calls (`calls_*.txt`) and one for annotations (`annot_*.txt`). This is done with the script `gff_parser.py` described in this [tutorial](https://merenlab.org/2017/05/18/working-with-prokka/).
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1
-mkdir -p "data/Anvio8/Parsed_prokka"
+#conda activate gffutils
+
 path_i="data/Anvio8/Prokka_out"
 path_o="data/Anvio8/Parsed_prokka"
+mkdir -p "$path_o"
 
 for file in $path_i/*.gff; do
     FILENAME=`basename ${file%.*}`
-    python gff_parser.py --gene-calls $path_o/calls_$FILENAME.txt --annotation $path_o/annot_$FILENAME.txt $file;
+    python scripts/gff_parser.py $file \
+    --gene-calls $path_o/calls_$FILENAME.txt \
+    --annotation $path_o/annot_$FILENAME.txt;
 done
 ```
 
