@@ -22,14 +22,15 @@ We annotated the genomes in two different ways for proper compatibility and stra
 
 ## Prokka annotations for GET_HOMOLOGUES
 
-More information about Prokka can be found here: <https://github.com/tseemann/prokka>
-
-This step annotates all the .fasta files in the selected input folder (`path_i`) and places all the output annotated files in the output folder (`path_o`). Output files headers get updated with --genus 'Corynebacterium' --species 'sp' and --strain based on the file name. We used default parameters, including gene recognition and translation initiation site identification with Prodigal [@Hyatt2010].
+This step annotates all the `.fasta` files in the selected input folder (`path_i`) and places all the output annotated files in the output folder (`path_o`). 
+Output files headers get updated with --genus 'Corynebacterium' --species 'sp' and --strain based on the file name. We used default parameters, including gene recognition and translation initiation site identification with Prodigal [@Hyatt2010].
 
 ```{bash, eval=FALSE}
-mkdir -p "analysis_GH/Prokka_out"
-path_i="Strain_genomes"
-path_o="analysis_GH/Prokka_out"
+#conda activate Prokka
+
+path_i="data/genomes"
+path_o="data/GET_HOMOLOGUES/Prokka_out"
+mkdir -p "$path_o"
 
 for file in $path_i/*.f*; do
     FILENAME=`basename ${file%.*}`
@@ -43,12 +44,12 @@ More information about importing Prokka annotations into anvi'o can be found her
 
 ### Fasta reformatting
 
-Before the annotation step with Prokka we need to reformat the .fasta files using `anvi-script-reformat-fasta`. This script creates .fasta files with simplified deflines and also by using --seq-type NT prevents downstream errors with "characters that are not any of A, C, T, G, N, a, c, t, g, n."
+Before the annotation step with Prokka we need to reformat the `.fasta` files using `anvi-script-reformat-fasta`. This script creates `.fasta` files with simplified deflines and also by using `--seq-type NT` prevents downstream errors with "characters that are not any of A, C, T, G, N, a, c, t, g, n."
 
 ```{bash, eval=FALSE}
 #conda activate anvio-dev
 
-path_i="data/x"
+path_i="data/genomes"
 path_o="data/Anvio8/Reformatted"
 mkdir -p "$path_o"
 
@@ -60,7 +61,9 @@ done
 
 ### Prokka annotation
 
-This step repeats the Prokka annotation using the anvio reformatted .fasta files. Output files headers get updated with --genus --species and --strain based on the info in the genomes list.
+This step repeats the Prokka annotation using the anvi'o reformatted `.fasta` files. 
+
+Output files headers get updated with --genus --species and --strain based on the info in the genomes list `.csv` file.
 
 ```{bash, eval=FALSE}
 #conda activate Prokka
@@ -79,7 +82,9 @@ done < "$csv_file"
 
 ### Parsing .gff files
 
-This step is to parse Prokka annotated genomes to import both the external Prodigal gene calls and functions independently into anvi'o. The input (`path_i`) is the annotation in GFF3 format and outputs (`path_o`) are tab-delimited text files, one for gene calls (`calls_*.txt`) and one for annotations (`annot_*.txt`). This is done with the script `gff_parser.py` described in this [tutorial](https://merenlab.org/2017/05/18/working-with-prokka/).
+This step is to parse Prokka annotated genomes to import both the external Prodigal gene calls and functions independently into anvi'o. The input (`path_i`) is the annotation in GFF3 format and outputs (`path_o`) are two tab-delimited text files, one for gene calls (`calls_*.txt`) and one for annotations (`annot_*.txt`). 
+
+This is done with the script `gff_parser.py` described in this [tutorial](https://merenlab.org/2017/05/18/working-with-prokka/).
 
 ```{bash, eval = FALSE}
 #conda activate gffutils
@@ -98,7 +103,7 @@ done
 
 ### Generating contigs databases
 
-In this step the reformatted fasta files (`path_i`) and the external gene calls (`calls_*.txt`) from Prokka (`path_e`) get imported to generate anvi’o contigs databases (`path_o`). Initially we got a lot of early stop codon errors. Therefore, we add the –ignore-internal-stop-codons flag.
+In this step the reformatted `.fa` files (`path_i`) and the external gene calls (`calls_*.txt`) from Prokka (`path_e`) get imported to generate anvi’o contig databases (`path_o`). Initially we got a lot of early stop codon errors. Therefore, we add the `–ignore-internal-stop-codons` flag.
 
 ```{bash, eval = FALSE}
 #conda activate anvio-dev
@@ -138,9 +143,13 @@ done
 
 # NCBI annotations
 
-The 9 genome assemblies listed in `CorPGA_AnnotationNCBI_GenomeList_v01a.csv` and included in `data/genomes_NCBIAnnotation` where used as references for comparisons on the KEGG metabolic analysis only. These genomes were not part of the phylogenetic/pangenomic analysis, and we were interested in keeping the original NCBI annotations in the anvi'o contig databases. They were downloaded from NCBI in `.gbff` format and processed as follows:
+The 9 genome assemblies listed in `CorPGA_AnnotationNCBI_GenomeList_v01a.csv` and included in `data/genomes_NCBIAnnotation` where used as references for comparisons on the KEGG metabolic analysis only. These genomes were not part of the phylogenetic/pangenomic analysis, and we were interested in keeping the original NCBI annotations in the anvi'o contig databases. 
+
+They were downloaded from NCBI in `.gbff` format and processed as follows:
 
 ## Parsing .gbff files downloaded from NCBI
+
+First we used `anvi-script-process-genbank` to parse the `.gbff` files (`path_i`) in order to output (`path_o`) the corresponding properly formatted `.fa` files, plus two tab-delimited text files, one for gene calls (`calls_*.txt`) and one for annotations (`annot_*.txt`). 
 
 ```{bash, eval = FALSE}
 #conda activate anvio-dev
@@ -161,7 +170,7 @@ done
 
 ## Generating contigs databases
 
-In this step the fasta files and the gene calls from NCBI (`path_i`) get imported to generate anvi'o contigs databases (`path_o`).
+In this step the `.fa` files and the gene calls from NCBI (`path_i`) get imported to generate anvi'o contigs databases (`path_o`).
 
 ```{bash, eval = FALSE}
 #conda activate anvio-dev
@@ -181,7 +190,7 @@ done
 
 ## Importing Prokka functional annotation
 
-The NCBI external annotations (`path_e`) get imported into the Anvi'o contigs databases (`path_i`).
+Then the NCBI external annotations (`path_e`) get imported into the Anvi'o contigs databases (`path_i`).
 
 ```{bash, eval = FALSE}
 #conda activate anvio-dev
