@@ -15,7 +15,7 @@ bibliography: referencesAnvio.bib
 klippy::klippy(c('r', 'bash'))
 ```
 
-This notebook contains analyses using anvi'o version 7.1 [@Eren2021]. For more in-depth information about anvi'o go to their official online site here: <https://anvio.org/>
+This notebook contains analyses using anvi'o version 8 [@Eren2021]. For more in-depth information about anvi'o go to their official online site here: <https://anvio.org/>
 
 # Functional annotations
 
@@ -23,51 +23,61 @@ We use as input (`path_i`) the anvi'o contigs database files (`.db`) that were g
 
 ## COG annotation
 
-First we download and set up the NCBI's Clusters of Orthologous Groups database using `anvi-setup-ncbi-cogs`. We used the COG20 version.
+First we downloaded and set up the NCBI's Clusters of Orthologous Groups database[@Tatusov2000, @Galperin2021] using `anvi-setup-ncbi-cogs`. The default is the latest version, which is COG20, meaning that anvi'o will use the NCBI's 2020 release of COGs to setup the database.
 
-Now the `anvi-run-ncbi-cogs` command can be used to annotate the .db genome files against the NCBI's COGs database [@Tatusov2001]: It uses DIAMOND [@Buchfink2015] "fast" as default, but it is recommended to use the "sensitive" option. This will take considerably much longer. Blastp can also be used instead of DIAMOND.
+The `anvi-run-ncbi-cogs` command was used to annotate the contig databases. We used DIAMOND as searching method[@buchfink2014] with the recommended "sensitive" option.
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1
-path_i="analysis_Anvio7/Contigs_db"
+#conda activate anvio-dev
+
+path_i="data/Anvio8/Contigs_db"
 
 for file in $path_i/*.db; do
-    anvi-run-ncbi-cogs -T 8 --sensitive -c $file;
+    anvi-run-ncbi-cogs -T 8 --search-with diamond -c $file;
 done
 ```
 
 ## KEGG annotation
 
-First we download and set up the KEGG KOfam database using `anvi-setup-kegg-kofams`. We used the KEGG snapshot provided by Anvio 7.1.
+First we downloaded and set up the KEGG KOfam[@Kanehisa2000; @Kanehisa2023] database using `anvi-setup-kegg-data`. We used the snapshot of the KEGG database dated 2023-09-22 (hash a2b5bde358bb). It contains 479 modules with 15116 entries.
 
-The program `anvi-run-kegg-kofams` annotates genes in a given anvi'o contigs database with KEGG Orthology (KO) numbers via hits to the KEGG KOfam database (release 102.0) [@Kanehisa2000].
+The program `anvi-run-kegg-kofams` annotates genes in a given anvi'o contigs database with KEGG Orthology (KO) numbers via hits to the KEGG KOfam database. We used `-E` lower than 1e-15.
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1
-path_i="analysis_Anvio7/Contigs_db"
+#conda activate anvio-dev
+
+path_i="data/Anvio8/Contigs_db"
 
 for file in $path_i/*.db; do
-    anvi-run-kegg-kofams -T 8 --log-bitscores -c $file;
+    anvi-run-kegg-kofams -T 8 --log-bitscores -E 1e-15 --just-do-it -c $file;
 done
 ```
 
-The option `--log-bitscores` records the bit scores values. They were saved to the main folder for the repo, so we moved them to a new subfolder:
+The option `--log-bitscores` records the bit scores values. They get saved to the main folder for the repo, so we moved them to a new subfolder
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1
-mkdir "analysis_Anvio7/KEGGbitscores"
-mv *_bitscores.txt analysis_Anvio7/KEGGbitscores/
+path_i <- "."
+path_o <- "data/Anvio8/KEGG_bitscores"
+dir.create(file.path("data/Anvio8/KEGG_bitscores"), recursive = TRUE, showWarnings=FALSE)
+files_to_move <- list.files(path_i, pattern = "_bitscores.txt$", full.names = TRUE)
+
+for (file in files_to_move) {
+  new_path <- file.path(path_o, basename(file))
+  print(new_path)
+  file.rename(file, new_path)
+}
 ```
 
 ## PFAM annotation
 
-First we need to download and set up the PFAM database using `anvi-setup-pfams`. We used the 35.0 version.
+First you need to download and set up the PFAM database[@Bateman2000; @Mistry2021] using `anvi-setup-pfams`: this is something you will do only once. We used Pfam version 36.0 (2023-07).
 
-The program `anvi-run-kegg-pfam` annotates genes in a given anvi'o contigs database with the PFAM database [@Mistry2021].
+The program `anvi-run-kegg-pfam` annotates genes in a given anvi'o contigs database with the PFAM database.
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1
-path_i="analysis_Anvio7/Contigs_db"
+#conda activate anvio-dev
+
+path_i="data/Anvio8/Contigs_db"
 
 for file in $path_i/*.db; do
     anvi-run-pfams -T 8 -c $file;
@@ -76,14 +86,31 @@ done
 
 ## Running HMMs
 
-The following command adds the occurrence of bacterial single-copy genes across your contigs to the anvi'o contigs databases [@Eddy2011].
+When you run the following command the occurrence of bacterial single-copy genes across your contigs is added to your contigs database [@Eddy2011].
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1
-path_i="analysis_Anvio7/Contigs_db"
+#conda activate anvio-dev
+
+path_i="data/Anvio8/Contigs_db"
 
 for file in $path_i/*.db; do
     anvi-run-hmms -T 8 -c $file --just-do-it;
+done
+```
+
+## Running CAZyme
+
+First you need to download and set up the CAZyme database [@drula2021] using `anvi-setup-cazymes`: this is something you will do only once. We used Pfam version 11.
+
+The program `anvi-run-cazymes` annotates genes in your contigs-db with the dbCAN CAZyme database.
+
+```{bash, eval = FALSE}
+#conda activate anvio-dev
+
+path_i="data/Anvio8/Contigs_db"
+
+for file in $path_i/*.db; do
+    anvi-run-cazymes -T 8 -c $file;
 done
 ```
 
@@ -92,11 +119,11 @@ done
 This generates basic stats on the annotations:
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1
-mkdir -p "analysis_Anvio7/Contigs_stats"
+#conda activate anvio-dev
 
-path_i="analysis_Anvio7/Contigs_db"
-path_o="analysis_Anvio7/Contigs_stats"
+path_i="data/Anvio8/Contigs_db"
+path_o="data/Anvio8/Annotation_summaries"
+mkdir -p "$path_o"
 
 for file in $path_i/*.db; do
     FILENAME=`basename ${file%.*}`
@@ -107,15 +134,15 @@ done
 This provides basic info on the contigs databases:
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1
-path_i="analysis_Anvio7/Contigs_db"
+#conda activate anvio-dev
+
+path_i="data/Anvio8/Contigs_db"
+path_o="data/Anvio8/Annotation_summaries"
 
 for file in $path_i/*.db; do
-    anvi-db-info $file;
+    anvi-db-info $file &>> $path_o/anvi-db-info_log.txt;
 done
 ```
-
-Terminal output saved to `analysis_Anvio7/anvi-db-info_log.txt`.
 
 # Pangenome Analysis
 
