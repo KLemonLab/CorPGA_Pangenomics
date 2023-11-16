@@ -15,7 +15,7 @@ bibliography: referencesAnvio.bib
 klippy::klippy(c('r', 'bash'))
 ```
 
-This notebook contains analyses using anvi'o version 8 [@Eren2021]. For more in-depth information about anvi'o go to their official online site here: <https://anvio.org/>
+This notebook contains analyses using anvi'o version 8 [@Eren2021] (development branch). For more in-depth information about anvi'o go to their official online site here: <https://anvio.org/>
 
 # Functional annotations
 
@@ -55,7 +55,7 @@ done
 
 The option `--log-bitscores` records the bit scores values. They get saved to the main folder for the repo, so we moved them to a new subfolder
 
-```{bash, eval = FALSE}
+```{r, eval = FALSE}
 path_i <- "."
 path_o <- "data/Anvio8/KEGG_bitscores"
 dir.create(file.path("data/Anvio8/KEGG_bitscores"), recursive = TRUE, showWarnings=FALSE)
@@ -148,20 +148,23 @@ done
 
 ## Generating an anvi'o genomes storage database
 
-The program `anvi-gen-genomes-storage` requires a `.txt` file with the names and path locations of the genomes to be included in the genome storage database. The storage database generated with `CorPGA_genome_list_PangenomeAnalysis.txt` includes 104 genomes, and was used to run the pangenome analysis for each of the four *Corynebacterium* species.
+The program `anvi-gen-genomes-storage` requires a `.txt` file with the names and path locations of the genomes to be included in the genome storage database. The storage database generated with `CorPGA_Anvio_GenomeList_v01a.txt` includes the 102 *Corynebacterium* genomes selected for pangenomic analysis (Cac_ATCC_49726 & Cps_090104 were excluded for further analysis, as well as all *C. macginleyi* genomes).
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1
-mkdir -p "analysis_Anvio7/Pangenomic_Analysis"
+#conda activate anvio-env
 
-anvi-gen-genomes-storage -e "analysis_Anvio7/CorPGA_genome_list_PangenomeAnalysis.txt" -o "analysis_Anvio7/Pangenomic_Analysis/CorPGA-All4Cor-GENOMES.db" --gene-caller Prodigal
+path_i="data/Anvio8/Pangenomic_Analysis"
+mkdir -p "$path_i"
+
+anvi-gen-genomes-storage -e "data/genome_lists/CorPGA_Anvio_GenomeList_v01a.txt" -o $path_i/CorPGA-All4Cor-GENOMES.db --gene-caller Prodigal
 ```
 
 This provides basic info on the generated genomes storage database:
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1
-anvi-db-info "analysis_Anvio7/Pangenomic_Analysis/CorPGA-All4Cor-GENOMES.db"
+#conda activate anvio-env
+
+anvi-db-info $path_i/CorPGA-All4Cor-GENOMES.db
 ```
 
 ## Running the pangenomic analyses
@@ -169,41 +172,48 @@ anvi-db-info "analysis_Anvio7/Pangenomic_Analysis/CorPGA-All4Cor-GENOMES.db"
 In order to analyze the pangenome individually for each of the four *Corynebacterium* species we created a `.txt` file including the list of genomes for each species and ran `anvi-pan-genome` with the `-G` flag:
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1
-anvi-pan-genome -g "analysis_Anvio7/Pangenomic_Analysis/CorPGA-All4Cor-GENOMES.db" \
-                -G "analysis_Anvio7/CorPGA_genome_list_PangenomeCpr.txt" \
-                -o "analysis_Anvio7/Pangenomic_Analysis/Only_Cpr" -n PAN_Cpr \
+#conda activate anvio-env
+
+path_i="data/Anvio8/Pangenomic_Analysis"
+path_g="data/genome_lists"
+
+anvi-pan-genome -g $path_i/CorPGA-All4Cor-GENOMES.db \
+                -G $path_g/CorPGA_Anvio_GenomeList_PangenomeCpr.txt \
+                -o $path_i/Only_Cpr -n PAN_Cpr \
                 --use-ncbi-blast --mcl-inflation 10  --num-threads 8
                 
-anvi-pan-genome -g "analysis_Anvio7/Pangenomic_Analysis/CorPGA-All4Cor-GENOMES.db" \
-                -G "analysis_Anvio7/CorPGA_genome_list_PangenomeCps.txt" \
-                -o "analysis_Anvio7/Pangenomic_Analysis/Only_Cps" -n PAN_Cps \
-                --use-ncbi-blast --mcl-inflation 10  --num-threads 8                
-                
-anvi-pan-genome -g "analysis_Anvio7/Pangenomic_Analysis/CorPGA-All4Cor-GENOMES.db" \
-                -G "analysis_Anvio7/CorPGA_genome_list_PangenomeCac.txt" \
-                -o "analysis_Anvio7/Pangenomic_Analysis/Only_Cac" -n PAN_Cac \
+anvi-pan-genome -g $path_i/CorPGA-All4Cor-GENOMES.db \
+                -G $path_g/CorPGA_Anvio_GenomeList_PangenomeCps.txt \
+                -o $path_i/Only_Cps -n PAN_Cps \
                 --use-ncbi-blast --mcl-inflation 10  --num-threads 8
 
-anvi-pan-genome -g "analysis_Anvio7/Pangenomic_Analysis/CorPGA-All4Cor-GENOMES.db" \
-                -G "analysis_Anvio7/CorPGA_genome_list_PangenomeCtu.txt" \
-                -o "analysis_Anvio7/Pangenomic_Analysis/Only_Ctu" -n PAN_Ctu \
+anvi-pan-genome -g $path_i/CorPGA-All4Cor-GENOMES.db \
+                -G $path_g/CorPGA_Anvio_GenomeList_PangenomeCac.txt \
+                -o $path_i/Only_Cac -n PAN_Cac \
                 --use-ncbi-blast --mcl-inflation 10  --num-threads 8
+                
+anvi-pan-genome -g $path_i/CorPGA-All4Cor-GENOMES.db \
+                -G $path_g/CorPGA_Anvio_GenomeList_PangenomeCtu.txt \
+                -o $path_i/Only_Ctu -n PAN_Ctu \
+                --use-ncbi-blast --mcl-inflation 10  --num-threads 8                
 ```
 
 ## Displaying the pangenomes
 
-This will display the pangenome in your default internet browser. Anvi'o says google chrome is the most compatible with the anvi''o interactive interface. You need to pick one of the `-p` inputs for each PAN.db file:
+This will display the pangenome in your default internet browser. Anvi'o says google chrome is the most compatible with the anvi'o interactive interface. You need to pick one of the `-p` inputs for each PAN.db file:
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1
-anvi-display-pan -p "analysis_Anvio7/Pangenomic_Analysis/Cps/PAN_Cps-PAN.db" -g "analysis_Anvio7/Pangenomic_Analysis/CorPGA-All4Cor-GENOMES.db"
+#conda activate anvio-env
 
-anvi-display-pan -p "analysis_Anvio7/Pangenomic_Analysis/Cpr/PAN_Cpr-PAN.db" -g "analysis_Anvio7/Pangenomic_Analysis/CorPGA-All4Cor-GENOMES.db"
+path_i="data/Anvio8/Pangenomic_Analysis"
 
-anvi-display-pan -p "analysis_Anvio7/Pangenomic_Analysis/Cac/PAN_Cac-PAN.db" -g "analysis_Anvio7/Pangenomic_Analysis/CorPGA-All4Cor-GENOMES.db"
+anvi-display-pan -p $path_i/Only_Cpr/PAN_Cpr-PAN.db -g $path_i/CorPGA-All4Cor-GENOMES.db
 
-anvi-display-pan -p "analysis_Anvio7/Pangenomic_Analysis/Ctu/PAN_Ctu-PAN.db" -g "analysis_Anvio7/Pangenomic_Analysis/CorPGA-All4Cor-GENOMES.db"
+anvi-display-pan -p $path_i/Only_Cps/PAN_Cps-PAN.db -g $path_i/CorPGA-All4Cor-GENOMES.db
+
+anvi-display-pan -p $path_i/Only_Cac/PAN_Cac-PAN.db -g $path_i/CorPGA-All4Cor-GENOMES.db
+
+anvi-display-pan -p $path_i/Only_Ctu/PAN_Ctu-PAN.db -g $path_i/CorPGA-All4Cor-GENOMES.db
 ```
 
 If you are using Windows and it cannot display the interactive page then try copy and pasting either 127.0.0.1:8080 or <http://localhost:8080/> into your browser. Do not use sudo in the front of the command either.
@@ -218,7 +228,7 @@ We manually reordered the layers to match the phylogenomic trees per species usi
 
 In order to define the Core vs Accessory pangenome for each of the four species level pangenomes we use anvi'o interactive interface. In the "Bins" tab we created the corresponding bins. Using the "Search" tab we used "Search gene clusters using filters" and "Append splits to selected bin" to create bins. The following tables summarizes how the bins in the collection named **CorevsAccessory** were created (last column indicates the criteria used on each search):
 
-#### *C. propinquum* pangenome
+#### *C. propinquum* pangenome (3,108 GCs)
 
 | Pangenome Bin    | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
 |------------------|------------------|------------------|-------------------|
@@ -229,7 +239,7 @@ In order to define the Core vs Accessory pangenome for each of the four species 
 | Shell            | 689/3108                      | `r round(100*(689/3108),1)`%  | 3-17                                 |
 | Cloud            | 556/3108                      | `r round(100*(556/3108),1)`%  | 1-2                                  |
 
-#### *C. pseudodiphtheriticum* pangenome
+#### *C. pseudodiphtheriticum* pangenome (3,548 GCs)
 
 | Pangenome Bin    | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
 |------------------|------------------|------------------|-------------------|
@@ -240,7 +250,7 @@ In order to define the Core vs Accessory pangenome for each of the four species 
 | Shell            | 972/3590                      | `r round(100*(972/3590),1)`%  | 3-39                                 |
 | Cloud            | 858/3590                      | `r round(100*(858/3590),1)`%  | 1-2                                  |
 
-#### *C. accolens* pangenome
+#### *C. accolens* pangenome (3,307 GCs)
 
 | Pangenome Bin    | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
 |------------------|------------------|------------------|-------------------|
@@ -251,7 +261,7 @@ In order to define the Core vs Accessory pangenome for each of the four species 
 | Shell            | 676/3427                      | `r round(100*(676/3427),1)`%  | 3-31                                 |
 | Cloud            | 770/3427                      | `r round(100*(770/3427),1)`%  | 1-2                                  |
 
-#### *C. tuberculostearicum* pangenome
+#### *C. tuberculostearicum* pangenome (2,907 GCs)
 
 | Pangenome Bin    | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
 |------------------|------------------|------------------|-------------------|
@@ -273,25 +283,28 @@ Using the program `anvi-summarize` we exported summary tables for each of the fo
 The resulting summaries contain a `gene_clusters_summary.txt.gz` file that links each gene to gene clusters, genomes, functions, layers, and bins selected from the interface. We used the flag `-C` to selected the **CorevsAccessory** collection described above:
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1
-anvi-summarize -p "analysis_Anvio7/Pangenomic_Analysis/Cps/PAN_Cps-PAN.db" \
-               -g "analysis_Anvio7/Pangenomic_Analysis/CorPGA-All4Cor-GENOMES.db" \
-               -o "analysis_Anvio7" \
+#conda activate anvio-env
+
+path_i="data/Anvio8/Pangenomic_Analysis"
+
+anvi-summarize -p $path_i/Only_Cpr/PAN_Cpr-PAN.db \
+               -g $path_i/CorPGA-All4Cor-GENOMES.db \
+               -o $path_i \
+               -C CorevsAccessory
+
+anvi-summarize -p $path_i/Only_Cps/PAN_Cps-PAN.db \
+               -g $path_i/CorPGA-All4Cor-GENOMES.db \
+               -o $path_i \
                -C CorevsAccessory
                
-anvi-summarize -p "analysis_Anvio7/Pangenomic_Analysis/Cpr/PAN_Cpr-PAN.db" \
-               -g "analysis_Anvio7/Pangenomic_Analysis/CorPGA-All4Cor-GENOMES.db" \
-               -o "analysis_Anvio7" \
+anvi-summarize -p $path_i/Only_Cac/PAN_Cac-PAN.db \
+               -g $path_i/CorPGA-All4Cor-GENOMES.db \
+               -o $path_i \
                -C CorevsAccessory
-               
-anvi-summarize -p "analysis_Anvio7/Pangenomic_Analysis/Ctu/PAN_Ctu-PAN.db" \
-               -g "analysis_Anvio7/Pangenomic_Analysis/CorPGA-All4Cor-GENOMES.db" \
-               -o "analysis_Anvio7" \
-               -C CorevsAccessory
-               
-anvi-summarize -p "analysis_Anvio7/Pangenomic_Analysis/Cac/PAN_Cac-PAN.db" \
-               -g "analysis_Anvio7/Pangenomic_Analysis/CorPGA-All4Cor-GENOMES.db" \
-               -o "analysis_Anvio7" \
+
+anvi-summarize -p $path_i/Only_Ctu/PAN_Ctu-PAN.db \
+               -g $path_i/CorPGA-All4Cor-GENOMES.db \
+               -o $path_i \
                -C CorevsAccessory
 ```
 
@@ -306,15 +319,15 @@ Using `anvi-estimate-metabolism` we predicted the metabolic capabilities of the 
 We generated outputs both in long tabular and matrix format with the KO hits and KEGG modules completeness scores.
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1
+#conda activate anvio-env
 
-mkdir -p "analysis_Anvio7/Metabolic_Analysis"
-path_o="analysis_Anvio7/Metabolic_Analysis"
+mkdir -p "data/Anvio8/Metabolic_Analysis"
+path_o="data/Anvio8/Metabolic_Analysis"
 
-anvi-estimate-metabolism -e "analysis_Anvio7/CorPGA_genome_list_MetabolicAnalysis.txt" \
+anvi-estimate-metabolism -e "data/Anvio8/CorPGA_genome_list_MetabolicAnalysis.txt" \
                          -O $path_o/CorPGA_AllStrains --matrix-format --include-metadata
 
-anvi-estimate-metabolism -e "analysis_Anvio7/CorPGA_genome_list_MetabolicAnalysis.txt" \
+anvi-estimate-metabolism -e "data/Anvio8/CorPGA_genome_list_MetabolicAnalysis.txt" \
                          -O $path_o/CorPGA_AllStrains --kegg-output-modes modules,kofam_hits 
 ```
 
@@ -324,66 +337,66 @@ The `CorPGA_AllStrains_modules.txt` file generated in the previous step is used 
 
 -   `CorPGA_groups_MetabolicAnalysis4Cor.txt`includes 102 genomes for the 4 nasal *Corynebacterium* grouped by their species.
 
--   `CorPGA_groups_MetabolicAnalysisCorDpi.txt` adds to the previous file an extra group with 27 *D. pigrum* genomes.
+-   `CorPGA_groups_MetabolicAnalysisCorDpi.txt` adds to the previous file an extra group with the 27 *D. pigrum* genomes.
 
 -   `CorPGA_groups_MetabolicAnalysisCps.txt` includes a subset of 41 *C. pseudodiphtheriticum* genomes selected to study metabolic differences across geographic locations (BWA vs. USA grouping).
 
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7.1
+#conda activate anvio-env
 
-path_i="analysis_Anvio7/Metabolic_Analysis"
+path_i="data/Anvio8/Metabolic_Analysis"
 
 anvi-compute-metabolic-enrichment -M $path_i/CorPGA_AllStrains_modules.txt \
-                                  -G "analysis_Anvio7/CorPGA_groups_MetabolicAnalysis4Cor.txt" \
+                                  -G "data/Anvio8/CorPGA_groups_MetabolicAnalysis4Cor.txt" \
                                   -o $path_i/CorPGA_enriched_75_modules_4Cor.txt \
                                   --module-completion-threshold 0.75
 
 anvi-compute-metabolic-enrichment -M $path_i/CorPGA_AllStrains_modules.txt \
-                                  -G "analysis_Anvio7/CorPGA_groups_MetabolicAnalysis4Cor.txt" \
+                                  -G "data/Anvio8/CorPGA_groups_MetabolicAnalysis4Cor.txt" \
                                   -o $path_i/CorPGA_enriched_80_modules_4Cor.txt \
                                   --module-completion-threshold 0.80
                                   
 anvi-compute-metabolic-enrichment -M $path_i/CorPGA_AllStrains_modules.txt \
-                                  -G "analysis_Anvio7/CorPGA_groups_MetabolicAnalysis4Cor.txt" \
+                                  -G "data/Anvio8/CorPGA_groups_MetabolicAnalysis4Cor.txt" \
                                   -o $path_i/CorPGA_enriched_85_modules_4Cor.txt \
                                   --module-completion-threshold 0.85
                                   
 anvi-compute-metabolic-enrichment -M $path_i/CorPGA_AllStrains_modules.txt \
-                                  -G "analysis_Anvio7/CorPGA_groups_MetabolicAnalysis4Cor.txt" \
+                                  -G "data/Anvio8/CorPGA_groups_MetabolicAnalysis4Cor.txt" \
                                   -o $path_i/CorPGA_enriched_90_modules_4Cor.txt \
                                   --module-completion-threshold 0.90
 
 anvi-compute-metabolic-enrichment -M $path_i/CorPGA_AllStrains_modules.txt \
-                                  -G "analysis_Anvio7/CorPGA_groups_MetabolicAnalysis4Cor.txt" \
+                                  -G "data/Anvio8/CorPGA_groups_MetabolicAnalysis4Cor.txt" \
                                   -o $path_i/CorPGA_enriched_95_modules_4Cor.txt \
                                   --module-completion-threshold 0.95
 
 anvi-compute-metabolic-enrichment -M $path_i/CorPGA_AllStrains_modules.txt \
-                                  -G "analysis_Anvio7/CorPGA_groups_MetabolicAnalysis4Cor.txt" \
+                                  -G "data/Anvio8/CorPGA_groups_MetabolicAnalysis4Cor.txt" \
                                   -o $path_i/CorPGA_enriched_100_modules_4Cor.txt \
                                   --module-completion-threshold 1
 
 
 anvi-compute-metabolic-enrichment -M $path_i/CorPGA_AllStrains_modules.txt \
-                                  -G "analysis_Anvio7/CorPGA_groups_MetabolicAnalysisCorDpi.txt"\
+                                  -G "data/Anvio8/CorPGA_groups_MetabolicAnalysisCorDpi.txt"\
                                   -o $path_i/CorPGA_enriched_modules_4CorDpi.txt
                                   
                                   
 anvi-compute-metabolic-enrichment -M $path_i/CorPGA_AllStrains_modules.txt \
-                                  -G "analysis_Anvio7/CorPGA_groups_MetabolicAnalysisCps.txt" \
+                                  -G "data/Anvio8/CorPGA_groups_MetabolicAnalysisCps.txt" \
                                   -o $path_i/CorPGA_enriched_modules_Cps.txt
 ```
 
 
 Keep only rows where all columns that start with "p_" have values greater than 0.95
 ```{r}
-Enrich_75 <- read.delim("analysis_Anvio7/Metabolic_Analysis/CorPGA_enriched_75_modules_4Cor.txt")
-Enrich_80 <- read.delim("analysis_Anvio7/Metabolic_Analysis/CorPGA_enriched_80_modules_4Cor.txt")
-Enrich_85 <- read.delim("analysis_Anvio7/Metabolic_Analysis/CorPGA_enriched_85_modules_4Cor.txt")
-Enrich_90 <- read.delim("analysis_Anvio7/Metabolic_Analysis/CorPGA_enriched_90_modules_4Cor.txt")
-Enrich_95 <- read.delim("analysis_Anvio7/Metabolic_Analysis/CorPGA_enriched_95_modules_4Cor.txt")
-Enrich_100 <- read.delim("analysis_Anvio7/Metabolic_Analysis/CorPGA_enriched_100_modules_4Cor.txt")
+Enrich_75 <- read.delim("data/Anvio8/Metabolic_Analysis/CorPGA_enriched_75_modules_4Cor.txt")
+Enrich_80 <- read.delim("data/Anvio8/Metabolic_Analysis/CorPGA_enriched_80_modules_4Cor.txt")
+Enrich_85 <- read.delim("data/Anvio8/Metabolic_Analysis/CorPGA_enriched_85_modules_4Cor.txt")
+Enrich_90 <- read.delim("data/Anvio8/Metabolic_Analysis/CorPGA_enriched_90_modules_4Cor.txt")
+Enrich_95 <- read.delim("data/Anvio8/Metabolic_Analysis/CorPGA_enriched_95_modules_4Cor.txt")
+Enrich_100 <- read.delim("data/Anvio8/Metabolic_Analysis/CorPGA_enriched_100_modules_4Cor.txt")
 ```
 
 ```{r}
@@ -413,11 +426,11 @@ processed_data_2 <- lapply(enrichment_data, process_data_2, threshold = 0.05)
 
 Enrich_All <- processed_data_1 %>% reduce(full_join, by = c('accession', 'KEGG_MODULE'))
 colnames(Enrich_All) <- c('accession', 'KEGG_MODULE', "0.75", "0.80", "0.85", "0.90", "0.95", "1")
-write_csv(Enrich_All, "analysis_Anvio7/Metabolic_Analysis/CorPGA_KEGG_Complete_4Cor.csv")
+write_csv(Enrich_All, "data/Anvio8/Metabolic_Analysis/CorPGA_KEGG_Complete_4Cor.csv")
 
 Enrich_Groups <- processed_data_2 %>% reduce(full_join, by = c('accession', 'KEGG_MODULE'))
 colnames(Enrich_Groups) <- c('accession', 'KEGG_MODULE', "0.75", "0.80", "0.85", "0.90", "0.95", "1")
-write_csv(Enrich_All, "analysis_Anvio7/Metabolic_Analysis/CorPGA_KEGG_Groups_4Cor.csv")
+write_csv(Enrich_All, "data/Anvio8/Metabolic_Analysis/CorPGA_KEGG_Groups_4Cor.csv")
 ```
 
 
