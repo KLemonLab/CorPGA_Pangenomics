@@ -151,7 +151,7 @@ done
 The program `anvi-gen-genomes-storage` requires a `.txt` file with the names and path locations of the genomes to be included in the genome storage database. The storage database generated with `CorPGA_Anvio_GenomeList_v01a.txt` includes the 102 *Corynebacterium* genomes selected for pangenomic analysis (Cac_ATCC_49726 & Cps_090104 were excluded for further analysis, as well as all *C. macginleyi* genomes).
 
 ```{bash, eval = FALSE}
-#conda activate anvio-env
+#conda activate anvio-dev
 
 path_i="data/Anvio8/Pangenomic_Analysis"
 mkdir -p "$path_i"
@@ -162,7 +162,7 @@ anvi-gen-genomes-storage -e "data/genome_lists/CorPGA_Anvio_GenomeList_v01a.txt"
 This provides basic info on the generated genomes storage database:
 
 ```{bash, eval = FALSE}
-#conda activate anvio-env
+#conda activate anvio-dev
 
 anvi-db-info $path_i/CorPGA-All4Cor-GENOMES.db
 ```
@@ -172,7 +172,7 @@ anvi-db-info $path_i/CorPGA-All4Cor-GENOMES.db
 In order to analyze the pangenome individually for each of the four *Corynebacterium* species we created a `.txt` file including the list of genomes for each species and ran `anvi-pan-genome` with the `-G` flag:
 
 ```{bash, eval = FALSE}
-#conda activate anvio-env
+#conda activate anvio-dev
 
 path_i="data/Anvio8/Pangenomic_Analysis"
 path_g="data/genome_lists"
@@ -203,7 +203,7 @@ anvi-pan-genome -g $path_i/CorPGA-All4Cor-GENOMES.db \
 This will display the pangenome in your default internet browser. Anvi'o says google chrome is the most compatible with the anvi'o interactive interface. You need to pick one of the `-p` inputs for each PAN.db file:
 
 ```{bash, eval = FALSE}
-#conda activate anvio-env
+#conda activate anvio-dev
 
 path_i="data/Anvio8/Pangenomic_Analysis"
 
@@ -283,7 +283,7 @@ Using the program `anvi-summarize` we exported summary tables for each of the fo
 The resulting summaries contain a `gene_clusters_summary.txt.gz` file that links each gene to gene clusters, genomes, functions, layers, and bins selected from the interface. We used the flag `-C` to selected the **CorevsAccessory** collection described above:
 
 ```{bash, eval = FALSE}
-#conda activate anvio-env
+#conda activate anvio-dev
 
 path_i="data/Anvio8/Pangenomic_Analysis"
 
@@ -319,7 +319,7 @@ Using `anvi-estimate-metabolism` we predicted the metabolic capabilities of the 
 We generated outputs both in long tabular and matrix format with the KO hits and KEGG modules completeness scores.
 
 ```{bash, eval = FALSE}
-#conda activate anvio-env
+#conda activate anvio-dev
 
 mkdir -p "data/Anvio8/Metabolic_Analysis"
 path_o="data/Anvio8/Metabolic_Analysis"
@@ -343,7 +343,7 @@ The `CorPGA_AllStrains_modules.txt` file generated in the previous step is used 
 
 
 ```{bash, eval = FALSE}
-#conda activate anvio-env
+#conda activate anvio-dev
 
 path_i="data/Anvio8/Metabolic_Analysis"
 
