@@ -14,7 +14,7 @@ bibliography: referencesAnnotations.bib
 klippy::klippy(c('r', 'bash'))
 ```
 
-# Prokka annotations 
+# Custom Prokka Annotations
 
 We used [Prokka v1.14.6](https://github.com/tseemann/prokka) [@Seemann2014] to annotate the 107 *Corynebacterium* strain genomes described in Table S1-A and the 28 *Dolosigranulum pigrum* genomes from our previous manuscript [@floresramos2021]. The total 135 genomes are listed in `CorPGA_AnnotationProkka_GenomeList_v01a.csv` and included in `data/genomes` as `.fasta` files. 
 
