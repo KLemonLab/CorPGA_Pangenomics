@@ -15,6 +15,10 @@ bibliography: referencesAnvio.bib
 klippy::klippy(c('r', 'bash'))
 ```
 
+```{r libraries, echo=FALSE, message=FALSE}
+library(tidyverse)
+```
+
 This notebook contains analyses using anvi'o version 8 [@Eren2021] (development branch). For more in-depth information about anvi'o go to their official online site here: <https://anvio.org/>
 
 # Functional annotations
@@ -314,7 +318,7 @@ The output files were used for the COG functional analysis based on PPanGGOLiN p
 
 ## Estimation of KEGG module completeness
 
-Using `anvi-estimate-metabolism` we predicted the metabolic capabilities of the organisms listed in `CorPGA_genome_list_MetabolicAnalysis.txt`. This list includes 102 *Corynebacterium* genomes plus 27 *Dolosigranulum pigrum* genomes described in [@floresramos2021] (KPL3086 was not included in the analysis due to being highly similar to KPL3065).
+Using `anvi-estimate-metabolism` we predicted KEGG module completeness as described in [@kanehisa2011a] for the the organisms listed in `CorPGA_MetabolicAnalysis_GenomeList_v01.txt`. This list includes the 102 *Corynebacterium* genomes selected for metabolic analysis (Cac_ATCC_49726 & Cps_090104 were excluded for these analysis, as well as all *C. macginleyi* genomes), plus 27 for the 28 *Dolosigranulum pigrum* genomes described in [@floresramos2021] (KPL3086 was not included in the analysis due to being highly similar to KPL3065) as well as 9 reference genomes with their original annotations as per NCBI.
 
 We generated outputs both in long tabular and matrix format with the KO hits and KEGG modules completeness scores.
 
@@ -324,114 +328,155 @@ We generated outputs both in long tabular and matrix format with the KO hits and
 mkdir -p "data/Anvio8/Metabolic_Analysis"
 path_o="data/Anvio8/Metabolic_Analysis"
 
-anvi-estimate-metabolism -e "data/Anvio8/CorPGA_genome_list_MetabolicAnalysis.txt" \
-                         -O $path_o/CorPGA_AllStrains --matrix-format --include-metadata
+txt_file="data/genome_lists/CorPGA_MetabolicAnalysis_GenomeList_v01.txt"
+prefix=CorPGA
+path_o="data/Anvio8/Metabolic_Analysis"
+mkdir -p "$path_o"
 
-anvi-estimate-metabolism -e "data/Anvio8/CorPGA_genome_list_MetabolicAnalysis.txt" \
-                         -O $path_o/CorPGA_AllStrains --kegg-output-modes modules,kofam_hits 
+anvi-estimate-metabolism -e $txt_file \
+                         -O $path_o/$prefix --matrix-format --include-metadata
+
+anvi-estimate-metabolism -e $txt_file \
+                         -O $path_o/$prefix --add-copy-number --output-modes modules,module_paths,module_steps,hits 
 ```
 
-## Enrichment Analysis 
+## Module Enrichment Analysis
 
-The `CorPGA_AllStrains_modules.txt` file generated in the previous step is used by `anvi-compute-metabolic-enrichment` to calculate KEGG module enrichment across different groups of genomes. We used the `-G` flag to indicate the grouping options:
+The `CorPGA_modules.txt` file generated in the previous step is used by `anvi-compute-metabolic-enrichment` to calculate KEGG module enrichment[@shaiber2020] across different groups of genomes. We used the `-G` flag to indicate the grouping options defined in the corresponding `txt_file`:
 
--   `CorPGA_groups_MetabolicAnalysis4Cor.txt`includes 102 genomes for the 4 nasal *Corynebacterium* grouped by their species.
+-   `CorPGA_MetabolicAnalysis_Groups_4Cor.txt`includes 102 genomes for the 4 nasal *Corynebacterium* grouped by their species.
 
--   `CorPGA_groups_MetabolicAnalysisCorDpi.txt` adds to the previous file an extra group with the 27 *D. pigrum* genomes.
+-   `CorPGA_MetabolicAnalysis_Groups_CorDpi.txt` adds to the previous file an extra group with the 27 *D. pigrum* genomes.
 
--   `CorPGA_groups_MetabolicAnalysisCps.txt` includes a subset of 41 *C. pseudodiphtheriticum* genomes selected to study metabolic differences across geographic locations (BWA vs. USA grouping).
+-   `CorPGA_MetabolicAnalysis_Groups_References.txt` adds to the previous file the 9 NCBI reference genomes as 9 new groups.
 
+-   `CorPGA_MetabolicAnalysis_Groups_Cps.txt` includes the 41 *C. pseudodiphtheriticum* genomes selected to study metabolic differences across geographic locations (BWA vs. USA grouping).
 
 ```{bash, eval = FALSE}
 #conda activate anvio-dev
 
-path_i="data/Anvio8/Metabolic_Analysis"
+csv_file_modules="data/Anvio8/Metabolic_Analysis/CorPGA_modules.txt"
+path_o="data/Anvio8/Metabolic_Analysis/Enrichment_Modules"
+mkdir -p "$path_o"
 
-anvi-compute-metabolic-enrichment -M $path_i/CorPGA_AllStrains_modules.txt \
-                                  -G "data/Anvio8/CorPGA_groups_MetabolicAnalysis4Cor.txt" \
-                                  -o $path_i/CorPGA_enriched_75_modules_4Cor.txt \
-                                  --module-completion-threshold 0.75
+txt_file_groups="data/genome_lists/CorPGA_MetabolicAnalysis_Groups_4Cor.txt"
+output_file="$path_o/CorPGA_enriched_modules_stepwise_1_4Cor.txt"
+anvi-compute-metabolic-enrichment -M "$csv_file_modules" \
+                                  -G "$txt_file_groups" \
+                                  -o "$output_file" \
+                                  --use-stepwise-completeness \
+                                  --module-completion-threshold 1.0
 
-anvi-compute-metabolic-enrichment -M $path_i/CorPGA_AllStrains_modules.txt \
-                                  -G "data/Anvio8/CorPGA_groups_MetabolicAnalysis4Cor.txt" \
-                                  -o $path_i/CorPGA_enriched_80_modules_4Cor.txt \
-                                  --module-completion-threshold 0.80
+
+txt_file_groups="data/genome_lists/CorPGA_MetabolicAnalysis_Groups_CorDpi.txt"
+output_file="$path_o/CorPGA_enriched_modules_stepwise_1_CorDpi.txt"
+anvi-compute-metabolic-enrichment -M "$csv_file_modules" \
+                                  -G "$txt_file_groups" \
+                                  -o "$output_file" \
+                                  --use-stepwise-completeness \
+                                  --module-completion-threshold 1.0
                                   
-anvi-compute-metabolic-enrichment -M $path_i/CorPGA_AllStrains_modules.txt \
-                                  -G "data/Anvio8/CorPGA_groups_MetabolicAnalysis4Cor.txt" \
-                                  -o $path_i/CorPGA_enriched_85_modules_4Cor.txt \
-                                  --module-completion-threshold 0.85
+txt_file_groups="data/genome_lists/CorPGA_MetabolicAnalysis_Groups_References.txt"
+output_file="$path_o/CorPGA_enriched_modules_stepwise_1_References.txt"
+anvi-compute-metabolic-enrichment -M "$csv_file_modules" \
+                                  -G "$txt_file_groups" \
+                                  -o "$output_file" \
+                                  --use-stepwise-completeness \
+                                  --module-completion-threshold 1.0
                                   
-anvi-compute-metabolic-enrichment -M $path_i/CorPGA_AllStrains_modules.txt \
-                                  -G "data/Anvio8/CorPGA_groups_MetabolicAnalysis4Cor.txt" \
-                                  -o $path_i/CorPGA_enriched_90_modules_4Cor.txt \
-                                  --module-completion-threshold 0.90
-
-anvi-compute-metabolic-enrichment -M $path_i/CorPGA_AllStrains_modules.txt \
-                                  -G "data/Anvio8/CorPGA_groups_MetabolicAnalysis4Cor.txt" \
-                                  -o $path_i/CorPGA_enriched_95_modules_4Cor.txt \
-                                  --module-completion-threshold 0.95
-
-anvi-compute-metabolic-enrichment -M $path_i/CorPGA_AllStrains_modules.txt \
-                                  -G "data/Anvio8/CorPGA_groups_MetabolicAnalysis4Cor.txt" \
-                                  -o $path_i/CorPGA_enriched_100_modules_4Cor.txt \
-                                  --module-completion-threshold 1
-
-
-anvi-compute-metabolic-enrichment -M $path_i/CorPGA_AllStrains_modules.txt \
-                                  -G "data/Anvio8/CorPGA_groups_MetabolicAnalysisCorDpi.txt"\
-                                  -o $path_i/CorPGA_enriched_modules_4CorDpi.txt
-                                  
-                                  
-anvi-compute-metabolic-enrichment -M $path_i/CorPGA_AllStrains_modules.txt \
-                                  -G "data/Anvio8/CorPGA_groups_MetabolicAnalysisCps.txt" \
-                                  -o $path_i/CorPGA_enriched_modules_Cps.txt
+txt_file_groups="data/genome_lists/CorPGA_MetabolicAnalysis_Groups_Cps.txt"
+output_file="$path_o/CorPGA_enriched_modules_stepwise_1_Cps.txt"
+anvi-compute-metabolic-enrichment -M "$csv_file_modules" \
+                                  -G "$txt_file_groups" \
+                                  -o "$output_file" \
+                                  --use-stepwise-completeness \
+                                  --module-completion-threshold 1.0
 ```
 
+## KO Enrichment Analysis
 
-Keep only rows where all columns that start with "p_" have values greater than 0.95
-```{r}
-Enrich_75 <- read.delim("data/Anvio8/Metabolic_Analysis/CorPGA_enriched_75_modules_4Cor.txt")
-Enrich_80 <- read.delim("data/Anvio8/Metabolic_Analysis/CorPGA_enriched_80_modules_4Cor.txt")
-Enrich_85 <- read.delim("data/Anvio8/Metabolic_Analysis/CorPGA_enriched_85_modules_4Cor.txt")
-Enrich_90 <- read.delim("data/Anvio8/Metabolic_Analysis/CorPGA_enriched_90_modules_4Cor.txt")
-Enrich_95 <- read.delim("data/Anvio8/Metabolic_Analysis/CorPGA_enriched_95_modules_4Cor.txt")
-Enrich_100 <- read.delim("data/Anvio8/Metabolic_Analysis/CorPGA_enriched_100_modules_4Cor.txt")
+We use `anvi-display-functions`. It runs the enrichment for the desired annotations (in this case KOfam). It saves the output to a temp file that can be recovered, renamed and saved into the same `path_o` as the database file.
+
+```{bash, eval = FALSE}
+
+#conda activate anvio-dev
+
+txt_file="data/genome_lists/CorPGA_MetabolicAnalysis_GenomeList_v01.txt"
+path_o="data/Anvio8/Metabolic_Analysis/Enrichment_KOs"
+mkdir -p "$path_o"
+
+txt_file_groups="data/genome_lists/CorPGA_MetabolicAnalysis_Groups_4Cor.txt"
+anvi-display-functions -e $txt_file \
+                       --groups-txt $txt_file_groups \
+                       --annotation-source KOfam \
+                       --profile-db $path_o/KOfam_4Cor.db
+                       
+txt_file_groups="data/genome_lists/CorPGA_MetabolicAnalysis_Groups_CorDpi.txt"
+anvi-display-functions -e $txt_file \
+                       --groups-txt $txt_file_groups \
+                       --annotation-source KOfam \
+                       --profile-db $path_o/KOfam_CorDpi.db    
+                       
+txt_file_groups="data/genome_lists/CorPGA_MetabolicAnalysis_Groups_Cps.txt"
+anvi-display-functions -e $txt_file \
+                       --groups-txt $txt_file_groups \
+                       --annotation-source KOfam \
+                       --profile-db $path_o/KOfam_Cps.db
+
+txt_file_groups="data/genome_lists/CorPGA_MetabolicAnalysis_Groups_References.txt"
+anvi-display-functions -e $txt_file \
+                       --groups-txt $txt_file_groups \
+                       --annotation-source KOfam \
+                       --profile-db $path_o/KOfam_References.db  
 ```
 
-```{r}
-# Create a list of data frames
-enrichment_data <- list(Enrich_75, Enrich_80, Enrich_85, Enrich_90, Enrich_95, Enrich_100)
+Many of the enriched KOs belong to the already identified enriched modules. This function filters out those KOs that are part of the definition of modules listed in the enriched modules identified with `anvi-compute-metabolic-enrichment`:
 
-# Create a function to process each data frame
-process_data_1 <- function(df, threshold) {
-  df %>%
-    filter(if_all(starts_with("p_"), ~ . > threshold)) %>%
-    select(accession, KEGG_MODULE) %>%
-    mutate(AllComplete = TRUE)
+```{r, eval = FALSE}
+get_KOs_not_in_enrich_modules <- function(modules, hits, enrich_modules, enrich_KOs, q_value_threshold) {
+
+  # Get list of KOs that correspond with the modules on the enrichment file
+  modules_subset <- modules %>% filter(module %in% enrich_modules$accession)
+  module_definition_subset <- paste(modules_subset$module_definition, collapse = " ")
+  module_definition_subset <- str_extract_all(module_definition_subset, "\\bK\\d+\\b")
+  module_definition_subset <- unique(unlist(module_definition_subset))
+
+  # Add a column to enrich_KOs indicating if the KO is the previous list
+  enrich_KOs$inModule <- sapply(strsplit(as.character(enrich_KOs$accession), ","), function(x) all((x %in% module_definition_subset)))
+
+  # Filter Enrich_KO based on inModule and q_value_threshold
+  enrich_KOs_filtered <- enrich_KOs %>% 
+    filter(inModule == FALSE) %>% 
+    filter(adjusted_q_value < q_value_threshold)
+
+  return(enrich_KOs_filtered)
 }
 
-process_data_2 <- function(df, threshold) {
-  df %>%
-  filter(adjusted_q_value < threshold) %>%
-  select(accession, KEGG_MODULE, associated_groups) 
-}
+Modules <- read_delim("data/Anvio8/Metabolic_Analysis/CorPGA_modules.txt", show_col_types = FALSE, col_types = cols(unique_enzymes_hit_counts = col_character(), gene_caller_ids_in_module = col_character()))
+KOHits <- read_delim("data/Anvio8/Metabolic_Analysis/CorPGA_hits.txt", show_col_types = FALSE)
 
-# Use lapply to apply the processing function to each data frame
-processed_data_1 <- lapply(enrichment_data, process_data_1, threshold = 0.90)
-processed_data_2 <- lapply(enrichment_data, process_data_2, threshold = 0.05)
+Enrich_Mod_4Cor <- read_delim("data/Anvio8/Metabolic_Analysis/Enrichment_Modules/CorPGA_enriched_modules_stepwise_1_4Cor.txt", show_col_types = FALSE)
+Enrich_KO_4Cor <- read_delim("data/Anvio8/Metabolic_Analysis/Enrichment_KOs/CorPGA_enriched_KOs_4Cor.txt", show_col_types = FALSE)
+Enrich_KO_4Cor_Filtered <- get_KOs_not_in_enrich_modules(Modules, KOHits, Enrich_Mod_4Cor, Enrich_KO_4Cor, 0.1)
+write_csv(Enrich_KO_4Cor_Filtered, "data/Anvio8/Metabolic_Analysis/Enrichment_KOs/CorPGA_enriched_KOs_4Cor_Filtered.csv")
 
+Enrich_Mod_CorDpi <- read_delim("data/Anvio8/Metabolic_Analysis/Enrichment_Modules/CorPGA_enriched_modules_stepwise_1_CorDpi.txt", show_col_types = FALSE)
+Enrich_KO_CorDpi <- read_delim("data/Anvio8/Metabolic_Analysis/Enrichment_KOs/CorPGA_enriched_KOs_CorDpi.txt", show_col_types = FALSE)
+Enrich_KO_CorDpi_Filtered <- get_KOs_not_in_enrich_modules(Modules, KOHits, Enrich_Mod_CorDpi, Enrich_KO_CorDpi, 0.1)
+write_csv(Enrich_KO_CorDpi_Filtered, "data/Anvio8/Metabolic_Analysis/Enrichment_KOs/CorPGA_enriched_KOs_CorDpi_Filtered.csv")
 
-# Combine the processed data frames using full_join
+Enrich_Mod_Cps <- read_delim("data/Anvio8/Metabolic_Analysis/Enrichment_Modules/CorPGA_enriched_modules_stepwise_1_Cps.txt", show_col_types = FALSE)
+Enrich_KO_Cps <- read_delim("data/Anvio8/Metabolic_Analysis/Enrichment_KOs/CorPGA_enriched_KOs_Cps.txt", show_col_types = FALSE)
+Enrich_KO_Cps_Filtered <- get_KOs_not_in_enrich_modules(Modules, KOHits, Enrich_Mod_Cps, Enrich_KO_Cps, 0.1)
+write_csv(Enrich_KO_Cps_Filtered, "data/Anvio8/Metabolic_Analysis/Enrichment_KOs/CorPGA_enriched_KOs_Cps_Filtered.csv")
 
-Enrich_All <- processed_data_1 %>% reduce(full_join, by = c('accession', 'KEGG_MODULE'))
-colnames(Enrich_All) <- c('accession', 'KEGG_MODULE', "0.75", "0.80", "0.85", "0.90", "0.95", "1")
-write_csv(Enrich_All, "data/Anvio8/Metabolic_Analysis/CorPGA_KEGG_Complete_4Cor.csv")
+Enrich_Mod_References <- read_delim("data/Anvio8/Metabolic_Analysis/Enrichment_Modules/CorPGA_enriched_modules_stepwise_1_References.txt", show_col_types = FALSE)
+Enrich_KO_References <- read_delim("data/Anvio8/Metabolic_Analysis/Enrichment_KOs/CorPGA_enriched_KOs_References.txt", show_col_types = FALSE)
+Enrich_KO_References_Filtered <- get_KOs_not_in_enrich_modules(Modules, KOHits, Enrich_Mod_References, Enrich_KO_References, 0.1)
+write_csv(Enrich_KO_References_Filtered, "data/Anvio8/Metabolic_Analysis/Enrichment_KOs/CorPGA_enriched_KOs_References_Filtered.csv")
 
-Enrich_Groups <- processed_data_2 %>% reduce(full_join, by = c('accession', 'KEGG_MODULE'))
-colnames(Enrich_Groups) <- c('accession', 'KEGG_MODULE', "0.75", "0.80", "0.85", "0.90", "0.95", "1")
-write_csv(Enrich_All, "data/Anvio8/Metabolic_Analysis/CorPGA_KEGG_Groups_4Cor.csv")
 ```
+
 
 
 <img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
