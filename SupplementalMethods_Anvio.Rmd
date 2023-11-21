@@ -348,9 +348,9 @@ The `CorPGA_modules.txt` file generated in the previous step is used by `anvi-co
 
 -   `CorPGA_MetabolicAnalysis_Groups_CorDpi.txt` adds to the previous file an extra group with the 27 *D. pigrum* genomes.
 
--   `CorPGA_MetabolicAnalysis_Groups_References.txt` adds to the previous file the 9 NCBI reference genomes as 9 new groups.
-
 -   `CorPGA_MetabolicAnalysis_Groups_Cps.txt` includes the 41 *C. pseudodiphtheriticum* genomes selected to study metabolic differences across geographic locations (BWA vs. USA grouping).
+
+-   `CorPGA_MetabolicAnalysis_Groups_References.txt` adds to the previous file the 9 NCBI reference genomes as 9 new groups.
 
 ```{bash, eval = FALSE}
 #conda activate anvio-dev
@@ -375,17 +375,17 @@ anvi-compute-metabolic-enrichment -M "$csv_file_modules" \
                                   -o "$output_file" \
                                   --use-stepwise-completeness \
                                   --module-completion-threshold 1.0
-                                  
-txt_file_groups="data/genome_lists/CorPGA_MetabolicAnalysis_Groups_References.txt"
-output_file="$path_o/CorPGA_enriched_modules_stepwise_1_References.txt"
+
+txt_file_groups="data/genome_lists/CorPGA_MetabolicAnalysis_Groups_Cps.txt"
+output_file="$path_o/CorPGA_enriched_modules_stepwise_1_Cps.txt"
 anvi-compute-metabolic-enrichment -M "$csv_file_modules" \
                                   -G "$txt_file_groups" \
                                   -o "$output_file" \
                                   --use-stepwise-completeness \
                                   --module-completion-threshold 1.0
                                   
-txt_file_groups="data/genome_lists/CorPGA_MetabolicAnalysis_Groups_Cps.txt"
-output_file="$path_o/CorPGA_enriched_modules_stepwise_1_Cps.txt"
+txt_file_groups="data/genome_lists/CorPGA_MetabolicAnalysis_Groups_References.txt"
+output_file="$path_o/CorPGA_enriched_modules_stepwise_1_References.txt"
 anvi-compute-metabolic-enrichment -M "$csv_file_modules" \
                                   -G "$txt_file_groups" \
                                   -o "$output_file" \
@@ -476,7 +476,6 @@ Enrich_KO_References_Filtered <- get_KOs_not_in_enrich_modules(Modules, KOHits, 
 write_csv(Enrich_KO_References_Filtered, "data/Anvio8/Metabolic_Analysis/Enrichment_KOs/CorPGA_enriched_KOs_References_Filtered.csv")
 
 ```
-
 
 
 <img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
