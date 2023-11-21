@@ -2257,8 +2257,8 @@ margin-left: 0 !important;
 <ul>
 <li><p><code>CorPGA_MetabolicAnalysis_Groups_4Cor.txt</code>includes 102 genomes for the 4 nasal <em>Corynebacterium</em> grouped by their species.</p></li>
 <li><p><code>CorPGA_MetabolicAnalysis_Groups_CorDpi.txt</code> adds to the previous file an extra group with the 27 <em>D. pigrum</em> genomes.</p></li>
-<li><p><code>CorPGA_MetabolicAnalysis_Groups_References.txt</code> adds to the previous file the 9 NCBI reference genomes as 9 new groups.</p></li>
 <li><p><code>CorPGA_MetabolicAnalysis_Groups_Cps.txt</code> includes the 41 <em>C. pseudodiphtheriticum</em> genomes selected to study metabolic differences across geographic locations (BWA vs. USA grouping).</p></li>
+<li><p><code>CorPGA_MetabolicAnalysis_Groups_References.txt</code> adds to the previous file the 9 NCBI reference genomes as 9 new groups.</p></li>
 </ul>
 <div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co">#conda activate anvio-dev</span></span>
 <span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a></span>
@@ -2282,17 +2282,17 @@ margin-left: 0 !important;
 <span id="cb15-20"><a href="#cb15-20" tabindex="-1"></a>                                  <span class="at">-o</span> <span class="st">&quot;</span><span class="va">$output_file</span><span class="st">&quot;</span> <span class="dt">\</span></span>
 <span id="cb15-21"><a href="#cb15-21" tabindex="-1"></a>                                  <span class="at">--use-stepwise-completeness</span> <span class="dt">\</span></span>
 <span id="cb15-22"><a href="#cb15-22" tabindex="-1"></a>                                  <span class="at">--module-completion-threshold</span> 1.0</span>
-<span id="cb15-23"><a href="#cb15-23" tabindex="-1"></a>                                  </span>
-<span id="cb15-24"><a href="#cb15-24" tabindex="-1"></a><span class="va">txt_file_groups</span><span class="op">=</span><span class="st">&quot;data/genome_lists/CorPGA_MetabolicAnalysis_Groups_References.txt&quot;</span></span>
-<span id="cb15-25"><a href="#cb15-25" tabindex="-1"></a><span class="va">output_file</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$path_o</span><span class="st">/CorPGA_enriched_modules_stepwise_1_References.txt&quot;</span></span>
+<span id="cb15-23"><a href="#cb15-23" tabindex="-1"></a></span>
+<span id="cb15-24"><a href="#cb15-24" tabindex="-1"></a><span class="va">txt_file_groups</span><span class="op">=</span><span class="st">&quot;data/genome_lists/CorPGA_MetabolicAnalysis_Groups_Cps.txt&quot;</span></span>
+<span id="cb15-25"><a href="#cb15-25" tabindex="-1"></a><span class="va">output_file</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$path_o</span><span class="st">/CorPGA_enriched_modules_stepwise_1_Cps.txt&quot;</span></span>
 <span id="cb15-26"><a href="#cb15-26" tabindex="-1"></a><span class="ex">anvi-compute-metabolic-enrichment</span> <span class="at">-M</span> <span class="st">&quot;</span><span class="va">$csv_file_modules</span><span class="st">&quot;</span> <span class="dt">\</span></span>
 <span id="cb15-27"><a href="#cb15-27" tabindex="-1"></a>                                  <span class="at">-G</span> <span class="st">&quot;</span><span class="va">$txt_file_groups</span><span class="st">&quot;</span> <span class="dt">\</span></span>
 <span id="cb15-28"><a href="#cb15-28" tabindex="-1"></a>                                  <span class="at">-o</span> <span class="st">&quot;</span><span class="va">$output_file</span><span class="st">&quot;</span> <span class="dt">\</span></span>
 <span id="cb15-29"><a href="#cb15-29" tabindex="-1"></a>                                  <span class="at">--use-stepwise-completeness</span> <span class="dt">\</span></span>
 <span id="cb15-30"><a href="#cb15-30" tabindex="-1"></a>                                  <span class="at">--module-completion-threshold</span> 1.0</span>
 <span id="cb15-31"><a href="#cb15-31" tabindex="-1"></a>                                  </span>
-<span id="cb15-32"><a href="#cb15-32" tabindex="-1"></a><span class="va">txt_file_groups</span><span class="op">=</span><span class="st">&quot;data/genome_lists/CorPGA_MetabolicAnalysis_Groups_Cps.txt&quot;</span></span>
-<span id="cb15-33"><a href="#cb15-33" tabindex="-1"></a><span class="va">output_file</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$path_o</span><span class="st">/CorPGA_enriched_modules_stepwise_1_Cps.txt&quot;</span></span>
+<span id="cb15-32"><a href="#cb15-32" tabindex="-1"></a><span class="va">txt_file_groups</span><span class="op">=</span><span class="st">&quot;data/genome_lists/CorPGA_MetabolicAnalysis_Groups_References.txt&quot;</span></span>
+<span id="cb15-33"><a href="#cb15-33" tabindex="-1"></a><span class="va">output_file</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$path_o</span><span class="st">/CorPGA_enriched_modules_stepwise_1_References.txt&quot;</span></span>
 <span id="cb15-34"><a href="#cb15-34" tabindex="-1"></a><span class="ex">anvi-compute-metabolic-enrichment</span> <span class="at">-M</span> <span class="st">&quot;</span><span class="va">$csv_file_modules</span><span class="st">&quot;</span> <span class="dt">\</span></span>
 <span id="cb15-35"><a href="#cb15-35" tabindex="-1"></a>                                  <span class="at">-G</span> <span class="st">&quot;</span><span class="va">$txt_file_groups</span><span class="st">&quot;</span> <span class="dt">\</span></span>
 <span id="cb15-36"><a href="#cb15-36" tabindex="-1"></a>                                  <span class="at">-o</span> <span class="st">&quot;</span><span class="va">$output_file</span><span class="st">&quot;</span> <span class="dt">\</span></span>
