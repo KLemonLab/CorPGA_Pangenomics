@@ -152,7 +152,7 @@ done
 
 ## Generating an anvi'o genomes storage database
 
-The program `anvi-gen-genomes-storage` requires a `.txt` file with the names and path locations of the genomes to be included in the genome storage database. The storage database generated with `CorPGA_Anvio_GenomeList_v01a.txt` includes the 102 *Corynebacterium* genomes selected for pangenomic analysis (Cac_ATCC_49726 & Cps_090104 were excluded for further analysis, as well as all *C. macginleyi* genomes).
+The program `anvi-gen-genomes-storage` requires a `.txt` file with the names and path locations of the genomes to be included in the genome storage database. The storage database generated with `CorPGA_Anvio_GenomeList_v01a.txt` includes the 104 *Corynebacterium* genomes selected for pangenomic analysis (*C. macginleyi* genomes were excluded).
 
 ```{bash, eval = FALSE}
 #conda activate anvio-dev
