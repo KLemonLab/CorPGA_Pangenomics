@@ -17,6 +17,7 @@ klippy::klippy(c('r', 'bash'))
 
 ```{r libraries, echo=FALSE, message=FALSE}
 library(tidyverse)
+library(viridis)
 ```
 
 This notebook contains analyses using anvi'o version 8 [@Eren2021] (development branch). For more in-depth information about anvi'o go to their official online site here: <https://anvio.org/>
@@ -243,7 +244,7 @@ In order to define the Core vs Accessory pangenome for each of the four species 
 | Shell            | 689/3108                      | `r round(100*(689/3108),1)`%  | 3-17                                 |
 | Cloud            | 556/3108                      | `r round(100*(556/3108),1)`%  | 1-2                                  |
 
-#### *C. pseudodiphtheriticum* pangenome (3,548 GCs)
+#### *C. pseudodiphtheriticum* pangenome (3,588 GCs)
 
 | Pangenome Bin    | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
 |------------------|------------------|------------------|-------------------|
@@ -254,7 +255,7 @@ In order to define the Core vs Accessory pangenome for each of the four species 
 | Shell            | 972/3590                      | `r round(100*(972/3590),1)`%  | 3-39                                 |
 | Cloud            | 858/3590                      | `r round(100*(858/3590),1)`%  | 1-2                                  |
 
-#### *C. accolens* pangenome (3,307 GCs)
+#### *C. accolens* pangenome (3,427 GCs)
 
 | Pangenome Bin    | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
 |------------------|------------------|------------------|-------------------|
@@ -474,7 +475,83 @@ Enrich_Mod_References <- read_delim("data/Anvio8/Metabolic_Analysis/Enrichment_M
 Enrich_KO_References <- read_delim("data/Anvio8/Metabolic_Analysis/Enrichment_KOs/CorPGA_enriched_KOs_References.txt", show_col_types = FALSE)
 Enrich_KO_References_Filtered <- get_KOs_not_in_enrich_modules(Modules, KOHits, Enrich_Mod_References, Enrich_KO_References, 0.1)
 write_csv(Enrich_KO_References_Filtered, "data/Anvio8/Metabolic_Analysis/Enrichment_KOs/CorPGA_enriched_KOs_References_Filtered.csv")
+```
 
+
+## Distribution Plots
+
+```{r, eval = FALSE}
+Modules_Distributions <- Modules %>% 
+  filter(!grepl("^GCF", genome_name)) %>%
+  #filter(module_class=="Pathway modules") %>%
+  mutate(species_name = str_extract(genome_name, "^[^_]+")) %>%
+  unite(modules_label, c(module_category, module_subcategory), sep = "_", remove = FALSE) %>% 
+  select(species_name, genome_name, module, module_name, module_category, module_subcategory, modules_label, stepwise_module_completeness, pathwise_module_completeness) %>% 
+  mutate_at(c("species_name", "genome_name", "module", "module_name", "module_category", "module_subcategory", "modules_label"), factor)
+
+plot_1 <-ggplot(Modules_Distributions, aes(y = stepwise_module_completeness, x = species_name, fill = species_name)) +
+  facet_wrap(~ module_category, ncol=2) +
+  geom_violin() +
+  scale_fill_manual(values = c("darkorange", "red", "darkviolet", "navy", "grey30")) +
+  theme_bw()
+
+plot_1
+ggsave(plot = plot_1, filename = "data/plots/plot1.jpg", height = 10, width = 10, device ='jpg', dpi = 500)
+```
+
+```{r message=FALSE, warning=FALSE, fig.height=10, fig.width=20}
+Modules_Distributions_Means = Modules_Distributions %>% 
+  group_by(modules_label, genome_name, .drop=FALSE) %>%
+  summarise(mean_stepwise_module_completeness=mean(stepwise_module_completeness)) %>%
+  mutate(mean_stepwise_module_completeness = coalesce(mean_stepwise_module_completeness, 0)) %>%
+  mutate(species_name = str_extract(genome_name, "^[^_]+")) %>%
+  mutate(module_category = str_extract(modules_label, "^[^_]+")) %>%
+  mutate(modules_final_label = str_replace(modules_label, "^[^_]+_", "")) %>%
+  mutate_at(c("module_category", "modules_final_label"), factor)
+
+
+plot_2 <- ggplot(Modules_Distributions_Means, aes(x=genome_name, y=modules_final_label, fill=mean_stepwise_module_completeness)) + 
+  geom_tile(color = "white") +
+  facet_grid(module_category ~ species_name, drop = TRUE, scales = "free", space = "free") + 
+  labs(x="", y="") +
+  scale_y_discrete(expand=c(0, 0)) +
+  scale_fill_viridis(direction = -1, option = "A", begin = 0.2) +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.background = element_blank(),
+        strip.text.y = element_text(angle = 0, hjust = 0),
+        axis.text.x = element_text(angle = 90, hjust = 1),
+        legend.position="top") +
+  guides(col = guide_colourbar(title="Average step module completeness"))
+
+plot_2
+ggsave(plot = plot_2, filename = "data/plots/plot2.jpg", height = 10, width = 20, device ='jpg', dpi = 500)
+```
+
+```{r message=FALSE, warning=FALSE}
+Modules_Distributions_Summary = Modules_Distributions %>% 
+  filter(stepwise_module_completeness==1) %>%
+  group_by(genome_name, module_category) %>% 
+  count() %>% 
+  mutate(species_name = str_extract(genome_name, "^[^_]+")) %>%
+  group_by(species_name, module_category) %>%
+  summarize(average = mean(n))
+  
+plot_3 <- ggplot(Modules_Distributions_Summary, aes(fill=module_category, y=average, x = factor(species_name, level = c("Cpr", "Cps", "Cac", "Ctu", "Dpi")))) + 
+  geom_bar(position="stack", stat="identity") + 
+  scale_fill_brewer(palette = "Set2") + 
+  labs(x="Species", y="Average # of Complete KEGG Modules per Genome") +
+  scale_y_continuous(expand=c(0, 0)) +
+  theme_classic() +
+  theme(axis.text.x = element_text(size = 15, colour = c("darkorange", "red", "darkviolet", "navy", "grey30")),
+        legend.title=element_text(size=15),
+        legend.text=element_text(size=11)) +
+  guides(fill = guide_legend(title="Module Category"))
+
+
+plot_3
+ggsave(plot = plot_3, filename = "data/plots/plot_3.jpg", height = 5, width = 8, device ='jpg', dpi = 500)
 ```
 
 
