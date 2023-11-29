@@ -492,7 +492,7 @@ Modules_Distributions <- Modules %>%
 plot_1 <-ggplot(Modules_Distributions, aes(y = stepwise_module_completeness, x = species_name, fill = species_name)) +
   facet_wrap(~ module_category, ncol=2) +
   geom_violin() +
-  scale_fill_manual(values = c("#6A329F", "#FF8C00", "#FF0000", "#0000FF", "grey30")) +
+  scale_fill_manual(values = c("#6A329F", "#FF8C00", "#FF0000", "#3B54A4", "grey30")) +
   theme_bw()
 
 plot_1
@@ -544,7 +544,7 @@ plot_3 <- ggplot(Modules_Distributions_Summary, aes(fill=module_category, y=aver
   labs(x="Species", y="Average # of Complete KEGG Modules per Genome") +
   scale_y_continuous(expand=c(0, 0)) +
   theme_classic() +
-  theme(axis.text.x = element_text(size = 15, colour = c("#FF8C00","#FF0000","#6A329F","#0000FF","grey30")),
+  theme(axis.text.x = element_text(size = 15, colour = c("#FF8C00","#FF0000","#6A329F","#3B54A4","grey30")),
         legend.title=element_text(size=15),
         legend.text=element_text(size=11)) +
   guides(fill = guide_legend(title="Module Category"))
