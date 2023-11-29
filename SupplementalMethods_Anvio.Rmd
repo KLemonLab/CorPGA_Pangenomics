@@ -233,7 +233,7 @@ We manually reordered the layers to match the phylogenomic trees per species usi
 
 In order to define the Core vs Accessory pangenome for each of the four species level pangenomes we use anvi'o interactive interface. In the "Bins" tab we created the corresponding bins. Using the "Search" tab we used "Search gene clusters using filters" and "Append splits to selected bin" to create bins. The following tables summarizes how the bins in the collection named **CorevsAccessory** were created (last column indicates the criteria used on each search):
 
-#### *C. propinquum* pangenome (3,108 GCs)
+#### *C. propinquum* pangenome
 
 | Pangenome Bin    | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
 |------------------|------------------|------------------|-------------------|
@@ -244,7 +244,7 @@ In order to define the Core vs Accessory pangenome for each of the four species 
 | Shell            | 689/3108                      | `r round(100*(689/3108),1)`%  | 3-17                                 |
 | Cloud            | 556/3108                      | `r round(100*(556/3108),1)`%  | 1-2                                  |
 
-#### *C. pseudodiphtheriticum* pangenome (3,588 GCs)
+#### *C. pseudodiphtheriticum* pangenome
 
 | Pangenome Bin    | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
 |------------------|------------------|------------------|-------------------|
@@ -255,7 +255,7 @@ In order to define the Core vs Accessory pangenome for each of the four species 
 | Shell            | 972/3590                      | `r round(100*(972/3590),1)`%  | 3-39                                 |
 | Cloud            | 858/3590                      | `r round(100*(858/3590),1)`%  | 1-2                                  |
 
-#### *C. accolens* pangenome (3,427 GCs)
+#### *C. accolens* pangenome
 
 | Pangenome Bin    | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
 |------------------|------------------|------------------|-------------------|
@@ -266,7 +266,7 @@ In order to define the Core vs Accessory pangenome for each of the four species 
 | Shell            | 676/3427                      | `r round(100*(676/3427),1)`%  | 3-31                                 |
 | Cloud            | 770/3427                      | `r round(100*(770/3427),1)`%  | 1-2                                  |
 
-#### *C. tuberculostearicum* pangenome (2,907 GCs)
+#### *C. tuberculostearicum* pangenome
 
 | Pangenome Bin    | \# of Gene Clusters/Pangenome | Percentage                    | Gene Cluster occurs in \# of genomes |
 |------------------|------------------|------------------|-------------------|
@@ -492,14 +492,14 @@ Modules_Distributions <- Modules %>%
 plot_1 <-ggplot(Modules_Distributions, aes(y = stepwise_module_completeness, x = species_name, fill = species_name)) +
   facet_wrap(~ module_category, ncol=2) +
   geom_violin() +
-  scale_fill_manual(values = c("darkorange", "red", "darkviolet", "navy", "grey30")) +
+  scale_fill_manual(values = c("#6A329F", "#FF8C00", "#FF0000", "#0000FF", "grey30")) +
   theme_bw()
 
 plot_1
-ggsave(plot = plot_1, filename = "data/plots/plot1.jpg", height = 10, width = 10, device ='jpg', dpi = 500)
+ggsave(plot = plot_1, filename = "data/Anvio8/Metabolic_Analysis/plots/plot1.jpg", height = 10, width = 10, device ='jpg', dpi = 500)
 ```
 
-```{r message=FALSE, warning=FALSE, fig.height=10, fig.width=20}
+```{r eval = FALSE, message=FALSE, warning=FALSE, fig.height=10, fig.width=20}
 Modules_Distributions_Means = Modules_Distributions %>% 
   group_by(modules_label, genome_name, .drop=FALSE) %>%
   summarise(mean_stepwise_module_completeness=mean(stepwise_module_completeness)) %>%
@@ -523,13 +523,13 @@ plot_2 <- ggplot(Modules_Distributions_Means, aes(x=genome_name, y=modules_final
         strip.text.y = element_text(angle = 0, hjust = 0),
         axis.text.x = element_text(angle = 90, hjust = 1),
         legend.position="top") +
-  guides(col = guide_colourbar(title="Average step module completeness"))
+  guides(fill = guide_colourbar(title="Average step module completeness"))
 
 plot_2
-ggsave(plot = plot_2, filename = "data/plots/plot2.jpg", height = 10, width = 20, device ='jpg', dpi = 500)
+ggsave(plot = plot_2, filename = "data/Anvio8/Metabolic_Analysis/plots/plot2.jpg", height = 10, width = 20, device ='jpg', dpi = 500)
 ```
 
-```{r message=FALSE, warning=FALSE}
+```{r eval = FALSE, message=FALSE, warning=FALSE}
 Modules_Distributions_Summary = Modules_Distributions %>% 
   filter(stepwise_module_completeness==1) %>%
   group_by(genome_name, module_category) %>% 
@@ -544,14 +544,14 @@ plot_3 <- ggplot(Modules_Distributions_Summary, aes(fill=module_category, y=aver
   labs(x="Species", y="Average # of Complete KEGG Modules per Genome") +
   scale_y_continuous(expand=c(0, 0)) +
   theme_classic() +
-  theme(axis.text.x = element_text(size = 15, colour = c("darkorange", "red", "darkviolet", "navy", "grey30")),
+  theme(axis.text.x = element_text(size = 15, colour = c("#FF8C00","#FF0000","#6A329F","#0000FF","grey30")),
         legend.title=element_text(size=15),
         legend.text=element_text(size=11)) +
   guides(fill = guide_legend(title="Module Category"))
 
 
 plot_3
-ggsave(plot = plot_3, filename = "data/plots/plot_3.jpg", height = 5, width = 8, device ='jpg', dpi = 500)
+ggsave(plot = plot_3, filename = "data/Anvio8/Metabolic_Analysis/plots/plot_3.jpg", height = 5, width = 8, device ='jpg', dpi = 500)
 ```
 
 
