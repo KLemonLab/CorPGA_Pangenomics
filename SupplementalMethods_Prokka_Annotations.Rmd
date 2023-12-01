@@ -204,7 +204,6 @@ for file in $path_i/*.db; do
                           -i $path_e/annot_$FILENAME.txt
       
 done
-
 ```
 
 
