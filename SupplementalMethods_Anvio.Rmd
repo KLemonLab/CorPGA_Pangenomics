@@ -294,22 +294,22 @@ path_i="data/Anvio8/Pangenomic_Analysis"
 
 anvi-summarize -p $path_i/Only_Cpr/PAN_Cpr-PAN.db \
                -g $path_i/CorPGA-All4Cor-GENOMES.db \
-               -o $path_i \
+               -o $path_i/Only_Cpr/Summaries \
                -C CorevsAccessory
 
 anvi-summarize -p $path_i/Only_Cps/PAN_Cps-PAN.db \
                -g $path_i/CorPGA-All4Cor-GENOMES.db \
-               -o $path_i \
+               -o $path_i/Only_Cps/Summaries \
                -C CorevsAccessory
                
 anvi-summarize -p $path_i/Only_Cac/PAN_Cac-PAN.db \
                -g $path_i/CorPGA-All4Cor-GENOMES.db \
-               -o $path_i \
+               -o $path_i/Only_Cac/Summaries \
                -C CorevsAccessory
 
 anvi-summarize -p $path_i/Only_Ctu/PAN_Ctu-PAN.db \
                -g $path_i/CorPGA-All4Cor-GENOMES.db \
-               -o $path_i \
+               -o $path_i/Only_Ctu/Summaries \
                -C CorevsAccessory
 ```
 
@@ -319,7 +319,7 @@ The output files were used for the COG functional analysis based on PPanGGOLiN p
 
 ## Estimation of KEGG module completeness
 
-Using `anvi-estimate-metabolism` we predicted KEGG module completeness as described in [@kanehisa2011a] for the the organisms listed in `CorPGA_MetabolicAnalysis_GenomeList_v01.txt`. This list includes the 102 *Corynebacterium* genomes selected for metabolic analysis (Cac_ATCC_49726 & Cps_090104 were excluded for these analysis, as well as all *C. macginleyi* genomes), plus 27 for the 28 *Dolosigranulum pigrum* genomes described in [@floresramos2021] (KPL3086 was not included in the analysis due to being highly similar to KPL3065) as well as 9 reference genomes with their original annotations as per NCBI.
+Using `anvi-estimate-metabolism` we predicted KEGG module completeness as described in [@kanehisa2011a] for the the organisms listed in `CorPGA_MetabolicAnalysis_GenomeList_v01.txt`. This list includes the 102 *Corynebacterium* genomes selected for metabolic analysis (Cac_ATCC_49726 & Cps_090104 were excluded for this analysis, as well as all *C. macginleyi* genomes), plus 27 for the 28 *Dolosigranulum pigrum* genomes described in [@floresramos2021] (KPL3086 was not included in the analysis due to being highly similar to KPL3065) as well as 9 reference genomes with their original annotations as per NCBI.
 
 We generated outputs both in long tabular and matrix format with the KO hits and KEGG modules completeness scores.
 
@@ -477,7 +477,6 @@ Enrich_KO_References_Filtered <- get_KOs_not_in_enrich_modules(Modules, KOHits, 
 write_csv(Enrich_KO_References_Filtered, "data/Anvio8/Metabolic_Analysis/Enrichment_KOs/CorPGA_enriched_KOs_References_Filtered.csv")
 ```
 
-
 ## Distribution Plots
 
 ```{r, eval = FALSE}
@@ -554,6 +553,63 @@ plot_3
 ggsave(plot = plot_3, filename = "data/Anvio8/Metabolic_Analysis/plots/plot_3.jpg", height = 5, width = 8, device ='jpg', dpi = 500)
 ```
 
+## Pangenomic level analysis
+
+This list includes a total of 103 genomes: the 102 *Corynebacterium* genomes selected for metabolic analysis (Cac_ATCC_49726 & Cps_090104 were excluded for this analysis) plus *C glutamicum* ATCC 13032 [GCF_000011325.1](https://www.ncbi.nlm.nih.gov/nuccore/NC_003450.3).
+
+```{bash, eval = FALSE}
+#conda activate anvio-dev
+
+path_i="data/Anvio8/Pangenomic_Analysis"
+
+anvi-gen-genomes-storage -e "data/genome_lists/CorPGA_Anvio_GenomeList_v01b.txt" -o $path_i/CorPGA-All4CorCgl-GENOMES.db --gene-caller Prodigal
+
+anvi-db-info $path_i/CorPGA-All4CorCgl-GENOMES.db
+
+anvi-pan-genome -g $path_i/CorPGA-All4CorCgl-GENOMES.db \
+                -o $path_i/All4CorCgl -n PAN_All4CorCgl \
+                --use-ncbi-blast --mcl-inflation 10  --num-threads 8 --I-know-this-is-not-a-good-idea
+                
+#Create a bin collection named All4CorCgl with all Core GCs for the 5 species using the visual interface:       
+
+anvi-display-pan -p $path_i/All4CorCgl/PAN_All4CorCgl-PAN.db -g $path_i/CorPGA-All4CorCgl-GENOMES.db         
+
+anvi-summarize -p $path_i/All4CorCgl/PAN_All4CorCgl-PAN.db \
+               -g $path_i/CorPGA-All4CorCgl-GENOMES.db \
+               -o $path_i/All4CorCgl/Summaries \
+               -C All4CorCgl
+```
+
+```{r}
+fasta_file_for_GC <- function(Summary, GC, output_path) {
+  data <- Summary %>% 
+    filter(gene_cluster_id == GC) %>% 
+    mutate(fasta_lines = paste0(">", gene_cluster_id, "|", genome_name, "|callers_id:", gene_callers_id, "\n", aa_sequence))
+  
+  if (!file.exists(output_path)) {
+    dir.create(output_path, recursive = TRUE)
+  }
+  output_fasta <- file.path(output_path, paste0(GC, ".fasta"))
+  output_csv <- file.path(output_path, paste0(GC, ".csv"))
+  
+  writeLines(data$fasta_lines, con = output_fasta)
+  write_csv(data, file = output_csv)
+
+  cat(GC, "files created with a total of", nrow(data), "aa sequences. \n")
+  return(data)
+}
+
+Summary <- read_delim("data/Anvio8/Pangenomic_Analysis/All4CorCgl/Summaries/PAN_All4CorCgl_gene_clusters_summary.txt.gz", show_col_types = FALSE)
+
+output_path <- "data/Anvio8/Metabolic_Analysis/GC_fastas"
+output <- fasta_file_for_GC(Summary, "GC_00000360", output_path)
+output <- fasta_file_for_GC(Summary, "GC_00000533", output_path)
+output <- fasta_file_for_GC(Summary, "GC_00000144", output_path)
+output <- fasta_file_for_GC(Summary, "GC_00000081", output_path)
+output <- fasta_file_for_GC(Summary, "GC_00000208", output_path)
+output <- fasta_file_for_GC(Summary, "GC_00001033", output_path)
+
+```
 
 <img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
 
