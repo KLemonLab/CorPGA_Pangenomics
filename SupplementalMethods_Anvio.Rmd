@@ -602,14 +602,130 @@ fasta_file_for_GC <- function(Summary, GC, output_path) {
 Summary <- read_delim("data/Anvio8/Pangenomic_Analysis/All4CorCgl/Summaries/PAN_All4CorCgl_gene_clusters_summary.txt.gz", show_col_types = FALSE)
 
 output_path <- "data/Anvio8/Metabolic_Analysis/GC_fastas"
-output <- fasta_file_for_GC(Summary, "GC_00000360", output_path)
-output <- fasta_file_for_GC(Summary, "GC_00000533", output_path)
-output <- fasta_file_for_GC(Summary, "GC_00000144", output_path)
-output <- fasta_file_for_GC(Summary, "GC_00000081", output_path)
-output <- fasta_file_for_GC(Summary, "GC_00000208", output_path)
-output <- fasta_file_for_GC(Summary, "GC_00001033", output_path)
+output <- fasta_file_for_GC(Summary, "GC_00000328", output_path) #glnA
+output <- fasta_file_for_GC(Summary, "GC_00000120", output_path) #gdhA
+output <- fasta_file_for_GC(Summary, "GC_00000515", output_path) #ilvA
 
+output <- fasta_file_for_GC(Summary, "GC_00000166", output_path) #aroT
+output <- fasta_file_for_GC(Summary, "GC_00000814", output_path) #aspT
+output <- fasta_file_for_GC(Summary, "GC_00000680", output_path) #serC
+output <- fasta_file_for_GC(Summary, "GC_00000732", output_path) #dapC
+output <- fasta_file_for_GC(Summary, "GC_00000889", output_path) #argD
+output <- fasta_file_for_GC(Summary, "GC_00000164", output_path) #hisC
+output <- fasta_file_for_GC(Summary, "GC_00000699", output_path) #ilvE
+output <- fasta_file_for_GC(Summary, "GC_00000782", output_path) #metC
+output <- fasta_file_for_GC(Summary, "GC_00006799", output_path) #avtA
+output <- fasta_file_for_GC(Summary, "GC_00000648", output_path) #alaT
+
+output <- fasta_file_for_GC(Summary, "GC_00000656", output_path) #hisB
+
+output <- fasta_file_for_GC(Summary, "GC_00000985", output_path) #argC
+output <- fasta_file_for_GC(Summary, "GC_00000984", output_path) #argJ
+output <- fasta_file_for_GC(Summary, "GC_00000986", output_path) #argB
+output <- fasta_file_for_GC(Summary, "GC_00000889", output_path) #argD
+
+output <- fasta_file_for_GC(Summary, "GC_00001785", output_path) #UreA
+output <- fasta_file_for_GC(Summary, "GC_00001786", output_path) #UreB
+output <- fasta_file_for_GC(Summary, "GC_00001789", output_path) #UreC
+output <- fasta_file_for_GC(Summary, "GC_00006375", output_path) #UreE
+output <- fasta_file_for_GC(Summary, "GC_00006213", output_path) #UreF Cgl
+output <- fasta_file_for_GC(Summary, "GC_00001796", output_path) #UreF 
+output <- fasta_file_for_GC(Summary, "GC_00001776", output_path) #UreG
+output <- fasta_file_for_GC(Summary, "GC_00005747", output_path) #UreD Cgl
+output <- fasta_file_for_GC(Summary, "GC_00001801", output_path) #UreD
 ```
+
+## Blast Validations
+
+```{bash}
+#| eval: FALSE
+
+path_o="data/Anvio8/Metabolic_Analysis/Blast_Validations/Databases"
+mkdir -p "$path_o"
+
+path_i="data/Anvio8/Prokka_out/"
+./scripts/process_files_forblastDB.sh $path_i .fna $path_o "NovCor_FullSequence"
+./scripts/process_files_forblastDB.sh $path_i .ffn $path_o "NovCor_Annotated_nt"
+./scripts/process_files_forblastDB.sh $path_i .faa $path_o "NovCor_Annotated_aa"
+
+path_i="data/Anvio8/Parsed_NCBI/"
+./scripts/process_files_forblastDB.sh $path_i .fa $path_o "NCBIStrains_FullSequence"
+```
+
+The directory "data/Anvio8/Metabolic_Analysis/NovCor_v03/Blast_Validations/Databases" had to be moved out of Box for the makeblastdb command to work
+
+```{bash}
+#| eval: FALSE
+
+#cd <local/path/Blast_Validations/Databases>
+
+makeblastdb -in NovCor_FullSequence -title "NovCor_FullSequence" -input_type fasta -parse_seqids -dbtype 'nucl'
+makeblastdb -in NovCor_Annotated_nt -title "NovCor_Annotated_nt" -input_type fasta -parse_seqids -dbtype 'nucl'
+makeblastdb -in NovCor_Annotated_aa -title "NovCor_Annotated_aa" -input_type fasta -parse_seqids -dbtype 'prot'
+
+makeblastdb -in NCBIStrains_FullSequence -title "NCBIStrains_FullSequence" -input_type fasta -parse_seqids -dbtype 'nucl'
+```
+
+```{bash}
+#| eval: FALSE
+
+path_o="data/Anvio8/Metabolic_Analysis/Blast_Validations"
+
+tblastn -db $path_o/Databases/NovCor_FullSequence \
+        -query $path_o/Cgl_gdhA.faa \
+        -out $path_o/Cgl_gdhA_vs_NovCor_FullSequence.csv \
+        -outfmt "10 std qcovs delim=,"
+        
+tblastn -db $path_o/Databases/NovCor_Annotated_nt \
+        -query $path_o/Cgl_gdhA.faa \
+        -out $path_o/Cgl_gdhA_vs_NovCor_Annotated_nt.csv \
+        -outfmt "10 std qcovs delim=,"       
+
+blastp -db $path_o/Databases/NovCor_Annotated_aa \
+        -query $path_o/Cgl_gdhA.faa \
+        -out $path_o/Cgl_gdhA_vs_NovCor_Annotated_aa.csv \
+        -outfmt "10 std qcovs delim=,"  
+        
+tblastn -db $path_o/Databases/NCBIStrains_FullSequence \
+        -query $path_o/Cgl_gdhA.faa \
+        -out $path_o/Cgl_gdhA_NCBIStrains_vs_FullSequence.csv \
+        -outfmt "10 std qcovs delim=,"
+        
+        
+tblastn -db $path_o/Databases/NovCor_FullSequence \
+        -query $path_o/Cgl_urease.faa \
+        -out $path_o/Cgl_urease_vs_NovCor_FullSequence.csv \
+        -outfmt "10 std qcovs delim=,"
+        
+tblastn -db $path_o/Databases/NovCor_Annotated_nt \
+        -query $path_o/Cgl_urease.faa \
+        -out $path_o/Cgl_urease_vs_NovCor_Annotated_nt.csv \
+        -outfmt "10 std qcovs delim=,"       
+
+blastp -db $path_o/Databases/NovCor_Annotated_aa \
+        -query $path_o/Cgl_urease.faa \
+        -out $path_o/Cgl_urease_vs_NovCor_Annotated_aa.csv \
+        -outfmt "10 std qcovs delim=,"  
+        
+tblastn -db $path_o/Databases/NCBIStrains_FullSequence \
+        -query $path_o/Cgl_urease.faa \
+        -out $path_o/Cgl_urease_NCBIStrains_vs_FullSequence.csv \
+        -outfmt "10 std qcovs delim=,"
+```
+
+```{r}
+Cgl_gdhA_vs_NovCor_FullSequence <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_gdhA_vs_NovCor_FullSequence.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
+Cgl_gdhA_vs_NovCor_Annotated_nt <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_gdhA_vs_NovCor_Annotated_nt.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
+Cgl_gdhA_vs_NovCor_Annotated_aa <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_gdhA_vs_NovCor_Annotated_aa.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
+Cgl_gdhA_vs_NovCor_FullSequence <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_gdhA_vs_NovCor_FullSequence.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
+
+Cgl_urease_vs_NovCor_FullSequence <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_urease_vs_NovCor_FullSequence.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
+Cgl_urease_vs_NovCor_Annotated_nt <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_urease_vs_NovCor_Annotated_nt.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
+Cgl_urease_vs_NovCor_Annotated_aa <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_urease_vs_NovCor_Annotated_aa.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
+Cgl_urease_vs_NovCor_FullSequence <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_urease_vs_NovCor_FullSequence.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
+```
+
+
 
 <img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
 
