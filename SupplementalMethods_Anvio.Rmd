@@ -153,7 +153,7 @@ done
 
 ## Generating an anvi'o genomes storage database
 
-The program `anvi-gen-genomes-storage` requires a `.txt` file with the names and path locations of the genomes to be included in the genome storage database. The storage database generated with `CorPGA_Anvio_GenomeList_v01a.txt` includes the 104 *Corynebacterium* genomes selected for pangenomic analysis (*C. macginleyi* genomes were excluded).
+The program `anvi-gen-genomes-storage` requires a `.txt` file with the names and path locations of the genomes to be included in the genome storage database. The storage database generated with `CorPGA_Anvio_GenomeList_v01a.txt` includes the 104 *Corynebacterium* genomes selected for pangenomic analysis (The three *C. macginleyi* genomes were excluded).
 
 ```{bash, eval = FALSE}
 #conda activate anvio-dev
@@ -319,7 +319,11 @@ The output files were used for the COG functional analysis based on PPanGGOLiN p
 
 ## Estimation of KEGG module completeness
 
-Using `anvi-estimate-metabolism` we predicted KEGG module completeness as described in [@kanehisa2011a] for the the organisms listed in `CorPGA_MetabolicAnalysis_GenomeList_v01.txt`. This list includes the 102 *Corynebacterium* genomes selected for metabolic analysis (Cac_ATCC_49726 & Cps_090104 were excluded for this analysis, as well as all *C. macginleyi* genomes), plus 27 for the 28 *Dolosigranulum pigrum* genomes described in [@floresramos2021] (KPL3086 was not included in the analysis due to being highly similar to KPL3065) as well as 9 reference genomes with their original annotations as per NCBI.
+Using `anvi-estimate-metabolism` we predicted KEGG module completeness as described in [@kanehisa2011a] for the the organisms listed in `CorPGA_MetabolicAnalysis_GenomeList_v01.txt`. This list includes:
+
+-   The 102 *Corynebacterium* genomes selected for metabolic analysis (Cac_ATCC_49726 & Cps_090104 were excluded for this analysis, as well as all three *C. macginleyi* genomes)
+-   Plus 27 for the 28 *Dolosigranulum pigrum* genomes described in [@floresramos2021] (KPL3086 was not included in the analysis due to being highly similar to KPL3065).
+-   As well as the 9 reference genomes with original NCBI annotations listed in Table S5.
 
 We generated outputs both in long tabular and matrix format with the KO hits and KEGG modules completeness scores.
 
@@ -488,17 +492,6 @@ Modules_Distributions <- Modules %>%
   select(species_name, genome_name, module, module_name, module_category, module_subcategory, modules_label, stepwise_module_completeness, pathwise_module_completeness) %>% 
   mutate_at(c("species_name", "genome_name", "module", "module_name", "module_category", "module_subcategory", "modules_label"), factor)
 
-plot_1 <-ggplot(Modules_Distributions, aes(y = stepwise_module_completeness, x = species_name, fill = species_name)) +
-  facet_wrap(~ module_category, ncol=2) +
-  geom_violin() +
-  scale_fill_manual(values = c("#6A329F", "#FF8C00", "#FF0000", "#3B54A4", "grey30")) +
-  theme_bw()
-
-plot_1
-ggsave(plot = plot_1, filename = "data/Anvio8/Metabolic_Analysis/plots/plot1.jpg", height = 10, width = 10, device ='jpg', dpi = 500)
-```
-
-```{r eval = FALSE, message=FALSE, warning=FALSE, fig.height=10, fig.width=20}
 Modules_Distributions_Means = Modules_Distributions %>% 
   group_by(modules_label, genome_name, .drop=FALSE) %>%
   summarise(mean_stepwise_module_completeness=mean(stepwise_module_completeness)) %>%
@@ -507,9 +500,10 @@ Modules_Distributions_Means = Modules_Distributions %>%
   mutate(module_category = str_extract(modules_label, "^[^_]+")) %>%
   mutate(modules_final_label = str_replace(modules_label, "^[^_]+_", "")) %>%
   mutate_at(c("module_category", "modules_final_label"), factor)
+```
 
-
-plot_2 <- ggplot(Modules_Distributions_Means, aes(x=genome_name, y=modules_final_label, fill=mean_stepwise_module_completeness)) + 
+```{r eval = FALSE, message=FALSE, warning=FALSE, fig.height=10, fig.width=20}
+plot <- ggplot(Modules_Distributions_Means, aes(x=genome_name, y=modules_final_label, fill=mean_stepwise_module_completeness)) + 
   geom_tile(color = "white") +
   facet_grid(module_category ~ species_name, drop = TRUE, scales = "free", space = "free") + 
   labs(x="", y="") +
@@ -524,34 +518,10 @@ plot_2 <- ggplot(Modules_Distributions_Means, aes(x=genome_name, y=modules_final
         legend.position="top") +
   guides(fill = guide_colourbar(title="Average step module completeness"))
 
-plot_2
-ggsave(plot = plot_2, filename = "data/Anvio8/Metabolic_Analysis/plots/plot2.jpg", height = 10, width = 20, device ='jpg', dpi = 500)
+plot
+ggsave(plot = plot, filename = "data/Anvio8/Metabolic_Analysis/plots/plot2.jpg", height = 10, width = 20, device ='jpg', dpi = 500)
 ```
 
-```{r eval = FALSE, message=FALSE, warning=FALSE}
-Modules_Distributions_Summary = Modules_Distributions %>% 
-  filter(stepwise_module_completeness==1) %>%
-  group_by(genome_name, module_category) %>% 
-  count() %>% 
-  mutate(species_name = str_extract(genome_name, "^[^_]+")) %>%
-  group_by(species_name, module_category) %>%
-  summarize(average = mean(n))
-  
-plot_3 <- ggplot(Modules_Distributions_Summary, aes(fill=module_category, y=average, x = factor(species_name, level = c("Cpr", "Cps", "Cac", "Ctu", "Dpi")))) + 
-  geom_bar(position="stack", stat="identity") + 
-  scale_fill_brewer(palette = "Set2") + 
-  labs(x="Species", y="Average # of Complete KEGG Modules per Genome") +
-  scale_y_continuous(expand=c(0, 0)) +
-  theme_classic() +
-  theme(axis.text.x = element_text(size = 15, colour = c("#FF8C00","#FF0000","#6A329F","#3B54A4","grey30")),
-        legend.title=element_text(size=15),
-        legend.text=element_text(size=11)) +
-  guides(fill = guide_legend(title="Module Category"))
-
-
-plot_3
-ggsave(plot = plot_3, filename = "data/Anvio8/Metabolic_Analysis/plots/plot_3.jpg", height = 5, width = 8, device ='jpg', dpi = 500)
-```
 
 ## Pangenomic level analysis
 
@@ -724,8 +694,6 @@ Cgl_urease_vs_NovCor_Annotated_nt <- read_csv("data/Anvio8/Metabolic_Analysis/Bl
 Cgl_urease_vs_NovCor_Annotated_aa <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_urease_vs_NovCor_Annotated_aa.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
 Cgl_urease_vs_NovCor_FullSequence <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_urease_vs_NovCor_FullSequence.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
 ```
-
-
 
 <img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
 
