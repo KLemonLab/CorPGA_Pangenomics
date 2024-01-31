@@ -1,0 +1,250 @@
+# Metabolism Exploration {.unnumbered}
+
+```{r}
+#| echo: FALSE
+#| message: FALSE
+library(tidyverse)
+```
+
+## Data input
+
+```{r}
+Summary <- read_delim("data/Anvio8/Pangenomic_Analysis/All4CorCgl/Summaries/PAN_All4CorCgl_gene_clusters_summary.txt.gz", show_col_types = FALSE)
+
+Modules <- read_delim("data/Anvio8/Metabolic_Analysis/CorPGA_modules.txt", show_col_types = FALSE, col_types = cols(unique_enzymes_hit_counts = col_character(), gene_caller_ids_in_module = col_character()))
+KOHits <- read_delim("data/Anvio8/Metabolic_Analysis/CorPGA_hits.txt", show_col_types = FALSE)
+
+Enrich_Mod_4Cor <- read_delim("data/Anvio8/Metabolic_Analysis/Enrichment_Modules/CorPGA_enriched_modules_stepwise_1_4Cor.txt", show_col_types = FALSE)
+Enrich_KO_4Cor_Filtered <- read_delim("data/Anvio8/Metabolic_Analysis/Enrichment_KOs/CorPGA_enriched_KOs_4Cor_Filtered.csv", show_col_types = FALSE)
+
+Enrich_Mod_CorDpi <- read_delim("data/Anvio8/Metabolic_Analysis/Enrichment_Modules/CorPGA_enriched_modules_stepwise_1_CorDpi.txt", show_col_types = FALSE)
+Enrich_KO_CorDpi_Filtered <- read_delim("data/Anvio8/Metabolic_Analysis/Enrichment_KOs/CorPGA_enriched_KOs_CorDpi_Filtered.csv", show_col_types = FALSE)
+
+Enrich_Mod_Cps <- read_delim("data/Anvio8/Metabolic_Analysis/Enrichment_Modules/CorPGA_enriched_modules_stepwise_1_Cps.txt", show_col_types = FALSE)
+Enrich_KO_Cps_Filtered <- read_delim("data/Anvio8/Metabolic_Analysis/Enrichment_KOs/CorPGA_enriched_KOs_Cps_Filtered.csv", show_col_types = FALSE)
+
+Enrich_Mod_References <- read_delim("data/Anvio8/Metabolic_Analysis/Enrichment_Modules/CorPGA_enriched_modules_stepwise_1_References.txt", show_col_types = FALSE)
+Enrich_KO_References_Filtered <- read_delim("data/Anvio8/Metabolic_Analysis/Enrichment_KOs/CorPGA_enriched_KOs_References_Filtered.csv", show_col_types = FALSE)
+```
+
+Directory for outputs:
+```{r}
+dir <- "data/Anvio8/Metabolic_Analysis/Pathway_Exploration"
+dir.create(file.path(dir), recursive = TRUE, showWarnings=FALSE)
+```
+
+Species info:
+```{r}
+#species_values <- c("Cgl", "Ctu", "Cac", "Cpr", "Cps")
+species_values <- c("Cpr", "Cps", "Cac", "Ctu", "Cgl", "Cdi", "Csi", "Ckr", "Cam", "Can", "Sau", "Sep", "Spn", "Dpi")
+num_genomes_values <- c("1", "8", "33", "19", "42")
+species_num_genomes_df <- data.frame(species = species_values, num_genomes = as.numeric(num_genomes_values))
+```
+
+Modules info:
+```{r}
+M00854 <- c("K00963", "K12447", "K22920", "K00693", "K00750", "K13679", "K16150", "K16153", "K20812", "K00975", "K00703", "K13679", "K16148", "K00700", "K16149")
+M00855 <- c("K00688", "K16153", "K01196", "K00705", "K22451", "K02438", "K01200", "K01835", "K15778", "K15779")
+M00854_M00855 <- c("K00963", "K12447", "K22920", "K00693", "K00750", "K13679", "K16150", "K16153", "K20812", "K00975", "K00703", "K13679", "K16148", "K00700", "K16149", "K00688", "K16153", "K01196", "K00705", "K22451", "K02438", "K01200", "K01835", "K15778", "K15779")
+```
+
+## Exploration of the KEGG Results
+
+### Average completion score for a Module in each species
+
+
+```{r}
+# Complete the modules dataset with rows for strains with completely missing modules and change NA to = 0
+Modules <- Modules %>%  
+  complete(db_name, nesting(module_category, module_subcategory, module)) %>%  
+  mutate(stepwise_module_completeness = ifelse(is.na(stepwise_module_completeness), 0, stepwise_module_completeness))
+
+```
+
+
+```{r, warning=FALSE}
+# Function to calculate average module completion for a given Module and Species
+
+average_Module_completion <- function(df, M, S) {
+  result <- df %>%
+    filter(grepl(S, db_name)) %>%
+    filter(module %in% M) %>%
+    summarise(mean = round(mean(stepwise_module_completeness),2))
+
+  return(result$mean)
+}
+
+# Example use
+#average_Module_completion(Modules, "M00026", "Cpr")
+
+# List of ModuleIDs
+ModuleList <- c("M00026", "M00022", "M00023", "M00024", "M00025", "M00019", "M00570", "M00432", "M00020", "M00021", "M00018", "M00017", "M00016", "M00525", "M00526", "M00527", "M00028", "M00844", "M00015", "M00530", "M00529", "M00804", "M00973", "M00176", "M00616")
+
+# List of species
+species_values <- c("Cpr", "Cps", "Cac", "Ctu", "Cgl", "Cdi", "Csi", "Ckr", "Cam", "Can", "Sau", "Sep", "Spn", "Dpi")
+
+# Generate all combinations of ModuleIDs and species
+combinations <- expand.grid(ModuleID = ModuleList, Species = species_values)
+
+# Use purrr::pmap_dbl to apply the function to each combination and store the results in a data frame
+result_df <- pmap_dfr(combinations, ~ tibble(ModuleID = ..1, Species = ..2, 
+                                             Average_Completion = average_Module_completion(Modules, ..1, ..2)))
+
+# Pivot the result data frame to have ModuleIDs as rows and species as columns
+final_df <- result_df %>%
+  pivot_wider(names_from = Species, values_from = Average_Completion)
+
+```
+
+
+Table with average_stepwise_module_completeness for all "Amino acid metabolism" modules. 
+```{r}
+AA_Modules <- Modules %>%
+  filter(module_category=="Amino acid metabolism") %>%
+  mutate(species_name = str_extract(db_name, "^[^_]+")) %>%
+  group_by(module_subcategory, module, module_name, species_name) %>%
+  summarise(average_stepwise_module_completeness = round(mean(stepwise_module_completeness), 2))
+
+AA_Modules$species_name <- factor(AA_Modules$species_name, levels=species_values)
+AA_Modules <- AA_Modules %>% arrange(species_name)
+
+AA_ModulesWide <- AA_Modules %>%
+  pivot_wider(names_from = species_name, values_from = average_stepwise_module_completeness, values_fill = 0)
+
+```
+
+
+### Proportion of genomes in a species a given KO is present in
+
+```{r, warning=FALSE}
+is_KO_present_in_all <- function(df, KO, species, num_genomes) {
+  result <- df %>%
+    filter(grepl(species, db_name)) %>%
+    filter(enzyme %in% KO) %>%
+    distinct(genome_name) 
+
+  return(nrow(result)/num_genomes)
+  #return(result)
+}
+
+KO <- c("K01956")
+
+is_KO_present_in_all(KOHits, KO, "Cac", 33)
+is_KO_present_in_all(KOHits, KO, "Cpr", 19)
+is_KO_present_in_all(KOHits, KO, "Cps", 42)
+is_KO_present_in_all(KOHits, KO, "Ctu", 8)
+is_KO_present_in_all(KOHits, KO, "Cgl", 1)
+```
+
+### What is the average number copies a KO has for all species?
+
+It can take a lists of KOs, like the elements of a module. Not very useful since the same gene can have more than one KO assignment. But It can be used to see the values of several KOs at once.
+
+```{r}
+# Define a function to calculate KO_copy_average
+KO_copy_average <- function(df, KO, species, num_genomes) {
+  result <- df %>%
+    filter(grepl(species, db_name)) %>%
+    filter(enzyme %in% KO)
+  return(nrow(result) / num_genomes)
+}
+
+# Define a function to calculate KO counts and write to CSV
+calculate_and_write_KO_counts <- function(df, dir, species_values, num_genomes_values, KO_values) {
+  result_df <- data.frame(KO = KO_values)
+  
+  for (species in species_values) {
+    # Create a column name for the result based on species
+    col_name <- species
+    
+    # Calculate KO_copy_average for each KO value
+    result <- sapply(KO_values, function(KO) {
+      KO_copy_average(df, KO, species, species_num_genomes_df$num_genomes[species_num_genomes_df$species == species])
+    })
+    
+    # Add the result to the data frame
+    result_df[col_name] <- round(result, 2)
+  }
+  
+  # Construct the output file name based on the KO_values list
+  output_file <- paste("CorPGA_KO_copies_", deparse(substitute(KO_values)), ".csv", sep = "")
+  
+  # Write the data frame into a file
+  write_csv(result_df, file.path(dir, output_file))
+}
+
+# Call the function to calculate KO counts and write to CSVs
+calculate_and_write_KO_counts(KOHits, dir, species_values, num_genomes_values, M00854)
+calculate_and_write_KO_counts(KOHits, dir, species_values, num_genomes_values, M00855)
+```
+
+### What is the number of unique genes that code for all steps in a module for all species?
+
+```{r}
+gene_copy_average <- function(df, KO, species, num_genomes) {
+  result <- df %>%
+    filter(grepl(species, db_name)) %>%
+    filter(enzyme %in% KO) %>%
+    group_by(gene_caller_id) %>%
+    summarize(enzyme_definition = paste(enzyme_definition, collapse = ", "),
+              enzyme = paste(enzyme, collapse = ", ")) 
+    return(nrow(result) / num_genomes)
+}
+
+# Define a function to calculate gene counts and write to CSV
+calculate_and_write_gene_counts <- function(df, dir, species_values, num_genomes_values, KO_values) {
+  result_df <- data.frame(Module = deparse(substitute(KO_values)))
+  
+  for (species in species_values) {
+    # Create a column name for the result based on species
+    col_name <- species
+    
+    # Calculate KO_copy_average for each KO value
+    result <- gene_copy_average(df, KO_values, species, species_num_genomes_df$num_genomes[species_num_genomes_df$species == species])
+    
+    # Add the result to the data frame
+    result_df[col_name] <- round(result, 2)
+  }
+  
+  # Construct the output file name based on the KO_values list
+  output_file <- paste("CorPGA_gene_copies_", deparse(substitute(KO_values)), ".csv", sep = "")
+  
+  # Write the data frame into a file
+  write_csv(result_df, file.path(dir, output_file))
+}
+
+# Call the function to calculate KO counts and write to CSVs
+calculate_and_write_gene_counts(KOHits, dir, species_values, num_genomes_values, M00854)
+calculate_and_write_gene_counts(KOHits, dir, species_values, num_genomes_values, M00855)
+calculate_and_write_gene_counts(KOHits, dir, species_values, num_genomes_values, M00854_M00855)
+```
+
+### What is the number of unique genes that code for all steps in a module for Cgl linked to the original annotation?
+
+```{r}
+unique_genes_for_Module <- function(df, KO_values, species, annot, calls) {
+  result <- df %>%
+    filter(grepl(species, db_name)) %>%
+    filter(enzyme %in% KO_values) %>%
+    group_by(gene_caller_id) %>%
+    summarize(enzyme_definition = paste(enzyme_definition, collapse = ", "),
+              enzyme = paste(enzyme, collapse = ", "))
+  
+  result <- left_join(result, annot, join_by(gene_caller_id == gene_callers_id))
+  result <- left_join(result, calls, join_by(gene_caller_id == gene_callers_id))
+  result <- result %>% 
+    select(-source.x, -source.y, -version)
+    
+  output_file <- paste(substitute(species), "_unique_genes_", deparse(substitute(KO_values)), ".csv", sep = "")
+  
+  # Write the data frame into a file
+  write_csv(result, file.path(dir, output_file))
+}
+
+annot_GCF_000011325.1 <- read_delim("data/Anvio8/Parsed_NCBI/annot_GCF_000011325.1.txt", show_col_types = FALSE)
+calls_GCF_000011325.1 <- read_delim("data/Anvio8/Parsed_NCBI/calls_GCF_000011325.1.txt", show_col_types = FALSE)
+
+unique_genes_for_Module(KOHits, M00854, "Cgl_ATCC_13032", annot_GCF_000011325.1, calls_GCF_000011325.1)
+unique_genes_for_Module(KOHits, M00855, "Cgl_ATCC_13032", annot_GCF_000011325.1, calls_GCF_000011325.1)
+unique_genes_for_Module(KOHits, M00854_M00855, "Cgl_ATCC_13032", annot_GCF_000011325.1, calls_GCF_000011325.1)
+```
