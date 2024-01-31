@@ -17,7 +17,16 @@ klippy::klippy(c('r', 'bash'))
 
 ```{r libraries, echo=FALSE, message=FALSE}
 library(tidyverse)
+library(ggtext)
+library(ggh4x)
+library(RColorBrewer)
 library(viridis)
+library(grid)
+library(ggpubr)
+library(gridtext)
+library(kableExtra)
+library(seqinr)
+library(reshape2)
 ```
 
 This notebook contains analyses using anvi'o version 8 [@Eren2021] (development branch). For more in-depth information about anvi'o go to their official online site here: <https://anvio.org/>
@@ -372,7 +381,6 @@ anvi-compute-metabolic-enrichment -M "$csv_file_modules" \
                                   --use-stepwise-completeness \
                                   --module-completion-threshold 1.0
 
-
 txt_file_groups="data/genome_lists/CorPGA_MetabolicAnalysis_Groups_CorDpi.txt"
 output_file="$path_o/CorPGA_enriched_modules_stepwise_1_CorDpi.txt"
 anvi-compute-metabolic-enrichment -M "$csv_file_modules" \
@@ -400,7 +408,9 @@ anvi-compute-metabolic-enrichment -M "$csv_file_modules" \
 
 ## KO Enrichment Analysis
 
-We use `anvi-display-functions`. It runs the enrichment for the desired annotations (in this case KOfam). It saves the output to a temp file that can be recovered, renamed and saved into the same `path_o` as the database file.
+We used `anvi-display-functions` to perform this functional enrichment[@shaiber2020]. It runs the enrichment for the desired annotations (in this case KOfam). It saves the output to a system temp file that can be recovered, renamed and saved into the same `path_o` along with the database file.
+
+The same `txt_file_groups` where used to to indicate grouping options equivalent to the ones used for the enrichment at the module level.
 
 ```{bash, eval = FALSE}
 
@@ -481,47 +491,129 @@ Enrich_KO_References_Filtered <- get_KOs_not_in_enrich_modules(Modules, KOHits, 
 write_csv(Enrich_KO_References_Filtered, "data/Anvio8/Metabolic_Analysis/Enrichment_KOs/CorPGA_enriched_KOs_References_Filtered.csv")
 ```
 
-## Distribution Plots
 
-```{r, eval = FALSE}
-Modules_Distributions <- Modules %>% 
+## Code for Figures and Tables
+
+### Code for Table 3
+
+```{r}
+Modules <- read_delim("data/Anvio8/Metabolic_Analysis/CorPGA_modules.txt", show_col_types = FALSE, col_types = cols(unique_enzymes_hit_counts = col_character(), gene_caller_ids_in_module = col_character())) %>% 
   filter(!grepl("^GCF", genome_name)) %>%
-  #filter(module_class=="Pathway modules") %>%
+  mutate(module_class_short = paste0("(", substr(module_class, 1, 1), ")")) %>%
   mutate(species_name = str_extract(genome_name, "^[^_]+")) %>%
-  unite(modules_label, c(module_category, module_subcategory), sep = "_", remove = FALSE) %>% 
-  select(species_name, genome_name, module, module_name, module_category, module_subcategory, modules_label, stepwise_module_completeness, pathwise_module_completeness) %>% 
-  mutate_at(c("species_name", "genome_name", "module", "module_name", "module_category", "module_subcategory", "modules_label"), factor)
+  unite(modules_label, c(module_class_short, module_category, module_subcategory), sep = "_", remove = FALSE) %>% 
+  mutate_at(c("species_name", "genome_name", "module", "module_name", "module_category", "module_subcategory", "module_class", "modules_label"), factor)
 
-Modules_Distributions_Means = Modules_Distributions %>% 
+ModulesTable <- Modules %>%
+  filter(stepwise_module_completeness == 1) %>%
+  group_by(module_category, module_subcategory, module, module_name, species_name) %>%
+  tally() 
+
+ModulesTableWide <- ModulesTable %>%
+  pivot_wider(names_from = species_name, values_from = n, values_fill = 0)
+
+ModulesTableWide$Cpr = round(100*(ModulesTableWide$Cpr/19), 1)
+ModulesTableWide$Cps = round(100*(ModulesTableWide$Cps/42), 1)
+ModulesTableWide$Cac = round(100*(ModulesTableWide$Cac/33), 1)
+ModulesTableWide$Ctu = round(100*(ModulesTableWide$Ctu/8), 1)
+ModulesTableWide$Dpi = round(100*(ModulesTableWide$Dpi/27), 1)
+
+ModulesTableWide <- ModulesTableWide %>%
+  select(module_category, module_subcategory, module, module_name, Cpr, Cps, Cac, Ctu, Dpi) %>%
+  filter(rowSums(across(c(Cpr, Cps, Cac, Ctu, Dpi)) > 12.5) > 0)
+
+write_csv(ModulesTableWide, "data/Anvio8/Metabolic_Analysis/Fig_Tables/TableKEGG.csv")
+kable(ModulesTableWide)
+```
+
+```{r}
+ModulesData <- ModulesTable %>%
+  filter(species_name!="Dpi") %>%
+  group_by(module_category, module_subcategory, module, module_name) %>%
+  summarise(total = sum(n)) %>%
+  mutate(percent = 100*total/102)
+```
+
+### Code for Figure 5
+
+```{r}
+StrainOrder <- read_csv("data/genome_lists/CorPGA_MetabolicAnalysis_PlotOrder.csv", show_col_types = FALSE)
+
+Modules_Means = Modules %>% 
   group_by(modules_label, genome_name, .drop=FALSE) %>%
   summarise(mean_stepwise_module_completeness=mean(stepwise_module_completeness)) %>%
   mutate(mean_stepwise_module_completeness = coalesce(mean_stepwise_module_completeness, 0)) %>%
   mutate(species_name = str_extract(genome_name, "^[^_]+")) %>%
-  mutate(module_category = str_extract(modules_label, "^[^_]+")) %>%
-  mutate(modules_final_label = str_replace(modules_label, "^[^_]+_", "")) %>%
-  mutate_at(c("module_category", "modules_final_label"), factor)
+  mutate(module_category = str_extract(modules_label, "^[^_]+_[^_]+")) %>%
+  mutate(module_category = str_replace_all(module_category, "_", " ")) %>%
+  mutate(modules_final_label = str_replace(modules_label, "^[^_]+_[^_]+_", "")) %>%
+  mutate_at(c("module_category", "modules_final_label"), factor) 
+
+Modules_Means <- left_join(Modules_Means, StrainOrder, by="genome_name")
+
+Modules_Means$species_name <- factor(Modules_Means$species_name, levels=c("Cpr","Cps","Cac","Ctu","Dpi"))
+Modules_Means$genome_name <- factor(Modules_Means$genome_name, levels=StrainOrder$genome_name)
+Modules_Means$styled_genome_name <- factor(Modules_Means$styled_genome_name, levels=StrainOrder$styled_genome_name)
 ```
 
-```{r eval = FALSE, message=FALSE, warning=FALSE, fig.height=10, fig.width=20}
-plot <- ggplot(Modules_Distributions_Means, aes(x=genome_name, y=modules_final_label, fill=mean_stepwise_module_completeness)) + 
+```{r}
+getPalette <- colorRampPalette(brewer.pal(8, "Set1"))
+colorsSpecies <- c("#FF8C00", "#FF0000", "#6A329F", "#3B54A4", "grey80")
+
+legend <-ggplot(Modules_Means, aes(x=module_category, y=mean_stepwise_module_completeness, fill=module_category)) +
+  geom_bar(stat="identity") + 
+  scale_fill_manual(values = getPalette(12)) + 
+  theme(legend.title=element_blank(),
+        legend.position="bottom",
+        legend.text = element_text(size = 7),
+        legend.key.size = unit(0.3,"line")) +
+  guides(fill=guide_legend(ncol=3))
+```
+
+```{r fig.height=9.0625, fig.width=6.875, message=FALSE, warning=FALSE}
+plot <- ggplot(Modules_Means, aes(x=modules_final_label, y=styled_genome_name, fill=mean_stepwise_module_completeness)) + 
   geom_tile(color = "white") +
-  facet_grid(module_category ~ species_name, drop = TRUE, scales = "free", space = "free") + 
+  facet_grid2(species_name ~ module_category, scales = "free", space = "free", switch = "both",
+              strip = strip_themed(background_x = elem_list_rect(fill = getPalette(12)),
+                                   background_y = elem_list_rect(fill = colorsSpecies))) +
   labs(x="", y="") +
-  scale_y_discrete(expand=c(0, 0)) +
+  scale_y_discrete(expand=c(0,0), position = "right", limits = rev) +
+  scale_x_discrete(expand=c(0,0)) +
   scale_fill_viridis(direction = -1, option = "A", begin = 0.2) +
   theme_bw() +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
-        strip.background = element_blank(),
-        strip.text.y = element_text(angle = 0, hjust = 0),
-        axis.text.x = element_text(angle = 90, hjust = 1),
-        legend.position="top") +
-  guides(fill = guide_colourbar(title="Average step module completeness"))
-
-plot
-ggsave(plot = plot, filename = "data/Anvio8/Metabolic_Analysis/plots/plot2.jpg", height = 10, width = 20, device ='jpg', dpi = 500)
+        strip.background = element_rect(colour = "black", fill = NA),
+        strip.text.y.left = element_text(angle=0, size=12, face="bold"),
+        strip.text.x = element_text(size=0),
+        axis.text.y.right = element_markdown(size=4, color = "black"),
+        axis.text.x = element_text(angle=45, hjust = 1, size=6, color = "black"),
+        panel.spacing = unit(0, 'pt'),
+        legend.text=element_text(size=7),
+        legend.title=element_text(size=7),
+        legend.direction = "vertical",
+        legend.position = c(0.97, -0.19),
+        legend.justification = c(0.4, 0),
+        legend.background = element_blank()) +
+  guides(fill = guide_colourbar(title="\nAverage\nstepwise\nmodule\ncompleteness", title.position="left", title.hjust=0.5, barwidth=0.8, barheight=3))
 ```
 
+```{r}
+text <- "<span style='font-size:10px'>USA isolate: </span> <span style='color:#ed1c24; font-size:14px;'>▲</span><br><span style='font-size:10px'>BWA isolate: </span> <span style='color:#6ca9d4; font-size:18px;'>●</span>"
+text.p <- textbox_grob(text)
+```
+
+
+```{r fig.height=9.0625, fig.width=6.875, message=FALSE, warning=FALSE}
+Figure <- ggarrange(plot + theme(plot.margin = unit(c(0.5,0,1.5,3), "lines")), 
+                    ggarrange(
+                      as_ggplot(get_legend(legend)) + theme(plot.margin = unit(c(-1,0,1,1), "lines")),
+                      as_ggplot(text.p) + theme(plot.margin = unit(c(0,0,2,1.5), "lines")),
+                      nrow=1, widths = c(0.8,0.2)),
+                    nrow = 2, heights = c(1,0.02))
+Figure
+ggsave(plot = Figure, filename = "data/Anvio8/Metabolic_Analysis/Fig_Tables/CorPGA_Heatmap.jpg", height = 9.0625, width = 6.875, device ='jpg', dpi = 600)
+```
 
 ## Pangenomic level analysis
 
@@ -604,6 +696,34 @@ output <- fasta_file_for_GC(Summary, "GC_00001776", output_path) #UreG
 output <- fasta_file_for_GC(Summary, "GC_00005747", output_path) #UreD Cgl
 output <- fasta_file_for_GC(Summary, "GC_00001801", output_path) #UreD
 ```
+
+```{r}
+library(seqinr)
+library(reshape2)
+
+output_path <- "data/Anvio8/Metabolic_Analysis/GC_fastas"
+file <- "GC_00000656.fasta"
+dist=dist.alignment(read.alignment(file.path(output_path, file),"fasta"), matrix = "identity")
+mat <- 100*(1-dist^2) # convert to identity percent since the dist matrix contains the squared root of the pairwise distances
+mat <- as.matrix(mat)
+df <- melt(mat)
+df$value <- as.numeric(df$value)
+df$Var1 <- sub(".*\\|(.*?)\\|.*", "\\1", df$Var1)
+df$Var2 <- sub(".*\\|(.*?)\\|.*", "\\1", df$Var2)
+
+ggplot(df, aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile() +
+  scale_fill_viridis(direction = -1, option = "A", begin = 0.2, limits=c(70, 100), na.value = 'white') +
+  labs(x="", y="") +
+  scale_y_discrete(expand=c(0,0), position = "right") +
+  scale_x_discrete(expand=c(0,0)) +
+  theme_bw() +
+  theme(axis.text.x = element_markdown(angle = 45, hjust = 1, size=6),
+        axis.text.y = element_markdown(size=6))
+```
+
+
+
 
 ## Blast Validations
 
