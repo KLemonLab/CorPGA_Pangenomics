@@ -491,7 +491,6 @@ Enrich_KO_References_Filtered <- get_KOs_not_in_enrich_modules(Modules, KOHits, 
 write_csv(Enrich_KO_References_Filtered, "data/Anvio8/Metabolic_Analysis/Enrichment_KOs/CorPGA_enriched_KOs_References_Filtered.csv")
 ```
 
-
 ## Code for Figures and Tables
 
 ### Code for Table 3
@@ -603,7 +602,6 @@ text <- "<span style='font-size:10px'>USA isolate: </span> <span style='color:#e
 text.p <- textbox_grob(text)
 ```
 
-
 ```{r fig.height=9.0625, fig.width=6.875, message=FALSE, warning=FALSE}
 Figure <- ggarrange(plot + theme(plot.margin = unit(c(0.5,0,1.5,3), "lines")), 
                     ggarrange(
@@ -617,14 +615,24 @@ ggsave(plot = Figure, filename = "data/Anvio8/Metabolic_Analysis/Fig_Tables/CorP
 
 ## Pangenomic level analysis
 
-This list includes a total of 103 genomes: the 102 *Corynebacterium* genomes selected for metabolic analysis (Cac_ATCC_49726 & Cps_090104 were excluded for this analysis) plus *C glutamicum* ATCC 13032 [GCF_000011325.1](https://www.ncbi.nlm.nih.gov/nuccore/NC_003450.3).
+This list includes a total of 107 genomes: the 102 *Corynebacterium* genomes selected for metabolic analysis (Cac_ATCC_49726 & Cps_090104 were excluded for this analysis) plus:
+
+-   Corynebacterium glutamicum ATCC 13032 (Kyowa Hakko) ([GCF_000011325.1](https://www.ncbi.nlm.nih.gov/nuccore/NC_003450.3))
+
+-   Corynebacterium diphtheriae NCTC11397 ([GCF_001457455.1](https://www.ncbi.nlm.nih.gov/nuccore/983357513))
+
+-   Corynebacterium simulans PES1 ([GCF_001586215.1](https://www.ncbi.nlm.nih.gov/nuccore/1011117755))
+
+-   Corynebacterium kroppenstedtii DSM 44385 ([GCF_000023145.1](https://www.ncbi.nlm.nih.gov/nuccore/237784637))
+
+-   Corynebacterium amycolatum FDAARGOS_1108 ([GCF_016728725.1](https://www.ncbi.nlm.nih.gov/nuccore/1959980970))
 
 ```{bash, eval = FALSE}
 #conda activate anvio-dev
 
 path_i="data/Anvio8/Pangenomic_Analysis"
 
-anvi-gen-genomes-storage -e "data/genome_lists/CorPGA_Anvio_GenomeList_v01b.txt" -o $path_i/CorPGA-All4CorCgl-GENOMES.db --gene-caller Prodigal
+anvi-gen-genomes-storage -e "data/genome_lists/CorPGA_Anvio_GenomeList_v01c.txt" -o $path_i/CorPGA-All4CorCgl-GENOMES.db --gene-caller Prodigal
 
 anvi-db-info $path_i/CorPGA-All4CorCgl-GENOMES.db
 
@@ -713,106 +721,13 @@ df$Var2 <- sub(".*\\|(.*?)\\|.*", "\\1", df$Var2)
 
 ggplot(df, aes(x=Var1, y=Var2, fill=value)) + 
   geom_tile() +
-  scale_fill_viridis(direction = -1, option = "A", begin = 0.2, limits=c(70, 100), na.value = 'white') +
+  scale_fill_viridis(direction = -1, option = "A", begin = 0.2, limits=c(40, 100), na.value = 'white') +
   labs(x="", y="") +
   scale_y_discrete(expand=c(0,0), position = "right") +
   scale_x_discrete(expand=c(0,0)) +
   theme_bw() +
   theme(axis.text.x = element_markdown(angle = 45, hjust = 1, size=6),
         axis.text.y = element_markdown(size=6))
-```
-
-
-
-
-## Blast Validations
-
-```{bash}
-#| eval: FALSE
-
-path_o="data/Anvio8/Metabolic_Analysis/Blast_Validations/Databases"
-mkdir -p "$path_o"
-
-path_i="data/Anvio8/Prokka_out/"
-./scripts/process_files_forblastDB.sh $path_i .fna $path_o "NovCor_FullSequence"
-./scripts/process_files_forblastDB.sh $path_i .ffn $path_o "NovCor_Annotated_nt"
-./scripts/process_files_forblastDB.sh $path_i .faa $path_o "NovCor_Annotated_aa"
-
-path_i="data/Anvio8/Parsed_NCBI/"
-./scripts/process_files_forblastDB.sh $path_i .fa $path_o "NCBIStrains_FullSequence"
-```
-
-The directory "data/Anvio8/Metabolic_Analysis/NovCor_v03/Blast_Validations/Databases" had to be moved out of Box for the makeblastdb command to work
-
-```{bash}
-#| eval: FALSE
-
-#cd <local/path/Blast_Validations/Databases>
-
-makeblastdb -in NovCor_FullSequence -title "NovCor_FullSequence" -input_type fasta -parse_seqids -dbtype 'nucl'
-makeblastdb -in NovCor_Annotated_nt -title "NovCor_Annotated_nt" -input_type fasta -parse_seqids -dbtype 'nucl'
-makeblastdb -in NovCor_Annotated_aa -title "NovCor_Annotated_aa" -input_type fasta -parse_seqids -dbtype 'prot'
-
-makeblastdb -in NCBIStrains_FullSequence -title "NCBIStrains_FullSequence" -input_type fasta -parse_seqids -dbtype 'nucl'
-```
-
-```{bash}
-#| eval: FALSE
-
-path_o="data/Anvio8/Metabolic_Analysis/Blast_Validations"
-
-tblastn -db $path_o/Databases/NovCor_FullSequence \
-        -query $path_o/Cgl_gdhA.faa \
-        -out $path_o/Cgl_gdhA_vs_NovCor_FullSequence.csv \
-        -outfmt "10 std qcovs delim=,"
-        
-tblastn -db $path_o/Databases/NovCor_Annotated_nt \
-        -query $path_o/Cgl_gdhA.faa \
-        -out $path_o/Cgl_gdhA_vs_NovCor_Annotated_nt.csv \
-        -outfmt "10 std qcovs delim=,"       
-
-blastp -db $path_o/Databases/NovCor_Annotated_aa \
-        -query $path_o/Cgl_gdhA.faa \
-        -out $path_o/Cgl_gdhA_vs_NovCor_Annotated_aa.csv \
-        -outfmt "10 std qcovs delim=,"  
-        
-tblastn -db $path_o/Databases/NCBIStrains_FullSequence \
-        -query $path_o/Cgl_gdhA.faa \
-        -out $path_o/Cgl_gdhA_NCBIStrains_vs_FullSequence.csv \
-        -outfmt "10 std qcovs delim=,"
-        
-        
-tblastn -db $path_o/Databases/NovCor_FullSequence \
-        -query $path_o/Cgl_urease.faa \
-        -out $path_o/Cgl_urease_vs_NovCor_FullSequence.csv \
-        -outfmt "10 std qcovs delim=,"
-        
-tblastn -db $path_o/Databases/NovCor_Annotated_nt \
-        -query $path_o/Cgl_urease.faa \
-        -out $path_o/Cgl_urease_vs_NovCor_Annotated_nt.csv \
-        -outfmt "10 std qcovs delim=,"       
-
-blastp -db $path_o/Databases/NovCor_Annotated_aa \
-        -query $path_o/Cgl_urease.faa \
-        -out $path_o/Cgl_urease_vs_NovCor_Annotated_aa.csv \
-        -outfmt "10 std qcovs delim=,"  
-        
-tblastn -db $path_o/Databases/NCBIStrains_FullSequence \
-        -query $path_o/Cgl_urease.faa \
-        -out $path_o/Cgl_urease_NCBIStrains_vs_FullSequence.csv \
-        -outfmt "10 std qcovs delim=,"
-```
-
-```{r}
-Cgl_gdhA_vs_NovCor_FullSequence <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_gdhA_vs_NovCor_FullSequence.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
-Cgl_gdhA_vs_NovCor_Annotated_nt <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_gdhA_vs_NovCor_Annotated_nt.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
-Cgl_gdhA_vs_NovCor_Annotated_aa <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_gdhA_vs_NovCor_Annotated_aa.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
-Cgl_gdhA_vs_NovCor_FullSequence <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_gdhA_vs_NovCor_FullSequence.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
-
-Cgl_urease_vs_NovCor_FullSequence <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_urease_vs_NovCor_FullSequence.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
-Cgl_urease_vs_NovCor_Annotated_nt <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_urease_vs_NovCor_Annotated_nt.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
-Cgl_urease_vs_NovCor_Annotated_aa <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_urease_vs_NovCor_Annotated_aa.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
-Cgl_urease_vs_NovCor_FullSequence <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_urease_vs_NovCor_FullSequence.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
 ```
 
 <img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
