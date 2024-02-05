@@ -58,7 +58,6 @@ M00854_M00855 <- c("K00963", "K12447", "K22920", "K00693", "K00750", "K13679", "
 Modules <- Modules %>%  
   complete(db_name, nesting(module_category, module_subcategory, module)) %>%  
   mutate(stepwise_module_completeness = ifelse(is.na(stepwise_module_completeness), 0, stepwise_module_completeness))
-
 ```
 
 
@@ -127,13 +126,15 @@ is_KO_present_in_all <- function(df, KO, species, num_genomes) {
   #return(result)
 }
 
-KO <- c("K01956")
+KO <- c("K01915")
 
 is_KO_present_in_all(KOHits, KO, "Cac", 33)
 is_KO_present_in_all(KOHits, KO, "Cpr", 19)
 is_KO_present_in_all(KOHits, KO, "Cps", 42)
 is_KO_present_in_all(KOHits, KO, "Ctu", 8)
 is_KO_present_in_all(KOHits, KO, "Cgl", 1)
+
+is_KO_present_in_all(KOHits, KO, "Dpi", 27)
 ```
 
 ### What is the average number copies a KO has for all species?
@@ -247,4 +248,94 @@ calls_GCF_000011325.1 <- read_delim("data/Anvio8/Parsed_NCBI/calls_GCF_000011325
 unique_genes_for_Module(KOHits, M00854, "Cgl_ATCC_13032", annot_GCF_000011325.1, calls_GCF_000011325.1)
 unique_genes_for_Module(KOHits, M00855, "Cgl_ATCC_13032", annot_GCF_000011325.1, calls_GCF_000011325.1)
 unique_genes_for_Module(KOHits, M00854_M00855, "Cgl_ATCC_13032", annot_GCF_000011325.1, calls_GCF_000011325.1)
+```
+
+## Blast Validations
+
+```{bash}
+#| eval: FALSE
+
+path_o="data/Anvio8/Metabolic_Analysis/Blast_Validations/Databases"
+mkdir -p "$path_o"
+
+path_i="data/Anvio8/Prokka_out/"
+./scripts/process_files_forblastDB.sh $path_i .fna $path_o "NovCor_FullSequence"
+./scripts/process_files_forblastDB.sh $path_i .ffn $path_o "NovCor_Annotated_nt"
+./scripts/process_files_forblastDB.sh $path_i .faa $path_o "NovCor_Annotated_aa"
+
+path_i="data/Anvio8/Parsed_NCBI/"
+./scripts/process_files_forblastDB.sh $path_i .fa $path_o "NCBIStrains_FullSequence"
+```
+
+The directory "data/Anvio8/Metabolic_Analysis/NovCor_v03/Blast_Validations/Databases" had to be moved out of Box for the makeblastdb command to work
+
+```{bash}
+#| eval: FALSE
+
+#cd <local/path/Blast_Validations/Databases>
+
+makeblastdb -in NovCor_FullSequence -title "NovCor_FullSequence" -input_type fasta -parse_seqids -dbtype 'nucl'
+makeblastdb -in NovCor_Annotated_nt -title "NovCor_Annotated_nt" -input_type fasta -parse_seqids -dbtype 'nucl'
+makeblastdb -in NovCor_Annotated_aa -title "NovCor_Annotated_aa" -input_type fasta -parse_seqids -dbtype 'prot'
+
+makeblastdb -in NCBIStrains_FullSequence -title "NCBIStrains_FullSequence" -input_type fasta -parse_seqids -dbtype 'nucl'
+```
+
+```{bash}
+#| eval: FALSE
+
+path_o="data/Anvio8/Metabolic_Analysis/Blast_Validations"
+
+tblastn -db $path_o/Databases/NovCor_FullSequence \
+        -query $path_o/Cgl_gdhA.faa \
+        -out $path_o/Cgl_gdhA_vs_NovCor_FullSequence.csv \
+        -outfmt "10 std qcovs delim=,"
+        
+tblastn -db $path_o/Databases/NovCor_Annotated_nt \
+        -query $path_o/Cgl_gdhA.faa \
+        -out $path_o/Cgl_gdhA_vs_NovCor_Annotated_nt.csv \
+        -outfmt "10 std qcovs delim=,"       
+
+blastp -db $path_o/Databases/NovCor_Annotated_aa \
+        -query $path_o/Cgl_gdhA.faa \
+        -out $path_o/Cgl_gdhA_vs_NovCor_Annotated_aa.csv \
+        -outfmt "10 std qcovs delim=,"  
+        
+tblastn -db $path_o/Databases/NCBIStrains_FullSequence \
+        -query $path_o/Cgl_gdhA.faa \
+        -out $path_o/Cgl_gdhA_NCBIStrains_vs_FullSequence.csv \
+        -outfmt "10 std qcovs delim=,"
+        
+        
+tblastn -db $path_o/Databases/NovCor_FullSequence \
+        -query $path_o/Cgl_urease.faa \
+        -out $path_o/Cgl_urease_vs_NovCor_FullSequence.csv \
+        -outfmt "10 std qcovs delim=,"
+        
+tblastn -db $path_o/Databases/NovCor_Annotated_nt \
+        -query $path_o/Cgl_urease.faa \
+        -out $path_o/Cgl_urease_vs_NovCor_Annotated_nt.csv \
+        -outfmt "10 std qcovs delim=,"       
+
+blastp -db $path_o/Databases/NovCor_Annotated_aa \
+        -query $path_o/Cgl_urease.faa \
+        -out $path_o/Cgl_urease_vs_NovCor_Annotated_aa.csv \
+        -outfmt "10 std qcovs delim=,"  
+        
+tblastn -db $path_o/Databases/NCBIStrains_FullSequence \
+        -query $path_o/Cgl_urease.faa \
+        -out $path_o/Cgl_urease_NCBIStrains_vs_FullSequence.csv \
+        -outfmt "10 std qcovs delim=,"
+```
+
+```{r}
+Cgl_gdhA_vs_NovCor_FullSequence <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_gdhA_vs_NovCor_FullSequence.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
+Cgl_gdhA_vs_NovCor_Annotated_nt <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_gdhA_vs_NovCor_Annotated_nt.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
+Cgl_gdhA_vs_NovCor_Annotated_aa <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_gdhA_vs_NovCor_Annotated_aa.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
+Cgl_gdhA_vs_NovCor_FullSequence <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_gdhA_vs_NovCor_FullSequence.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
+
+Cgl_urease_vs_NovCor_FullSequence <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_urease_vs_NovCor_FullSequence.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
+Cgl_urease_vs_NovCor_Annotated_nt <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_urease_vs_NovCor_Annotated_nt.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
+Cgl_urease_vs_NovCor_Annotated_aa <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_urease_vs_NovCor_Annotated_aa.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
+Cgl_urease_vs_NovCor_FullSequence <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_urease_vs_NovCor_FullSequence.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
 ```
