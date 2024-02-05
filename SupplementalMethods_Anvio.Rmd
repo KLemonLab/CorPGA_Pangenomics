@@ -632,22 +632,22 @@ This list includes a total of 107 genomes: the 102 *Corynebacterium* genomes sel
 
 path_i="data/Anvio8/Pangenomic_Analysis"
 
-anvi-gen-genomes-storage -e "data/genome_lists/CorPGA_Anvio_GenomeList_v01c.txt" -o $path_i/CorPGA-All4CorCgl-GENOMES.db --gene-caller Prodigal
+anvi-gen-genomes-storage -e "data/genome_lists/CorPGA_Anvio_GenomeList_v01c.txt" -o $path_i/CorPGA-All4CorRefs-GENOMES.db --gene-caller Prodigal
 
-anvi-db-info $path_i/CorPGA-All4CorCgl-GENOMES.db
+anvi-db-info $path_i/CorPGA-All4CorRefs-GENOMES.db
 
-anvi-pan-genome -g $path_i/CorPGA-All4CorCgl-GENOMES.db \
-                -o $path_i/All4CorCgl -n PAN_All4CorCgl \
+anvi-pan-genome -g $path_i/CorPGA-All4CorRefs-GENOMES.db \
+                -o $path_i/All4CorRefs -n PAN_All4CorRefs \
                 --use-ncbi-blast --mcl-inflation 10  --num-threads 8 --I-know-this-is-not-a-good-idea
                 
-#Create a bin collection named All4CorCgl with all Core GCs for the 5 species using the visual interface:       
+#Create a bin collection named All4CorRefs with all Core GCs for the 5 species using the visual interface:       
 
-anvi-display-pan -p $path_i/All4CorCgl/PAN_All4CorCgl-PAN.db -g $path_i/CorPGA-All4CorCgl-GENOMES.db         
+anvi-display-pan -p $path_i/All4CorRefs/PAN_All4CorRefs-PAN.db -g $path_i/CorPGA-All4CorRefs-GENOMES.db         
 
-anvi-summarize -p $path_i/All4CorCgl/PAN_All4CorCgl-PAN.db \
-               -g $path_i/CorPGA-All4CorCgl-GENOMES.db \
-               -o $path_i/All4CorCgl/Summaries \
-               -C All4CorCgl
+anvi-summarize -p $path_i/All4CorRefs/PAN_All4CorRefs-PAN.db \
+               -g $path_i/CorPGA-All4CorRefs-GENOMES.db \
+               -o $path_i/All4CorRefs/Summaries \
+               -C All4CorRefs
 ```
 
 ```{r}
@@ -669,7 +669,7 @@ fasta_file_for_GC <- function(Summary, GC, output_path) {
   return(data)
 }
 
-Summary <- read_delim("data/Anvio8/Pangenomic_Analysis/All4CorCgl/Summaries/PAN_All4CorCgl_gene_clusters_summary.txt.gz", show_col_types = FALSE)
+Summary <- read_delim("data/Anvio8/Pangenomic_Analysis/All4CorRefs/Summaries/PAN_All4CorRefs_gene_clusters_summary.txt.gz", show_col_types = FALSE)
 
 output_path <- "data/Anvio8/Metabolic_Analysis/GC_fastas"
 output <- fasta_file_for_GC(Summary, "GC_00000328", output_path) #glnA
@@ -706,9 +706,6 @@ output <- fasta_file_for_GC(Summary, "GC_00001801", output_path) #UreD
 ```
 
 ```{r}
-library(seqinr)
-library(reshape2)
-
 output_path <- "data/Anvio8/Metabolic_Analysis/GC_fastas"
 file <- "GC_00000656.fasta"
 dist=dist.alignment(read.alignment(file.path(output_path, file),"fasta"), matrix = "identity")
