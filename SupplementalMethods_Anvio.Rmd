@@ -617,15 +617,15 @@ ggsave(plot = Figure, filename = "data/Anvio8/Metabolic_Analysis/Fig_Tables/CorP
 
 This list includes a total of 107 genomes: the 102 *Corynebacterium* genomes selected for metabolic analysis (Cac_ATCC_49726 & Cps_090104 were excluded for this analysis) plus:
 
--   Corynebacterium glutamicum ATCC 13032 (Kyowa Hakko) ([GCF_000011325.1](https://www.ncbi.nlm.nih.gov/nuccore/NC_003450.3))
+-   *Corynebacterium glutamicum* ATCC 13032 (Kyowa Hakko) ([GCF_000011325.1](https://www.ncbi.nlm.nih.gov/nuccore/NC_003450.3))
 
--   Corynebacterium diphtheriae NCTC11397 ([GCF_001457455.1](https://www.ncbi.nlm.nih.gov/nuccore/983357513))
+-   *Corynebacterium diphtheriae* NCTC11397 ([GCF_001457455.1](https://www.ncbi.nlm.nih.gov/nuccore/983357513))
 
--   Corynebacterium simulans PES1 ([GCF_001586215.1](https://www.ncbi.nlm.nih.gov/nuccore/1011117755))
+-   *Corynebacterium simulans* PES1 ([GCF_001586215.1](https://www.ncbi.nlm.nih.gov/nuccore/1011117755))
 
--   Corynebacterium kroppenstedtii DSM 44385 ([GCF_000023145.1](https://www.ncbi.nlm.nih.gov/nuccore/237784637))
+-   *Corynebacterium kroppenstedtii* DSM 44385 ([GCF_000023145.1](https://www.ncbi.nlm.nih.gov/nuccore/237784637))
 
--   Corynebacterium amycolatum FDAARGOS_1108 ([GCF_016728725.1](https://www.ncbi.nlm.nih.gov/nuccore/1959980970))
+-   *Corynebacterium amycolatum* FDAARGOS_1108 ([GCF_016728725.1](https://www.ncbi.nlm.nih.gov/nuccore/1959980970))
 
 ```{bash, eval = FALSE}
 #conda activate anvio-dev
@@ -639,8 +639,11 @@ anvi-db-info $path_i/CorPGA-All4CorRefs-GENOMES.db
 anvi-pan-genome -g $path_i/CorPGA-All4CorRefs-GENOMES.db \
                 -o $path_i/All4CorRefs -n PAN_All4CorRefs \
                 --use-ncbi-blast --mcl-inflation 10  --num-threads 8 --I-know-this-is-not-a-good-idea
-                
-#Create a bin collection named All4CorRefs with all Core GCs for the 5 species using the visual interface:       
+```
+
+Create a bin collection named All4CorRefs with all Core GCs for all the *Corynebacterium* species using the visual interface. We do this because in order to use `anvi-summarize` we need to have at least one bin.
+```{bash, eval = FALSE}
+#conda activate anvio-dev
 
 anvi-display-pan -p $path_i/All4CorRefs/PAN_All4CorRefs-PAN.db -g $path_i/CorPGA-All4CorRefs-GENOMES.db         
 
