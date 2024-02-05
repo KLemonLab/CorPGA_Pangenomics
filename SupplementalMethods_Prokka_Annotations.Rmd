@@ -170,12 +170,12 @@ done
 
 ## Fixing annotation files
 
-The parsed annotation files from the original NCBI annotations describe the annotation source as "prodigal", but in the rest of the files that we have manually annotated describe the source as "Prodigal". Later anvi'o will not be able to cluster together genomes with different annotation sources, so we need a consistent name. Here we iterate through all `annot_*.txt` files in the folder and perform text replacement from "prodigal" to "Prodigal".
+The parsed annotation files from the original NCBI annotations describe the annotation source as "prodigal", but in the rest of the files that we have manually annotated describe the source as "Prodigal". Later anvi'o will not be able to cluster together genomes with different annotation sources, so we need a consistent name. Here we iterate through all `*.txt` files in the folder and perform text replacement from "prodigal" to "Prodigal".
 
 ```{bash}
 path_i="data/Anvio8/Parsed_NCBI"
 
-for file in "$path_i"/annot_*; do
+for file in "$path_i"/*.txt; do
     if [ -f "$file" ]; then
         # Create a temporary file for the updated content
         tmp_file=$(mktemp)
