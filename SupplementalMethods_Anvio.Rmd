@@ -655,12 +655,11 @@ anvi-summarize -p $path_i/All4CorRefs/PAN_All4CorRefs-PAN.db \
                -C All4CorRefs
 ```
 
-```{r}
-Summary <- read_delim("data/Anvio8/Pangenomic_Analysis/All4CorRefs/Summaries/PAN_All4CorRefs_gene_clusters_summary.txt.gz", show_col_types = FALSE)
-```
+### Code to explore GCs of interest
 
+This function allows to explored the generated summary dataset for any GC of interest. It generates a subset of the dataset, a fasta file with the protein alignment and a identity percent distance matrix foe any selected GC:
 ```{r}
-fasta_file_for_GC <- function(Summary, GC, output_path) {
+info_for_GC <- function(Summary, output_path, GC, gene) {
   data <- Summary %>% 
     filter(gene_cluster_id == GC) %>% 
     mutate(fasta_lines = paste0(">", gene_cluster_id, "|", genome_name, "|callers_id:", gene_callers_id, "\n", aa_sequence))
@@ -668,44 +667,45 @@ fasta_file_for_GC <- function(Summary, GC, output_path) {
   if (!file.exists(output_path)) {
     dir.create(output_path, recursive = TRUE)
   }
-  output_fasta <- file.path(output_path, paste0(GC, ".fasta"))
-  output_csv <- file.path(output_path, paste0(GC, ".csv"))
+  output_fasta <- file.path(output_path, paste0(GC, "_", gene, ".fasta"))
+  output_csv <- file.path(output_path, paste0(GC, "_", gene, ".csv"))
   
   writeLines(data$fasta_lines, con = output_fasta)
   write_csv(data, file = output_csv)
-
+  
+  dist=dist.alignment(read.alignment(output_fasta,"fasta"), matrix = "identity")
+  mat <- 100*(1-dist^2) # convert to identity percent since the dist matrix contains the squared root of the pairwise distances
+  mat <- as.matrix(mat)
+  df <- melt(mat)
+  df$value <- as.numeric(df$value)
+  df$Var1 <- sub(".*\\|(.*?)\\|.*", "\\1", df$Var1)
+  df$Var2 <- sub(".*\\|(.*?)\\|.*", "\\1", df$Var2)
+  
+  plot <- ggplot(df, aes(x=Var1, y=Var2, fill=value)) + 
+    geom_tile() +
+    scale_fill_viridis(direction = -1, option = "A", begin = 0.2, limits=c(40, 100), na.value = 'white') +
+    labs(x="", y="") +
+    scale_y_discrete(expand=c(0,0), position = "right") +
+    scale_x_discrete(expand=c(0,0)) +
+    theme_bw() +
+    theme(axis.text.x = element_markdown(angle = 45, hjust = 1, size=6),
+          axis.text.y = element_markdown(size=6))
+  
+  output_plot <- file.path(output_path, paste0(GC, "_", gene, ".jpg"))
+  ggsave(plot, filename = output_plot, height = 20, width = 20, device ='jpg', dpi = 600)
+  
   cat(GC, "files created with a total of", nrow(data), "aa sequences. \n")
-  return(data)
 }
-
-Summary <- read_delim("data/Anvio8/Pangenomic_Analysis/All4CorRefs/Summaries/PAN_All4CorRefs_gene_clusters_summary.txt.gz", show_col_types = FALSE)
-
-output_path <- "data/Anvio8/Metabolic_Analysis/GC_fastas"
-output <- fasta_file_for_GC(Summary, "GC_00000328", output_path) #glnA
-
 ```
 
 ```{r}
+Summary <- read_delim("data/Anvio8/Pangenomic_Analysis/All4CorRefs/Summaries/PAN_All4CorRefs_gene_clusters_summary.txt.gz", show_col_types = FALSE)
 output_path <- "data/Anvio8/Metabolic_Analysis/GC_fastas"
-file <- "GC_00000656.fasta"
-dist=dist.alignment(read.alignment(file.path(output_path, file),"fasta"), matrix = "identity")
-mat <- 100*(1-dist^2) # convert to identity percent since the dist matrix contains the squared root of the pairwise distances
-mat <- as.matrix(mat)
-df <- melt(mat)
-df$value <- as.numeric(df$value)
-df$Var1 <- sub(".*\\|(.*?)\\|.*", "\\1", df$Var1)
-df$Var2 <- sub(".*\\|(.*?)\\|.*", "\\1", df$Var2)
 
-ggplot(df, aes(x=Var1, y=Var2, fill=value)) + 
-  geom_tile() +
-  scale_fill_viridis(direction = -1, option = "A", begin = 0.2, limits=c(40, 100), na.value = 'white') +
-  labs(x="", y="") +
-  scale_y_discrete(expand=c(0,0), position = "right") +
-  scale_x_discrete(expand=c(0,0)) +
-  theme_bw() +
-  theme(axis.text.x = element_markdown(angle = 45, hjust = 1, size=6),
-        axis.text.y = element_markdown(size=6))
+#Example
+info_for_GC(Summary, output_path, "GC_00000328", "glnA")
 ```
+
 
 <img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
 
