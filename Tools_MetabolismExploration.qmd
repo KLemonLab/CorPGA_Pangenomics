@@ -9,7 +9,7 @@ library(tidyverse)
 ## Data input
 
 ```{r}
-Summary <- read_delim("data/Anvio8/Pangenomic_Analysis/All4CorCgl/Summaries/PAN_All4CorCgl_gene_clusters_summary.txt.gz", show_col_types = FALSE)
+Summary <- read_delim("data/Anvio8/Pangenomic_Analysis/All4CorRefs/Summaries/PAN_All4CorRefs_gene_clusters_summary.txt.gz", show_col_types = FALSE)
 
 Modules <- read_delim("data/Anvio8/Metabolic_Analysis/CorPGA_modules.txt", show_col_types = FALSE, col_types = cols(unique_enzymes_hit_counts = col_character(), gene_caller_ids_in_module = col_character()))
 KOHits <- read_delim("data/Anvio8/Metabolic_Analysis/CorPGA_hits.txt", show_col_types = FALSE)

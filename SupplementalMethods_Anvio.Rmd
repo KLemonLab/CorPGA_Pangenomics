@@ -645,12 +645,18 @@ Create a bin collection named All4CorRefs with all Core GCs for all the *Coryneb
 ```{bash, eval = FALSE}
 #conda activate anvio-dev
 
+path_i="data/Anvio8/Pangenomic_Analysis"
+
 anvi-display-pan -p $path_i/All4CorRefs/PAN_All4CorRefs-PAN.db -g $path_i/CorPGA-All4CorRefs-GENOMES.db         
 
 anvi-summarize -p $path_i/All4CorRefs/PAN_All4CorRefs-PAN.db \
                -g $path_i/CorPGA-All4CorRefs-GENOMES.db \
                -o $path_i/All4CorRefs/Summaries \
                -C All4CorRefs
+```
+
+```{r}
+Summary <- read_delim("data/Anvio8/Pangenomic_Analysis/All4CorRefs/Summaries/PAN_All4CorRefs_gene_clusters_summary.txt.gz", show_col_types = FALSE)
 ```
 
 ```{r}
@@ -676,36 +682,7 @@ Summary <- read_delim("data/Anvio8/Pangenomic_Analysis/All4CorRefs/Summaries/PAN
 
 output_path <- "data/Anvio8/Metabolic_Analysis/GC_fastas"
 output <- fasta_file_for_GC(Summary, "GC_00000328", output_path) #glnA
-output <- fasta_file_for_GC(Summary, "GC_00000120", output_path) #gdhA
-output <- fasta_file_for_GC(Summary, "GC_00000515", output_path) #ilvA
 
-output <- fasta_file_for_GC(Summary, "GC_00000166", output_path) #aroT
-output <- fasta_file_for_GC(Summary, "GC_00000814", output_path) #aspT
-output <- fasta_file_for_GC(Summary, "GC_00000680", output_path) #serC
-output <- fasta_file_for_GC(Summary, "GC_00000732", output_path) #dapC
-output <- fasta_file_for_GC(Summary, "GC_00000889", output_path) #argD
-output <- fasta_file_for_GC(Summary, "GC_00000164", output_path) #hisC
-output <- fasta_file_for_GC(Summary, "GC_00000699", output_path) #ilvE
-output <- fasta_file_for_GC(Summary, "GC_00000782", output_path) #metC
-output <- fasta_file_for_GC(Summary, "GC_00006799", output_path) #avtA
-output <- fasta_file_for_GC(Summary, "GC_00000648", output_path) #alaT
-
-output <- fasta_file_for_GC(Summary, "GC_00000656", output_path) #hisB
-
-output <- fasta_file_for_GC(Summary, "GC_00000985", output_path) #argC
-output <- fasta_file_for_GC(Summary, "GC_00000984", output_path) #argJ
-output <- fasta_file_for_GC(Summary, "GC_00000986", output_path) #argB
-output <- fasta_file_for_GC(Summary, "GC_00000889", output_path) #argD
-
-output <- fasta_file_for_GC(Summary, "GC_00001785", output_path) #UreA
-output <- fasta_file_for_GC(Summary, "GC_00001786", output_path) #UreB
-output <- fasta_file_for_GC(Summary, "GC_00001789", output_path) #UreC
-output <- fasta_file_for_GC(Summary, "GC_00006375", output_path) #UreE
-output <- fasta_file_for_GC(Summary, "GC_00006213", output_path) #UreF Cgl
-output <- fasta_file_for_GC(Summary, "GC_00001796", output_path) #UreF 
-output <- fasta_file_for_GC(Summary, "GC_00001776", output_path) #UreG
-output <- fasta_file_for_GC(Summary, "GC_00005747", output_path) #UreD Cgl
-output <- fasta_file_for_GC(Summary, "GC_00001801", output_path) #UreD
 ```
 
 ```{r}
