@@ -9,6 +9,8 @@ library(tidyverse)
 ## Data input
 
 ```{r}
+annot_Cgl <- read_delim("data/Anvio8/Parsed_NCBI/annot_GCF_000011325.1.txt", delim = "\t", escape_double = FALSE, trim_ws = TRUE)
+
 Summary <- read_delim("data/Anvio8/Pangenomic_Analysis/All4CorRefs/Summaries/PAN_All4CorRefs_gene_clusters_summary.txt.gz", show_col_types = FALSE)
 
 Modules <- read_delim("data/Anvio8/Metabolic_Analysis/CorPGA_modules.txt", show_col_types = FALSE, col_types = cols(unique_enzymes_hit_counts = col_character(), gene_caller_ids_in_module = col_character()))
