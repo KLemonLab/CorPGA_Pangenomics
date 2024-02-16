@@ -10,8 +10,10 @@ library(tidyverse)
 
 ```{r}
 annot_Cgl <- read_delim("data/Anvio8/Parsed_NCBI/annot_GCF_000011325.1.txt", delim = "\t", escape_double = FALSE, trim_ws = TRUE)
+annot_Cgl$genome_name <- "Cgl_ATCC_13032"
 
 Summary <- read_delim("data/Anvio8/Pangenomic_Analysis/All4CorRefs/Summaries/PAN_All4CorRefs_gene_clusters_summary.txt.gz", show_col_types = FALSE)
+Summary = left_join(Summary,annot_Cgl, by = join_by(genome_name, gene_callers_id))
 
 Modules <- read_delim("data/Anvio8/Metabolic_Analysis/CorPGA_modules.txt", show_col_types = FALSE, col_types = cols(unique_enzymes_hit_counts = col_character(), gene_caller_ids_in_module = col_character()))
 KOHits <- read_delim("data/Anvio8/Metabolic_Analysis/CorPGA_hits.txt", show_col_types = FALSE)
@@ -52,8 +54,7 @@ M00854_M00855 <- c("K00963", "K12447", "K22920", "K00693", "K00750", "K13679", "
 
 ## Exploration of the KEGG Results
 
-### Average completion score for a Module in each species
-
+### Average completion score for a list of modules for each species
 
 ```{r}
 # Complete the modules dataset with rows for strains with completely missing modules and change NA to = 0
@@ -92,11 +93,9 @@ result_df <- pmap_dfr(combinations, ~ tibble(ModuleID = ..1, Species = ..2,
                                              Average_Completion = average_Module_completion(Modules, ..1, ..2)))
 
 # Pivot the result data frame to have ModuleIDs as rows and species as columns
-final_df <- result_df %>%
+final_df_modules <- result_df %>%
   pivot_wider(names_from = Species, values_from = Average_Completion)
-
 ```
-
 
 Table with average_stepwise_module_completeness for all "Amino acid metabolism" modules. 
 ```{r}
@@ -114,6 +113,105 @@ AA_ModulesWide <- AA_Modules %>%
 
 ```
 
+### Number of genomes for each species a list of KOs is present
+
+```{r, warning=FALSE}
+# Function to calculate average module completion for a given Module and Species
+
+number_genomes_KO_is_present <- function(df, KO, species) {
+  result <- df %>%
+    filter(grepl(species, db_name)) %>%
+    filter(enzyme %in% KO) %>%
+    distinct(genome_name) 
+
+  return(nrow(result))
+}
+
+# Example use
+#number_genomes_KO_is_present(KOHits, "K00957", "Cpr")
+
+# List of ModuleIDs
+KOList <- c("K00817", "K01693", "K00821", "K00600", "K00262", "K01915", "K00265", "K00266", "K00259", "K14260", "K01953", "K01425", "K01424", "K01956", "K01955", "K01430", "K01429", "K01428", "K03187", "K03188", "K03189", "K03190", "K11959", "K11960", "K11962", "K03320")
+
+KOList <- c("K07090", "K03795", "K00956", "K00957", "K00390", "K00392", "K00528")
+
+# List of species
+species_values <- c("Cpr", "Cps", "Cac", "Ctu", "Cgl", "Cdi", "Csi", "Ckr", "Cam", "Can", "Sau", "Sep", "Spn", "Dpi")
+
+# Generate all combinations of ModuleIDs and species
+combinations <- expand.grid(KOID = KOList, Species = species_values)
+
+# Use purrr::pmap_dbl to apply the function to each combination and store the results in a data frame
+result_df <- pmap_dfr(combinations, ~ tibble(KOID = ..1, Species = ..2, 
+                                             Genome_Number = number_genomes_KO_is_present(KOHits, ..1, ..2)))
+
+# Pivot the result data frame to have ModuleIDs as rows and species as columns
+final_df_KOs <- result_df %>%
+  pivot_wider(names_from = Species, values_from = Genome_Number)
+```
+
+```{r}
+KOList <- c("K07090", "K03795", "K00956", "K00957", "K00390", "K00392", "K00528")
+
+KOselection <- Summary %>%
+  filter(KOfam_ACC %in% KOList) %>%
+  arrange(genome_name,gene_callers_id) %>%
+  mutate(KO_GC_id=paste(KOfam_ACC, gene_cluster_id, gene_callers_id, sep="_")) %>%
+  select(KO_GC_id, genome_name, gene_callers_id)
+
+KOselectionWide <- spread(KOselection, genome_name, gene_callers_id)
+KOselectionWide$KO_GC <- sub("_[^_]+$", "", KOselectionWide$KO_GC_id)
+
+KOselectionWide_summary <- KOselectionWide %>%
+  select(-KO_GC_id) %>%
+  group_by(KO_GC) %>%
+  summarise(across(everything(), ~ if (any(!is.na(.))) toString(na.omit(.)) else NA_character_)) %>%
+  arrange(desc(Cgl_ATCC_13032)) %>% 
+  separate(KO_GC, into = c("KO", "GC"), sep = "_", extra = "merge")
+
+write_csv(KOselectionWide_summary, file.path(dir, "SummaryARS.csv"))
+```
+
+
+### Number of genomes for each species a included in a list of GCs
+
+```{r, warning=FALSE}
+# Function to calculate average module completion for a given Module and Species
+
+number_genomes_GC_is_present <- function(df, GC, species) {
+  result <- df %>%
+    filter(grepl(species, genome_name)) %>%
+    filter(gene_cluster_id %in% GC) %>%
+    distinct(genome_name) 
+
+  return(nrow(result))
+}
+
+# Example use
+#number_genomes_GC_is_present(Summary, "GC_00004683", "Cpr")
+
+# List of ModuleIDs
+GCList <- c("GC_00000647", "GC_00000128", "GC_00000502","GC_00000644","GC_00000383", "GC_00000103", "GC_00000073", "GC_00000214", "GC_00001022", "GC_00003183", "GC_00005127", "GC_00005070", "GC_00000924", "GC_00000496", "GC_00004638", "GC_00000603", "GC_00000590", "GC_00000872", "GC_00006661", "GC_00009187", "GC_00000510", "GC_00000411", "GC_00000767", "GC_00008014", "GC_00009615", "GC_00006414", "GC_00010430", "GC_00009898", "GC_00011478", "GC_00001796", "GC_00004683", "GC_00001514", "GC_00002481", "GC_00002732", "GC_00007871", "GC_00001774", "GC_00001775", "GC_00001792", "GC_00007530", "GC_00001800", "GC_00007211", "GC_00001799", "GC_00009638", "GC_00008645", "GC_00001781", "GC_00007018", "GC_00006274", "GC_00001805", "GC_00008808", "GC_00007968")
+
+GCList <- c("GC_00001076", "GC_00008677", "GC_00001061", "GC_00001058", "GC_00002998", "GC_00000686", "GC_00000017")
+
+
+# List of species
+species_values <- c("Cpr", "Cps", "Cac", "Ctu", "Cgl", "Cdi", "Csi", "Ckr", "Cam")
+
+# Generate all combinations of ModuleIDs and species
+combinations <- expand.grid(GCID = GCList, Species = species_values)
+
+# Use purrr::pmap_dbl to apply the function to each combination and store the results in a data frame
+result_df <- pmap_dfr(combinations, ~ tibble(GCID = ..1, Species = ..2, 
+                                             GC_Number = number_genomes_GC_is_present(Summary, ..1, ..2)))
+
+# Pivot the result data frame to have ModuleIDs as rows and species as columns
+final_df_GCs <- result_df %>%
+  pivot_wider(names_from = Species, values_from = GC_Number)
+```
+
+
 
 ### Proportion of genomes in a species a given KO is present in
 
@@ -128,7 +226,7 @@ is_KO_present_in_all <- function(df, KO, species, num_genomes) {
   #return(result)
 }
 
-KO <- c("K01915")
+KO <- c("K00957")
 
 is_KO_present_in_all(KOHits, KO, "Cac", 33)
 is_KO_present_in_all(KOHits, KO, "Cpr", 19)
