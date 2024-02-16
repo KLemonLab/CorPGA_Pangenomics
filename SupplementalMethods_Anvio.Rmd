@@ -694,17 +694,70 @@ info_for_GC <- function(Summary, output_path, GC, gene) {
   output_plot <- file.path(output_path, paste0(GC, "_", gene, ".jpg"))
   ggsave(plot, filename = output_plot, height = 20, width = 20, device ='jpg', dpi = 600)
   
-  cat(GC, "files created with a total of", nrow(data), "aa sequences. \n")
+  num_seqs <- nrow(data)
+  num_genomes <- data$num_genomes_gene_cluster_has_hits[1]
+  protein_id <- data$accession[data$genome_name=="Cgl_ATCC_13032"]
+  KO <- data$KOfam_ACC[data$genome_name=="Cgl_ATCC_13032"]
+  index <- data$combined_homogeneity_index[1]
+
+  
+  cat(protein_id[1], gene, GC, KO[1], "has", num_seqs, "aa sequences across", num_genomes, "genomes with", index ,"combined homogeneity. \n")
 }
 ```
 
 ```{r}
-Summary <- read_delim("data/Anvio8/Pangenomic_Analysis/All4CorRefs/Summaries/PAN_All4CorRefs_gene_clusters_summary.txt.gz", show_col_types = FALSE)
 output_path <- "data/Anvio8/Metabolic_Analysis/GC_fastas"
 
-#Example
-info_for_GC(Summary, output_path, "GC_00000328", "glnA")
+annot_Cgl <- read_delim("data/Anvio8/Parsed_NCBI/annot_GCF_000011325.1.txt", delim = "\t", escape_double = FALSE, trim_ws = TRUE) %>%
+  select(-source, -e_value)
+annot_Cgl$genome_name <- "Cgl_ATCC_13032"
+
+Summary <- read_delim("data/Anvio8/Pangenomic_Analysis/All4CorRefs/Summaries/PAN_All4CorRefs_gene_clusters_summary.txt.gz", show_col_types = FALSE)
+Summary = left_join(Summary,annot_Cgl, by = join_by(genome_name, gene_callers_id))
 ```
+
+```{r}
+info_for_GC(Summary, output_path, "GC_00000647", "aroT") #Aromatics AT that complements M00024 and M00025
+info_for_GC(Summary, output_path, "GC_00000128", "hisC") #AT present in all
+info_for_GC(Summary, output_path, "GC_00000502", "hisB") #GC present, but K01693 annotation missing in Cac_KPL2660, Cac_KPL3802, Cac_KPL3926 and all Ctu
+info_for_GC(Summary, output_path, "GC_00000644", "argD") #AT in the Arg/Lys pathways missing in some Ctus
+
+info_for_GC(Summary, output_path, "GC_00000383", "glyA") #Present in all
+info_for_GC(Summary, output_path, "GC_00000924", "ald") #Alanine dehydrogenase
+info_for_GC(Summary, output_path, "GC_00000496", "alaT") #AT present in all
+info_for_GC(Summary, output_path, "GC_00000603", "aspT") #AT present in all (No KO number)
+info_for_GC(Summary, output_path, "GC_00000103", "gdhA") #GDH Partial extra copy in Cac_KPL3802. Only partial in Cpr_KPL2804, Cpr_KPL2811, Cpr_KPL3889
+info_for_GC(Summary, output_path, "GC_00005127", "gltB") #GOGAT Only in Cgl, Ckr and Cam
+info_for_GC(Summary, output_path, "GC_00005070", "gltD") #GOGAT Only in Cgl, Ckr and Cam
+info_for_GC(Summary, output_path, "GC_00000073", "glnA") #
+info_for_GC(Summary, output_path, "GC_00000214", "glnA2") #
+info_for_GC(Summary, output_path, "GC_00001022", "glnAx") #
+info_for_GC(Summary, output_path, "GC_00003183", "glnAx") #
+info_for_GC(Summary, output_path, "GC_00004638", "avtA") #Only in Cgl, Cdi, Ckr and Cam
+info_for_GC(Summary, output_path, "GC_00000590", "asnB") #Also called LtsA. It might not have asparagine synthase activity
+info_for_GC(Summary, output_path, "GC_00000872", "glsK") #Ckr and Cam have their own GC for K01425. Cdi does not have K01425. 
+info_for_GC(Summary, output_path, "GC_00001514", "ansA") #K01424 All Cpr & Cps
+info_for_GC(Summary, output_path, "GC_00002481", "ansA") #K01424 All Cac, Ctu & Csi
+info_for_GC(Summary, output_path, "GC_00002732", "ansA") #K01424 All Cac & most Ctu (Missing in Ctu_MSK207, Ctu_KPL3807 & Ctu_MSK074)
+info_for_GC(Summary, output_path, "GC_00004683", "ansA") #K01424 Only in Cgl, Cdi, Ckr and Cam. Cgl labelled as L-asparaginase/archaeal Glu-tRNAGln amidotransferase subunit D.
+info_for_GC(Summary, output_path, "GC_00000510", "carA") #Carbamoyl-P synthase
+info_for_GC(Summary, output_path, "GC_00000411", "carB") #Carbamoyl-P synthase
+info_for_GC(Summary, output_path, "GC_00000767", "amtR") #N master regulator
+info_for_GC(Summary, output_path, "GC_00001774", "ureA") #urease subunit gamma
+info_for_GC(Summary, output_path, "GC_00001775", "ureB") #urease subunit beta
+info_for_GC(Summary, output_path, "GC_00001792", "ureC") #urease subunit alpha
+info_for_GC(Summary, output_path, "GC_00007530", "ureE") #urease accessory protein
+info_for_GC(Summary, output_path, "GC_00007211", "ureF") #urease accessory protein
+info_for_GC(Summary, output_path, "GC_00001781", "ureG") #urease accessory protein
+info_for_GC(Summary, output_path, "GC_00006274", "ureD") #urease accessory protein
+```
+
+```{r}
+data <- Summary %>% 
+    filter(KOfam_ACC == "K01915")
+unique(data$gene_cluster_id)
+```
+
 
 
 <img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
