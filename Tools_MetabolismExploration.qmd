@@ -63,7 +63,6 @@ Modules <- Modules %>%
   mutate(stepwise_module_completeness = ifelse(is.na(stepwise_module_completeness), 0, stepwise_module_completeness))
 ```
 
-
 ```{r, warning=FALSE}
 # Function to calculate average module completion for a given Module and Species
 
@@ -150,29 +149,6 @@ final_df_KOs <- result_df %>%
   pivot_wider(names_from = Species, values_from = Genome_Number)
 ```
 
-```{r}
-KOList <- c("K07090", "K03795", "K00956", "K00957", "K00390", "K00392", "K00528")
-
-KOselection <- Summary %>%
-  filter(KOfam_ACC %in% KOList) %>%
-  arrange(genome_name,gene_callers_id) %>%
-  mutate(KO_GC_id=paste(KOfam_ACC, gene_cluster_id, gene_callers_id, sep="_")) %>%
-  select(KO_GC_id, genome_name, gene_callers_id)
-
-KOselectionWide <- spread(KOselection, genome_name, gene_callers_id)
-KOselectionWide$KO_GC <- sub("_[^_]+$", "", KOselectionWide$KO_GC_id)
-
-KOselectionWide_summary <- KOselectionWide %>%
-  select(-KO_GC_id) %>%
-  group_by(KO_GC) %>%
-  summarise(across(everything(), ~ if (any(!is.na(.))) toString(na.omit(.)) else NA_character_)) %>%
-  arrange(desc(Cgl_ATCC_13032)) %>% 
-  separate(KO_GC, into = c("KO", "GC"), sep = "_", extra = "merge")
-
-write_csv(KOselectionWide_summary, file.path(dir, "SummaryARS.csv"))
-```
-
-
 ### Number of genomes for each species a included in a list of GCs
 
 ```{r, warning=FALSE}
@@ -211,9 +187,7 @@ final_df_GCs <- result_df %>%
   pivot_wider(names_from = Species, values_from = GC_Number)
 ```
 
-
-
-### Proportion of genomes in a species a given KO is present in
+### What is the proportion of genomes in a species a given KO is present in?
 
 ```{r, warning=FALSE}
 is_KO_present_in_all <- function(df, KO, species, num_genomes) {
@@ -439,3 +413,112 @@ Cgl_urease_vs_NovCor_Annotated_nt <- read_csv("data/Anvio8/Metabolic_Analysis/Bl
 Cgl_urease_vs_NovCor_Annotated_aa <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_urease_vs_NovCor_Annotated_aa.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
 Cgl_urease_vs_NovCor_FullSequence <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_urease_vs_NovCor_FullSequence.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
 ```
+
+
+## Explore a specific genomic region
+
+### Generate list of gene_callers_id for a list of KOs/GCs in all genomes
+
+```{r}
+KOList <- c("K07090", "K03795", "K00956", "K00957", "K00390", "K00392", "K00528")
+
+KOselection <- Summary %>%
+  filter(KOfam_ACC %in% KOList) %>%
+  arrange(genome_name,gene_callers_id) %>%
+  mutate(KO_GC_id=paste(KOfam_ACC, gene_cluster_id, gene_callers_id, sep="_")) %>%
+  select(KO_GC_id, genome_name, gene_callers_id)
+
+KOselectionWide <- spread(KOselection, genome_name, gene_callers_id)
+KOselectionWide$KO_GC <- sub("_[^_]+$", "", KOselectionWide$KO_GC_id)
+
+KOselectionWide_summary <- KOselectionWide %>%
+  select(-KO_GC_id) %>%
+  group_by(KO_GC) %>%
+  summarise(across(everything(), ~ if (any(!is.na(.))) toString(na.omit(.)) else NA_character_)) %>%
+  arrange(desc(Cgl_ATCC_13032)) %>% 
+  separate(KO_GC, into = c("KO", "GC"), sep = "_", extra = "merge")
+
+write_csv(KOselectionWide_summary, file.path(dir, "ARS/SummaryARS_KOs.csv"))
+```
+
+```{r}
+GCList <- KOselectionWide_summary$GC
+
+GCselection <- Summary %>%
+  filter(gene_cluster_id %in% GCList) %>%
+  arrange(genome_name,gene_callers_id) %>%
+  mutate(KO_GC_id=paste(KOfam_ACC, gene_cluster_id, gene_callers_id, sep="_")) %>%
+  select(KO_GC_id, genome_name, gene_callers_id)
+
+GCselectionWide <- spread(GCselection, genome_name, gene_callers_id)
+GCselectionWide$KO_GC <- sub("_[^_]+$", "", GCselectionWide$KO_GC_id)
+
+GCselectionWide_summary <- GCselectionWide %>%
+  select(-KO_GC_id) %>%
+  group_by(KO_GC) %>%
+  summarise(across(everything(), ~ if (any(!is.na(.))) toString(na.omit(.)) else NA_character_)) %>%
+  arrange(desc(Cgl_ATCC_13032)) %>% 
+  separate(KO_GC, into = c("KO", "GC"), sep = "_", extra = "merge")
+
+write_csv(GCselectionWide_summary, file.path(dir, "ARS/SummaryARS_GCs.csv"))
+```
+
+### Generate list of gene_callers_id/annotations around a specific gene
+
+```{r}
+folder_path <- "data/Anvio8/Parsed_prokka"
+txt_files <- list.files(path = folder_path, pattern = '^annot_Cps_.*\\.txt$', full.names = TRUE)
+
+dfs <- list()
+
+for (file in txt_files) {
+  df <- read_delim(file, delim = "\t", escape_double = FALSE, trim_ws = TRUE)  
+  df <- df %>% mutate(strain_name = gsub("^annot_|\\.txt$", "", basename(file)))
+  dfs <- c(dfs, list(df))
+}
+
+annotation_table <- bind_rows(dfs) %>%
+  select(-source, -e_value)
+
+selected_gene <- annotation_table %>%
+  filter(accession == "fprA") %>%
+  select(strain_name, gene_callers_id) %>%
+  group_by(strain_name) %>%
+  expand(gene_callers_id = seq(min(gene_callers_id) - 20, max(gene_callers_id) + 20))
+
+annotation_region_table <- annotation_table %>%
+  inner_join(selected_gene, by = c("gene_callers_id", "strain_name")) %>%
+  group_by(strain_name) %>%
+  mutate(row_num = row_number()) %>%
+  mutate(label = paste(gene_callers_id, accession, `function`, sep = "|")) %>%
+  select(row_num, strain_name, label)
+
+wide_table <- spread(annotation_region_table, key = strain_name, value = label)
+write_csv(wide_table, file.path(dir, "ARS/SummaryARS_region.csv"))
+```
+
+
+```{bash}
+cd data/Anvio8/Metabolic_Analysis/Pathway_Exploration/ARS
+
+grep -E 'Name=hchA|Name=ipdC' Cps_MSK127.gff | sort -k4,4n | awk 'NR==1 {start=$4} NR==2 {end=$5} END {print $1 "\t" start "\t" end}' > Cps_MSK127_coordinates.bed
+bedtools getfasta -fi Cps_MSK127.fsa -bed Cps_MSK127_coordinates.bed -fo Cps_MSK127_sequences.fasta
+
+
+```
+
+```{bash}
+
+cd data/Anvio8/Metabolic_Analysis/Pathway_Exploration/ARS
+
+awk '/^##FASTA/{flag=1;next} {if(!flag) print}' your_file.gff > annotations_only.gff
+awk '/^##FASTA/{flag=1} {if(flag) print}' your_file.gff > sequence_part.fasta
+grep -v '^##FASTA' sequence_part.fasta > cleaned_sequence_part.fasta
+
+
+grep -E 'Name=hchA|Name=ipdC' annotations_only.gff | sort -k4,4n | awk 'NR==1 {start=$4} NR==2 {end=$5} END {print $1 "\t" start "\t" end}' > region_coordinates.bed
+bedtools intersect -a annotations_only.gff -b region_coordinates.bed -wa > annotations_in_region.gff
+bedtools getfasta -fi cleaned_sequence_part.fasta -bed region_coordinates.bed -fo extracted_sequences.fasta
+
+```
+
