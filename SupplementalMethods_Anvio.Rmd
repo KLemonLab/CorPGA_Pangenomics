@@ -681,27 +681,28 @@ info_for_GC <- function(Summary, output_path, GC, gene) {
   df$Var1 <- sub(".*\\|(.*?)\\|.*", "\\1", df$Var1)
   df$Var2 <- sub(".*\\|(.*?)\\|.*", "\\1", df$Var2)
   
-  plot <- ggplot(df, aes(x=Var1, y=Var2, fill=value)) + 
-    geom_tile() +
-    scale_fill_viridis(direction = -1, option = "A", begin = 0.2, limits=c(40, 100), na.value = 'white') +
-    labs(x="", y="") +
-    scale_y_discrete(expand=c(0,0), position = "right") +
-    scale_x_discrete(expand=c(0,0)) +
-    theme_bw() +
-    theme(axis.text.x = element_markdown(angle = 45, hjust = 1, size=6),
-          axis.text.y = element_markdown(size=6))
-  
-  output_plot <- file.path(output_path, paste0(GC, "_", gene, ".jpg"))
-  ggsave(plot, filename = output_plot, height = 20, width = 20, device ='jpg', dpi = 600)
-  
+  if (nrow(df) > 1) {
+    plot <- ggplot(df, aes(x=Var1, y=Var2, fill=value)) + 
+      geom_tile() +
+      scale_fill_viridis(direction = -1, option = "A", begin = 0.2, limits=c(40, 100), na.value = 'white') +
+      labs(x="", y="") +
+      scale_y_discrete(expand=c(0,0), position = "right") +
+      scale_x_discrete(expand=c(0,0)) +
+      theme_bw() +
+      theme(axis.text.x = element_markdown(angle = 45, hjust = 1, size=6),
+            axis.text.y = element_markdown(size=6))
+    
+    output_plot <- file.path(output_path, paste0(GC, "_", gene, ".jpg"))
+    ggsave(plot, filename = output_plot, height = 20, width = 20, device ='jpg', dpi = 600)
+  }
+
   num_seqs <- nrow(data)
   num_genomes <- data$num_genomes_gene_cluster_has_hits[1]
-  protein_id <- data$accession[data$genome_name=="Cgl_ATCC_13032"]
-  KO <- data$KOfam_ACC[data$genome_name=="Cgl_ATCC_13032"]
+  protein_id <- ifelse("Cgl_ATCC_13032" %in% data$genome_name, data$accession[data$genome_name=="Cgl_ATCC_13032"][1], NA)
+  KO <- ifelse("Cgl_ATCC_13032" %in% data$genome_name, data$KOfam_ACC[data$genome_name=="Cgl_ATCC_13032"][1], NA)
   index <- data$combined_homogeneity_index[1]
-
   
-  cat(protein_id[1], gene, GC, KO[1], "has", num_seqs, "aa sequences across", num_genomes, "genomes with", index ,"combined homogeneity. \n")
+  cat(protein_id, gene, GC, KO, "has", num_seqs, "aa sequences across", num_genomes, "genomes with", index ,"combined homogeneity. \n")
 }
 ```
 
@@ -721,7 +722,6 @@ info_for_GC(Summary, output_path, "GC_00000647", "aroT") #Aromatics AT that comp
 info_for_GC(Summary, output_path, "GC_00000128", "hisC") #AT present in all
 info_for_GC(Summary, output_path, "GC_00000502", "hisB") #GC present, but K01693 annotation missing in Cac_KPL2660, Cac_KPL3802, Cac_KPL3926 and all Ctu
 info_for_GC(Summary, output_path, "GC_00000644", "argD") #AT in the Arg/Lys pathways missing in some Ctus
-
 info_for_GC(Summary, output_path, "GC_00000383", "glyA") #Present in all
 info_for_GC(Summary, output_path, "GC_00000924", "ald") #Alanine dehydrogenase
 info_for_GC(Summary, output_path, "GC_00000496", "alaT") #AT present in all
@@ -751,6 +751,45 @@ info_for_GC(Summary, output_path, "GC_00007211", "ureF") #urease accessory prote
 info_for_GC(Summary, output_path, "GC_00001781", "ureG") #urease accessory protein
 info_for_GC(Summary, output_path, "GC_00006274", "ureD") #urease accessory protein
 ```
+
+
+```{r}
+info_for_GC(Summary, output_path, "GC_00001076", "cysZ") 
+info_for_GC(Summary, output_path, "GC_00000371", "cysZ") 
+info_for_GC(Summary, output_path, "GC_00001598", "cysZ") 
+info_for_GC(Summary, output_path, "GC_00002233", "cysZ") 
+info_for_GC(Summary, output_path, "GC_00002528", "cysZ") 
+info_for_GC(Summary, output_path, "GC_00003187", "cysZ") 
+info_for_GC(Summary, output_path, "GC_00006756", "cysZ") 
+info_for_GC(Summary, output_path, "GC_00007124", "cysZ") 
+info_for_GC(Summary, output_path, "GC_00010016", "cysZ") 
+info_for_GC(Summary, output_path, "GC_00011283", "cysZ") 
+info_for_GC(Summary, output_path, "GC_00006612", "cysZ") 
+info_for_GC(Summary, output_path, "GC_00001997", "cysZ") 
+info_for_GC(Summary, output_path, "GC_00009495", "cysZ") 
+info_for_GC(Summary, output_path, "GC_00010341", "cysZ") 
+
+info_for_GC(Summary, output_path, "GC_00008677", "cysY") 
+info_for_GC(Summary, output_path, "GC_00002569", "cysY") 
+info_for_GC(Summary, output_path, "GC_00003025", "cysY") 
+info_for_GC(Summary, output_path, "GC_00005778", "cysY") 
+info_for_GC(Summary, output_path, "GC_00010446", "cysY") 
+info_for_GC(Summary, output_path, "GC_00010469", "cysY") 
+
+info_for_GC(Summary, output_path, "GC_00001061", "cysN") 
+
+info_for_GC(Summary, output_path, "GC_00001058", "cysD") 
+
+info_for_GC(Summary, output_path, "GC_00002998", "cysH") 
+info_for_GC(Summary, output_path, "GC_00002484", "cysH") 
+info_for_GC(Summary, output_path, "GC_00005242", "cysH") 
+
+info_for_GC(Summary, output_path, "GC_00000686", "cysI") 
+
+info_for_GC(Summary, output_path, "GC_00000017", "fpr") 
+```
+
+
 
 ```{r}
 data <- Summary %>% 
