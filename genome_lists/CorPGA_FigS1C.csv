@@ -1,0 +1,72 @@
+name,genus ,species
+C_accolens_DSM_44278,Corynebacterium, accolens
+C_afermentans_CCUG_32105,Corynebacterium, afermentans
+C_ammoniagenes_MGYG_HGUT_01533,Corynebacterium, ammoniagenes
+C_amycolatum_FDAARGOS_1108,Corynebacterium, amycolatum
+C_aurimucosum_DSM_44827,Corynebacterium, aurimucosum
+C_bovis_4826,Corynebacterium, bovis
+C_callunae_DSM_20147,Corynebacterium, callunae
+C_camporealensis_DSM_44610,Corynebacterium, camporealensis
+C_canis_CCUG_58627,Corynebacterium, canis
+C_casei_LMG_S_19264,Corynebacterium, casei
+C_caspium_DSM_44850,Corynebacterium, caspium
+C_coyleae_DSM_44184,Corynebacterium, coyleae
+C_curieae_c8Ua_181,Corynebacterium, curieae
+C_diphtheriae_ISS_3319,Corynebacterium, diphtheriae
+C_doosanense_DSM_45436,Corynebacterium, doosanense
+C_durum_F0235,Corynebacterium, durum
+C_efficiens_YS_314,Corynebacterium, efficiens
+C_endometrii_LMM_1653,Corynebacterium, endometrii
+C_evansiae_c8Ua_174,Corynebacterium, evansiae
+C_flavescens_OJ8,Corynebacterium, flavescens
+C_genitalim_ATCC_33030,Corynebacterium, genitalim
+C_glucuronolyticum_FDAARGOS_1111,Corynebacterium, glucuronolyticum
+C_glutamicum_SCgG2,Corynebacterium, glutamicum
+C_halotolerans_DSM_44683,Corynebacterium, halotolerans
+C_hesseae_c19Ua_109,Corynebacterium, hesseae
+C_imitans_NCTC13015,Corynebacterium, imitans
+C_incognita_Marseille_Q3630,Corynebacterium, incognita
+C_jeikeium_K411,Corynebacterium, jeikeium
+C_kalinowskii_1959,Corynebacterium, kalinowskii
+C_kroppenstedtii_DSM_44385,Corynebacterium, kroppenstedtii
+C_lehmanniae_c8Ua_144,Corynebacterium, lehmanniae
+C_lizhenjunii_ZJ_599,Corynebacterium, lizhenjunii
+C_macclintockiae_c9Ua_112,Corynebacterium, macclintockiae
+C_macginleyi_160811,Corynebacterium, macginleyi
+C_marinum_DSM_44953,Corynebacterium, marinum
+C_maris_DSM_45190,Corynebacterium, maris
+C_marquesiae_c19Ua_121,Corynebacterium, marquesiae
+C_massilience_DSM_45435,Corynebacterium, massilience
+C_mastitidis_DSM_44356,Corynebacterium, mastitidis
+C_matruchotii_ATCC_14266,Corynebacterium, matruchotii
+C_meitnerae_c8Ua_172,Corynebacterium, meitnerae
+C_minutissimum_NCTC10288,Corynebacterium, minutissimum
+C_mucifaciens_ATCC_700355,Corynebacterium, mucifaciens
+C_otitidis_ATCC_51513,Corynebacterium, otitidis
+C_pelargi_1363,Corynebacterium, pelargi
+C_phocae_M408891,Corynebacterium, phocae
+C_pilosum_NCTC11862,Corynebacterium, pilosum
+C_propinquum_FDAARGOS_1112,Corynebacterium, propinquum
+C_pseudodiphtheriticum_DSM_44287,Corynebacterium, pseduotuberculosis
+C_pseudotuberculosis_MEX29,Corynebacterium, pseudodiphtheriticum
+C_resistens_DSM_45100,Corynebacterium, resistens
+C_simulans_Wattiau,Corynebacterium, simulans
+C_singulare_IBS_B52218,Corynebacterium, singulare
+C_stationis_622,Corynebacterium, stationis
+C_striatum_FDAARGOS_1115,Corynebacterium, striatum
+C_timonense_5401744,Corynebacterium, timonense
+C_tuberculostearicum_FDAARGOS_1117,Corynebacterium, tuberculostearicum
+C_ulcerans_809,Corynebacterium, ulcerans
+C_urealyticum_NCTC12011,Corynebacterium, urealyticum
+C_variabile_NBRC_15286,Corynebacterium, variabile
+C_vitaeruminis_DSM_20294,Corynebacterium, vitaeruminis
+C_xerosis_GS_1,Corynebacterium, xerosis
+C_yonathiae_c21Ua_68,Corynebacterium, yonathiae
+Cac_KPL1996,Corynebacterium,accolens
+Cac_MSK070,Corynebacterium,accolens
+Cpr_KPL2657,Corynebacterium,propinquum
+Cpr_MSK290,Corynebacterium,propinquum
+Cps_KPL1989,Corynebacterium,pseudodiphtheriticum
+Cps_MSK311,Corynebacterium,pseudodiphtheriticum
+Ctu_KPL3807,Corynebacterium,tuberculostearicum
+Ctu_MSK207,Corynebacterium,tuberculostearicum
