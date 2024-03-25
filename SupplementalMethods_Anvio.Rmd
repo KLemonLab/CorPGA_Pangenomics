@@ -613,6 +613,34 @@ Figure
 ggsave(plot = Figure, filename = "data/Anvio8/Metabolic_Analysis/Fig_Tables/CorPGA_Heatmap.jpg", height = 9.0625, width = 6.875, device ='jpg', dpi = 600)
 ```
 
+### Code for percentages in Figure 5
+
+```{r}
+Modules_MeansSummary = Modules_Means %>% 
+  group_by(modules_final_label, species_name, .drop=TRUE) %>%
+  summarise(mean_bySpecies=mean(mean_stepwise_module_completeness))
+```
+
+```{r fig.height=10, fig.width=12, message=FALSE, warning=FALSE}
+summaryPlot <-ggplot(Modules_MeansSummary, aes(x=mean_bySpecies, y=modules_final_label, fill=species_name)) +
+  geom_bar(stat="identity", position="dodge") +
+  scale_fill_manual(values = colorsSpecies) +
+  scale_x_continuous(expand = c(0,0)) +
+  labs(x="", y="") +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text.y = element_text(hjust = 1, size=10, color = "black"))
+summaryPlot
+```
+
+```{r}
+library(plotly)
+library(htmlwidgets)
+
+saveWidget(ggplotly(summaryPlot), "data/Anvio8/Metabolic_Analysis/Fig_Tables/Heatmap_Percents_Interactive.html", selfcontained = TRUE)
+```
+
 ## Pangenomic level analysis
 
 This list includes a total of 107 genomes: the 102 *Corynebacterium* genomes selected for metabolic analysis (Cac_ATCC_49726 & Cps_090104 were excluded for this analysis) plus:
