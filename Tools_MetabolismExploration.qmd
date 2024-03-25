@@ -620,9 +620,10 @@ plot_ASRGenes <- plot_ASRGenes +
         axis.ticks.x=element_blank(),
         axis.text.y=element_text(size=12))
 
+plot_ASR <- readRDS("data/Anvio8/Metabolic_Analysis/Pathway_Exploration/ARS/Alignments_hchA-fprA/plot_ASR.rds")
 FinalFigure <- ggarrange(plot_ASRGenes, plot_ASR, ncol = 1, heights = c(0.20, 1))
 FinalFigure
-ggsave(FinalFigure, file="data/Anvio8/Metabolic_Analysis/Pathway_Exploration/ARS/ASR_Cps_region.svg", height=10, width=20, dpi = 600)
+ggsave(FinalFigure, file="data/Anvio8/Metabolic_Analysis/Pathway_Exploration/ARS/ASR_Cps_region.svg", height=10, width=20, dpi = 150)
 ```
 
 ```{r}
