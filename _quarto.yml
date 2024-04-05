@@ -1,0 +1,32 @@
+project:
+  type: book
+  
+format:
+  html:
+    theme: flatly
+    code-tools: true
+    toc: true
+    toc-location: left
+    embed-resources: true
+    page-layout: full
+
+book:
+  title: "NovCOR"
+  author:
+    - name: Tommy Tran
+    - name: Isabel Fernandez Escapa
+  date: last-modified
+  navbar:
+    background: "primary"
+    search: true
+    right:
+      - icon: github
+        href: https://github.com/KLemonLab/NovCor_Pangenomics
+        aria-label: GitHub
+
+  reader-mode: true  
+
+bibliography: references.bib
+    
+profile:
+  default: development

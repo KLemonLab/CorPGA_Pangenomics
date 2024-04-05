@@ -1,0 +1,26 @@
+project:
+  output-dir: _notebooks
+
+execute:
+  echo: true
+  freeze: false
+  eval: false
+  
+book:  
+  chapters:
+    - index.qmd
+    - part: "Notebooks"
+      chapters:
+      - Notebook_Anvio-7.qmd
+      - Notebook_Anvio-8_Transition.qmd
+    - part: "Tools"
+      chapters:
+      - Tools_File_Manipulation.qmd
+      - Tools_MetabolismExploration.qmd
+    - part: "Methods"
+      chapters:
+      - Methods_Prokka_Annotations.qmd
+      - Methods_ANIs.qmd
+      - Methods_Phylogenies.qmd
+      - Methods_Anvio.qmd
+    - references.qmd
