@@ -33,6 +33,13 @@ Enrich_Mod_References <- read_delim("data/Anvio8/Metabolic_Analysis/Enrichment_M
 Enrich_KO_References_Filtered <- read_delim("data/Anvio8/Metabolic_Analysis/Enrichment_KOs/CorPGA_enriched_KOs_References_Filtered.csv", show_col_types = FALSE)
 ```
 
+```{r}
+# Complete the modules dataset with rows for strains with completely missing modules and change NA to = 0
+Modules <- Modules %>%  
+  complete(db_name, nesting(module_category, module_subcategory, module)) %>%  
+  mutate(stepwise_module_completeness = ifelse(is.na(stepwise_module_completeness), 0, stepwise_module_completeness))
+```
+
 Directory for outputs:
 ```{r}
 dir <- "data/Anvio8/Metabolic_Analysis/Pathway_Exploration"
@@ -41,29 +48,31 @@ dir.create(file.path(dir), recursive = TRUE, showWarnings=FALSE)
 
 Species info:
 ```{r}
-#species_values <- c("Cgl", "Ctu", "Cac", "Cpr", "Cps")
 species_values <- c("Cpr", "Cps", "Cac", "Ctu", "Cgl", "Cdi", "Csi", "Ckr", "Cam", "Can", "Sau", "Sep", "Spn", "Dpi")
-num_genomes_values <- c("1", "8", "33", "19", "42")
-species_num_genomes_df <- data.frame(species = species_values, num_genomes = as.numeric(num_genomes_values))
 ```
 
-Modules info:
-```{r}
-M00854 <- c("K00963", "K12447", "K22920", "K00693", "K00750", "K13679", "K16150", "K16153", "K20812", "K00975", "K00703", "K13679", "K16148", "K00700", "K16149")
-M00855 <- c("K00688", "K16153", "K01196", "K00705", "K22451", "K02438", "K01200", "K01835", "K15778", "K15779")
-M00854_M00855 <- c("K00963", "K12447", "K22920", "K00693", "K00750", "K13679", "K16150", "K16153", "K20812", "K00975", "K00703", "K13679", "K16148", "K00700", "K16149", "K00688", "K16153", "K01196", "K00705", "K22451", "K02438", "K01200", "K01835", "K15778", "K15779")
-```
 
 ## Exploration of the KEGG Results
 
-### Average completion score for a list of modules for each species
+### Table with average_stepwise_module_completeness for all modules for each species
 
 ```{r}
-# Complete the modules dataset with rows for strains with completely missing modules and change NA to = 0
-Modules <- Modules %>%  
-  complete(db_name, nesting(module_category, module_subcategory, module)) %>%  
-  mutate(stepwise_module_completeness = ifelse(is.na(stepwise_module_completeness), 0, stepwise_module_completeness))
+Modules_AverageBySpecies <- Modules %>%
+  mutate(species_name = str_extract(db_name, "^[^_]+")) %>%
+  group_by(module_subcategory, module, module_name, species_name) %>%
+  summarise(average_stepwise_module_completeness = round(mean(stepwise_module_completeness), 2)) %>%
+  filter(!is.na(module_name))
+
+Modules_AverageBySpecies$species_name <- factor(Modules_AverageBySpecies$species_name, levels=species_values)
+Modules_AverageBySpecies <- Modules_AverageBySpecies %>% arrange(species_name)
+
+Modules_AverageBySpecies_Wide <- Modules_AverageBySpecies %>%
+  pivot_wider(names_from = species_name, values_from = average_stepwise_module_completeness, values_fill = 0)
+
+write_csv(Modules_AverageBySpecies_Wide, file.path(dir, "CorPGA_KEGG_AverageModuleCompletionBySpecies.csv"))
 ```
+
+### Average completion score for a list of modules for each species
 
 ```{r, warning=FALSE}
 # Function to calculate average module completion for a given Module and Species
@@ -96,22 +105,6 @@ result_df <- pmap_dfr(combinations, ~ tibble(ModuleID = ..1, Species = ..2,
 # Pivot the result data frame to have ModuleIDs as rows and species as columns
 final_df_modules <- result_df %>%
   pivot_wider(names_from = Species, values_from = Average_Completion)
-```
-
-Table with average_stepwise_module_completeness for all "Amino acid metabolism" modules. 
-```{r}
-AA_Modules <- Modules %>%
-  filter(module_category=="Amino acid metabolism") %>%
-  mutate(species_name = str_extract(db_name, "^[^_]+")) %>%
-  group_by(module_subcategory, module, module_name, species_name) %>%
-  summarise(average_stepwise_module_completeness = round(mean(stepwise_module_completeness), 2))
-
-AA_Modules$species_name <- factor(AA_Modules$species_name, levels=species_values)
-AA_Modules <- AA_Modules %>% arrange(species_name)
-
-AA_ModulesWide <- AA_Modules %>%
-  pivot_wider(names_from = species_name, values_from = average_stepwise_module_completeness, values_fill = 0)
-
 ```
 
 ### Number of genomes for each species a list of KOs is present
@@ -216,6 +209,18 @@ is_KO_present_in_all(KOHits, KO, "Dpi", 27)
 ### What is the average number copies a KO has for all species?
 
 It can take a lists of KOs, like the elements of a module. Not very useful since the same gene can have more than one KO assignment. But It can be used to see the values of several KOs at once.
+
+```{r}
+M00854 <- c("K00963", "K12447", "K22920", "K00693", "K00750", "K13679", "K16150", "K16153", "K20812", "K00975", "K00703", "K13679", "K16148", "K00700", "K16149")
+M00855 <- c("K00688", "K16153", "K01196", "K00705", "K22451", "K02438", "K01200", "K01835", "K15778", "K15779")
+M00854_M00855 <- c("K00963", "K12447", "K22920", "K00693", "K00750", "K13679", "K16150", "K16153", "K20812", "K00975", "K00703", "K13679", "K16148", "K00700", "K16149", "K00688", "K16153", "K01196", "K00705", "K22451", "K02438", "K01200", "K01835", "K15778", "K15779")
+```
+
+```{r}
+species_values <- c("Cgl", "Ctu", "Cac", "Cpr", "Cps")
+num_genomes_values <- c("1", "8", "33", "19", "42")
+species_num_genomes_df <- data.frame(species = species_values, num_genomes = as.numeric(num_genomes_values))
+```
 
 ```{r}
 # Define a function to calculate KO_copy_average
