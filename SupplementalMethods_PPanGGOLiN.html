@@ -1746,7 +1746,7 @@ margin-left: 0 !important;
           <li><a href="#finding-regions-of-genome-plasticity" id="toc-finding-regions-of-genome-plasticity"><span class="toc-section-number">1.4</span> Finding Regions of Genome Plasticity</a></li>
           <li><a href="#summary-of-used-parameters" id="toc-summary-of-used-parameters"><span class="toc-section-number">1.5</span> Summary of used parameters</a></li>
           </ul></li>
-          <li><a href="#import-ppanggolin-partitions-into-anvio" id="toc-import-ppanggolin-partitions-into-anvio"><span class="toc-section-number">2</span> Import PPanGGOLiN Partitions into anvio</a>
+          <li><a href="#import-ppanggolin-partitions-into-anvio" id="toc-import-ppanggolin-partitions-into-anvio"><span class="toc-section-number">2</span> Import PPanGGOLiN Partitions into anvi’o</a>
           <ul>
           <li><a href="#persistent-vs.-accessory-based-on-ppanggolin" id="toc-persistent-vs.-accessory-based-on-ppanggolin"><span class="toc-section-number">2.1</span> Persistent vs. Accessory based on PPanGGOLiN</a></li>
           <li><a href="#displaying-the-generated-bin-collections" id="toc-displaying-the-generated-bin-collections"><span class="toc-section-number">2.2</span> Displaying the generated bin collections</a></li>
@@ -1826,7 +1826,7 @@ margin-left: 0 !important;
 <span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
 <span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="fu">write_delim</span>(AnvioClusters_Cac, <span class="st">&quot;/analysis_PPanGGOLiN/Cac_PAN_SUMMARY.tsv&quot;</span>, <span class="at">col_names=</span><span class="cn">FALSE</span>)</span></code></pre></div>
 <p><u><strong>IMPORTANT</strong></u><strong>:</strong> The gene_callers_id provided by anvi’o don’t match the original ones in the prokka annotation. The prokka annotated genomes were parsed into two text files, one for gene calls and one for annotations, with the script <code>gff_parser.py</code>. By default prokka annotates also tRNAs, rRNAs and CRISPR regions. However, <code>gff_parser.py</code> will only utilize open reading frames reported by Prodigal in the prokka output in order to be compatible with the pangenomic anvi’o pipeline. While parsing new gene_callers_id are generated only for the ORFs that will be imported into anvi’o. Fortunately, <code>anvi-get-sequences-for-gene-calls</code> can be used to export new .gff files with only the ORFs and these can be used for PPanGGOLiN, instead of the original prokka ones:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co">#conda activate anvio-7</span></span>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co">#conda activate anvio-7.1</span></span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Exported_gffs&quot;</span></span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
 <span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="va">path_f</span><span class="op">=</span><span class="st">&quot;/analysis_Anvio7/Contigs_db&quot;</span></span>
@@ -1915,7 +1915,7 @@ margin-left: 0 !important;
 </div>
 <div id="summary-of-used-parameters" class="section level2" number="1.5">
 <h2><span class="header-section-number">1.5</span> Summary of used parameters</h2>
-<p>The <code>info</code> subcommand indicates, for each steps of the analysis, the PPanGGOLiN parameters that were used and the source of the data if appropriate. This is useful for methods sections on manuscripts.</p>
+<p>The <code>info</code> subcommand indicates, for each steps of the analysis, the PPanGGOLiN parameters that were used and the source of the data if appropriate.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co">#conda activate PPanGGOLiN</span></span>
 <span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="ex">ppanggolin</span> info <span class="at">-p</span> <span class="st">&quot;/analysis_PPanGGOLiN/Cac_anno_output/Cac.h5&quot;</span> <span class="at">--parameters</span> <span class="at">--content</span> <span class="at">--status</span></span>
 <span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a></span>
@@ -1927,7 +1927,7 @@ margin-left: 0 !important;
 </div>
 </div>
 <div id="import-ppanggolin-partitions-into-anvio" class="section level1" number="2">
-<h1><span class="header-section-number">2</span> Import PPanGGOLiN Partitions into anvio</h1>
+<h1><span class="header-section-number">2</span> Import PPanGGOLiN Partitions into anvi’o</h1>
 <p>The <code>pangenomeGraph.gexf</code> file can be opened with Gephi, and the Data Table exported as a <code>gephi_table.csv</code>. This can be used to easily explore the PPanGGOLiN output with the same gene IDs anvi’o uses. The <code>matrix.csv</code> should be used with caution, since records PPanGGOLiN internal gene IDs, that are different from the anvi’o ones.</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>Gephi <span class="ot">&lt;-</span>  <span class="fu">read.delim</span>(<span class="st">&quot;analysis_PPanGGOLiN/Output_Cps/Cps_gephi_table.csv&quot;</span>, <span class="st">&quot;,&quot;</span>, <span class="at">escape_double =</span> <span class="cn">FALSE</span>, <span class="at">trim_ws =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a></span>
@@ -1979,7 +1979,7 @@ margin-left: 0 !important;
 <span id="cb14-38"><a href="#cb14-38" tabindex="-1"></a>Cac_partitions <span class="ot">&lt;-</span> Cac_partitions[<span class="fu">grep</span>(<span class="st">&quot;GC_&quot;</span>, Cac_partitions<span class="sc">$</span>GC),]</span>
 <span id="cb14-39"><a href="#cb14-39" tabindex="-1"></a><span class="fu">write_delim</span>(Cac_partitions, <span class="st">&quot;/analysis_PPanGGOLiN/Output_Cac/partitions/partitions.txt&quot;</span>, <span class="at">delim =</span> <span class="st">&quot;</span><span class="sc">\t</span><span class="st">&quot;</span>)</span></code></pre></div>
 <p>This will import the PPanGGOLiN partitions (from <code>partitions.txt</code>) as a collection of bins named <strong>PPanGGOLiNpartitions</strong> in each profile-db:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co">#conda activate anvio-7</span></span>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co">#conda activate anvio-7.1</span></span>
 <span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="ex">anvi-import-collection</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cps/partitions_Cps.txt&quot;</span> <span class="dt">\</span></span>
 <span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>                       <span class="at">-p</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cps/PAN_Cps-PAN.db&quot;</span> <span class="dt">\</span></span>
 <span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>                       <span class="at">-C</span> <span class="st">&quot;PPanGGOLiNpartitions&quot;</span> <span class="at">--bins-info</span> <span class="st">&quot;/analysis_Anvio7/main_outputs/PPanGGOLiN_bin_colors.txt&quot;</span></span>
@@ -1993,7 +1993,7 @@ margin-left: 0 !important;
 <span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a>                       <span class="at">-p</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cac/PAN_Cac-PAN.db&quot;</span> <span class="dt">\</span></span>
 <span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a>                       <span class="at">-C</span> <span class="st">&quot;PPanGGOLiNpartitions&quot;</span> <span class="at">--bins-info</span> <span class="st">&quot;/analysis_Anvio7/main_outputs/PPanGGOLiN_bin_colors.txt&quot;</span></span></code></pre></div>
 <p>We can also import this data (from <code>partitions.txt</code>) as a PPanGGOLiN layer into in each profile-db:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co">#conda activate anvio-7</span></span>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co">#conda activate anvio-7.1</span></span>
 <span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="ex">anvi-import-misc-data</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cps/partitions_Cps.txt&quot;</span> <span class="dt">\</span></span>
 <span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>                       <span class="at">-p</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cps/PAN_Cps-PAN.db&quot;</span> <span class="at">-t</span> items</span>
 <span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="ex">anvi-import-misc-data</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cpr/partitions_Cpr.txt&quot;</span> <span class="dt">\</span></span>
@@ -2006,7 +2006,7 @@ margin-left: 0 !important;
 <div id="displaying-the-generated-bin-collections" class="section level2" number="2.2">
 <h2><span class="header-section-number">2.2</span> Displaying the generated bin collections</h2>
 <p>We can see the collections and bins created in a pangenomic database using the command <code>anvi-show-collections-and-bins</code>:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co">#conda activate anvio-7</span></span>
+<div class="sourceCode" id="cb17"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co">#conda activate anvio-7.1</span></span>
 <span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="ex">anvi-show-collections-and-bins</span> <span class="at">-p</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cps/PAN_Cps-PAN.db&quot;</span> <span class="at">--debug</span> </span>
 <span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a></span>
 <span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="ex">anvi-show-collections-and-bins</span> <span class="at">-p</span> <span class="st">&quot;/analysis_Anvio7/Pangenomic_Results/Cpr/PAN_Cpr-PAN.db&quot;</span> <span class="at">--debug</span> </span>

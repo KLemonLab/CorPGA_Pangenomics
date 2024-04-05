@@ -1,0 +1,768 @@
+# Metabolism Exploration {.unnumbered}
+
+```{r}
+#| echo: FALSE
+#| message: FALSE
+library(tidyverse)
+library(seqvisr)
+library(ggpubr)
+```
+
+## Data input
+
+```{r}
+annot_Cgl <- read_delim("data/Anvio8/Parsed_NCBI/annot_GCF_000011325.1.txt", delim = "\t", escape_double = FALSE, trim_ws = TRUE)
+annot_Cgl$genome_name <- "Cgl_ATCC_13032"
+
+Summary <- read_delim("data/Anvio8/Pangenomic_Analysis/All4CorRefs/Summaries/PAN_All4CorRefs_gene_clusters_summary.txt.gz", show_col_types = FALSE)
+Summary = left_join(Summary,annot_Cgl, by = join_by(genome_name, gene_callers_id))
+
+Modules <- read_delim("data/Anvio8/Metabolic_Analysis/CorPGA_modules.txt", show_col_types = FALSE, col_types = cols(unique_enzymes_hit_counts = col_character(), gene_caller_ids_in_module = col_character()))
+KOHits <- read_delim("data/Anvio8/Metabolic_Analysis/CorPGA_hits.txt", show_col_types = FALSE)
+
+Enrich_Mod_4Cor <- read_delim("data/Anvio8/Metabolic_Analysis/Enrichment_Modules/CorPGA_enriched_modules_stepwise_1_4Cor.txt", show_col_types = FALSE)
+Enrich_KO_4Cor_Filtered <- read_delim("data/Anvio8/Metabolic_Analysis/Enrichment_KOs/CorPGA_enriched_KOs_4Cor_Filtered.csv", show_col_types = FALSE)
+
+Enrich_Mod_CorDpi <- read_delim("data/Anvio8/Metabolic_Analysis/Enrichment_Modules/CorPGA_enriched_modules_stepwise_1_CorDpi.txt", show_col_types = FALSE)
+Enrich_KO_CorDpi_Filtered <- read_delim("data/Anvio8/Metabolic_Analysis/Enrichment_KOs/CorPGA_enriched_KOs_CorDpi_Filtered.csv", show_col_types = FALSE)
+
+Enrich_Mod_Cps <- read_delim("data/Anvio8/Metabolic_Analysis/Enrichment_Modules/CorPGA_enriched_modules_stepwise_1_Cps.txt", show_col_types = FALSE)
+Enrich_KO_Cps_Filtered <- read_delim("data/Anvio8/Metabolic_Analysis/Enrichment_KOs/CorPGA_enriched_KOs_Cps_Filtered.csv", show_col_types = FALSE)
+
+Enrich_Mod_References <- read_delim("data/Anvio8/Metabolic_Analysis/Enrichment_Modules/CorPGA_enriched_modules_stepwise_1_References.txt", show_col_types = FALSE)
+Enrich_KO_References_Filtered <- read_delim("data/Anvio8/Metabolic_Analysis/Enrichment_KOs/CorPGA_enriched_KOs_References_Filtered.csv", show_col_types = FALSE)
+```
+
+```{r}
+# Complete the modules dataset with rows for strains with completely missing modules and change NA to = 0
+Modules <- Modules %>%  
+  complete(db_name, nesting(module_category, module_subcategory, module)) %>%  
+  mutate(stepwise_module_completeness = ifelse(is.na(stepwise_module_completeness), 0, stepwise_module_completeness))
+```
+
+Directory for outputs:
+```{r}
+dir <- "data/Anvio8/Metabolic_Analysis/Pathway_Exploration"
+dir.create(file.path(dir), recursive = TRUE, showWarnings=FALSE)
+```
+
+Species info:
+```{r}
+species_values <- c("Cpr", "Cps", "Cac", "Ctu", "Cgl", "Cdi", "Csi", "Ckr", "Cam", "Can", "Sau", "Sep", "Spn", "Dpi")
+```
+
+
+## Exploration of the KEGG Results
+
+### Table with average_stepwise_module_completeness for all modules for each species
+
+```{r}
+Modules_AverageBySpecies <- Modules %>%
+  mutate(species_name = str_extract(db_name, "^[^_]+")) %>%
+  group_by(module_subcategory, module, module_name, species_name) %>%
+  summarise(average_stepwise_module_completeness = round(mean(stepwise_module_completeness), 2)) %>%
+  filter(!is.na(module_name))
+
+Modules_AverageBySpecies$species_name <- factor(Modules_AverageBySpecies$species_name, levels=species_values)
+Modules_AverageBySpecies <- Modules_AverageBySpecies %>% arrange(species_name)
+
+Modules_AverageBySpecies_Wide <- Modules_AverageBySpecies %>%
+  pivot_wider(names_from = species_name, values_from = average_stepwise_module_completeness, values_fill = 0)
+
+write_csv(Modules_AverageBySpecies_Wide, file.path(dir, "CorPGA_KEGG_AverageModuleCompletionBySpecies.csv"))
+```
+
+### Average completion score for a list of modules for each species
+
+```{r, warning=FALSE}
+# Function to calculate average module completion for a given Module and Species
+
+average_Module_completion <- function(df, M, S) {
+  result <- df %>%
+    filter(grepl(S, db_name)) %>%
+    filter(module %in% M) %>%
+    summarise(mean = round(mean(stepwise_module_completeness),2))
+
+  return(result$mean)
+}
+
+# Example use
+#average_Module_completion(Modules, "M00026", "Cpr")
+
+# List of ModuleIDs
+ModuleList <- c("M00026", "M00022", "M00023", "M00024", "M00025", "M00019", "M00570", "M00432", "M00020", "M00021", "M00018", "M00017", "M00016", "M00525", "M00526", "M00527", "M00028", "M00844", "M00015", "M00530", "M00529", "M00804", "M00973", "M00176", "M00616")
+
+# List of species
+species_values <- c("Cpr", "Cps", "Cac", "Ctu", "Cgl", "Cdi", "Csi", "Ckr", "Cam", "Can", "Sau", "Sep", "Spn", "Dpi")
+
+# Generate all combinations of ModuleIDs and species
+combinations <- expand.grid(ModuleID = ModuleList, Species = species_values)
+
+# Use purrr::pmap_dbl to apply the function to each combination and store the results in a data frame
+result_df <- pmap_dfr(combinations, ~ tibble(ModuleID = ..1, Species = ..2, 
+                                             Average_Completion = average_Module_completion(Modules, ..1, ..2)))
+
+# Pivot the result data frame to have ModuleIDs as rows and species as columns
+final_df_modules <- result_df %>%
+  pivot_wider(names_from = Species, values_from = Average_Completion)
+```
+
+### Number of genomes for each species a list of KOs is present
+
+```{r, warning=FALSE}
+# Function to calculate average module completion for a given Module and Species
+
+number_genomes_KO_is_present <- function(df, KO, species) {
+  result <- df %>%
+    filter(grepl(species, db_name)) %>%
+    filter(enzyme %in% KO) %>%
+    distinct(genome_name) 
+
+  return(nrow(result))
+}
+
+# Example use
+#number_genomes_KO_is_present(KOHits, "K00957", "Cpr")
+
+# List of ModuleIDs
+KOList <- c("K00817", "K01693", "K00821", "K00600", "K00262", "K01915", "K00265", "K00266", "K00259", "K14260", "K01953", "K01425", "K01424", "K01956", "K01955", "K01430", "K01429", "K01428", "K03187", "K03188", "K03189", "K03190", "K11959", "K11960", "K11962", "K03320")
+
+KOList <- c("K07090", "K03795", "K00956", "K00957", "K00390", "K00392", "K00528")
+
+# List of species
+species_values <- c("Cpr", "Cps", "Cac", "Ctu", "Cgl", "Cdi", "Csi", "Ckr", "Cam", "Can", "Sau", "Sep", "Spn", "Dpi")
+
+# Generate all combinations of ModuleIDs and species
+combinations <- expand.grid(KOID = KOList, Species = species_values)
+
+# Use purrr::pmap_dbl to apply the function to each combination and store the results in a data frame
+result_df <- pmap_dfr(combinations, ~ tibble(KOID = ..1, Species = ..2, 
+                                             Genome_Number = number_genomes_KO_is_present(KOHits, ..1, ..2)))
+
+# Pivot the result data frame to have ModuleIDs as rows and species as columns
+final_df_KOs <- result_df %>%
+  pivot_wider(names_from = Species, values_from = Genome_Number)
+```
+
+### Number of genomes for each species a included in a list of GCs
+
+```{r, warning=FALSE}
+# Function to calculate average module completion for a given Module and Species
+
+number_genomes_GC_is_present <- function(df, GC, species) {
+  result <- df %>%
+    filter(grepl(species, genome_name)) %>%
+    filter(gene_cluster_id %in% GC) %>%
+    distinct(genome_name) 
+
+  return(nrow(result))
+}
+
+# Example use
+#number_genomes_GC_is_present(Summary, "GC_00004683", "Cpr")
+
+# List of ModuleIDs
+GCList <- c("GC_00000647", "GC_00000128", "GC_00000502","GC_00000644","GC_00000383", "GC_00000103", "GC_00000073", "GC_00000214", "GC_00001022", "GC_00003183", "GC_00005127", "GC_00005070", "GC_00000924", "GC_00000496", "GC_00004638", "GC_00000603", "GC_00000590", "GC_00000872", "GC_00006661", "GC_00009187", "GC_00000510", "GC_00000411", "GC_00000767", "GC_00008014", "GC_00009615", "GC_00006414", "GC_00010430", "GC_00009898", "GC_00011478", "GC_00001796", "GC_00004683", "GC_00001514", "GC_00002481", "GC_00002732", "GC_00007871", "GC_00001774", "GC_00001775", "GC_00001792", "GC_00007530", "GC_00001800", "GC_00007211", "GC_00001799", "GC_00009638", "GC_00008645", "GC_00001781", "GC_00007018", "GC_00006274", "GC_00001805", "GC_00008808", "GC_00007968")
+
+GCList <- c("GC_00001076", "GC_00008677", "GC_00001061", "GC_00001058", "GC_00002998", "GC_00000686", "GC_00000017")
+
+
+# List of species
+species_values <- c("Cpr", "Cps", "Cac", "Ctu", "Cgl", "Cdi", "Csi", "Ckr", "Cam")
+
+# Generate all combinations of ModuleIDs and species
+combinations <- expand.grid(GCID = GCList, Species = species_values)
+
+# Use purrr::pmap_dbl to apply the function to each combination and store the results in a data frame
+result_df <- pmap_dfr(combinations, ~ tibble(GCID = ..1, Species = ..2, 
+                                             GC_Number = number_genomes_GC_is_present(Summary, ..1, ..2)))
+
+# Pivot the result data frame to have ModuleIDs as rows and species as columns
+final_df_GCs <- result_df %>%
+  pivot_wider(names_from = Species, values_from = GC_Number)
+```
+
+### What is the proportion of genomes in a species a given KO is present in?
+
+```{r, warning=FALSE}
+is_KO_present_in_all <- function(df, KO, species, num_genomes) {
+  result <- df %>%
+    filter(grepl(species, db_name)) %>%
+    filter(enzyme %in% KO) %>%
+    distinct(genome_name) 
+
+  return(nrow(result)/num_genomes)
+  #return(result)
+}
+
+KO <- c("K00957")
+
+is_KO_present_in_all(KOHits, KO, "Cac", 33)
+is_KO_present_in_all(KOHits, KO, "Cpr", 19)
+is_KO_present_in_all(KOHits, KO, "Cps", 42)
+is_KO_present_in_all(KOHits, KO, "Ctu", 8)
+is_KO_present_in_all(KOHits, KO, "Cgl", 1)
+
+is_KO_present_in_all(KOHits, KO, "Dpi", 27)
+```
+
+### What is the average number copies a KO has for all species?
+
+It can take a lists of KOs, like the elements of a module. Not very useful since the same gene can have more than one KO assignment. But It can be used to see the values of several KOs at once.
+
+```{r}
+M00854 <- c("K00963", "K12447", "K22920", "K00693", "K00750", "K13679", "K16150", "K16153", "K20812", "K00975", "K00703", "K13679", "K16148", "K00700", "K16149")
+M00855 <- c("K00688", "K16153", "K01196", "K00705", "K22451", "K02438", "K01200", "K01835", "K15778", "K15779")
+M00854_M00855 <- c("K00963", "K12447", "K22920", "K00693", "K00750", "K13679", "K16150", "K16153", "K20812", "K00975", "K00703", "K13679", "K16148", "K00700", "K16149", "K00688", "K16153", "K01196", "K00705", "K22451", "K02438", "K01200", "K01835", "K15778", "K15779")
+```
+
+```{r}
+species_values <- c("Cgl", "Ctu", "Cac", "Cpr", "Cps")
+num_genomes_values <- c("1", "8", "33", "19", "42")
+species_num_genomes_df <- data.frame(species = species_values, num_genomes = as.numeric(num_genomes_values))
+```
+
+```{r}
+# Define a function to calculate KO_copy_average
+KO_copy_average <- function(df, KO, species, num_genomes) {
+  result <- df %>%
+    filter(grepl(species, db_name)) %>%
+    filter(enzyme %in% KO)
+  return(nrow(result) / num_genomes)
+}
+
+# Define a function to calculate KO counts and write to CSV
+calculate_and_write_KO_counts <- function(df, dir, species_values, num_genomes_values, KO_values) {
+  result_df <- data.frame(KO = KO_values)
+  
+  for (species in species_values) {
+    # Create a column name for the result based on species
+    col_name <- species
+    
+    # Calculate KO_copy_average for each KO value
+    result <- sapply(KO_values, function(KO) {
+      KO_copy_average(df, KO, species, species_num_genomes_df$num_genomes[species_num_genomes_df$species == species])
+    })
+    
+    # Add the result to the data frame
+    result_df[col_name] <- round(result, 2)
+  }
+  
+  # Construct the output file name based on the KO_values list
+  output_file <- paste("CorPGA_KO_copies_", deparse(substitute(KO_values)), ".csv", sep = "")
+  
+  # Write the data frame into a file
+  write_csv(result_df, file.path(dir, output_file))
+}
+
+# Call the function to calculate KO counts and write to CSVs
+calculate_and_write_KO_counts(KOHits, dir, species_values, num_genomes_values, M00854)
+calculate_and_write_KO_counts(KOHits, dir, species_values, num_genomes_values, M00855)
+```
+
+### What is the number of unique genes that code for all steps in a module for all species?
+
+```{r}
+gene_copy_average <- function(df, KO, species, num_genomes) {
+  result <- df %>%
+    filter(grepl(species, db_name)) %>%
+    filter(enzyme %in% KO) %>%
+    group_by(gene_caller_id) %>%
+    summarize(enzyme_definition = paste(enzyme_definition, collapse = ", "),
+              enzyme = paste(enzyme, collapse = ", ")) 
+    return(nrow(result) / num_genomes)
+}
+
+# Define a function to calculate gene counts and write to CSV
+calculate_and_write_gene_counts <- function(df, dir, species_values, num_genomes_values, KO_values) {
+  result_df <- data.frame(Module = deparse(substitute(KO_values)))
+  
+  for (species in species_values) {
+    # Create a column name for the result based on species
+    col_name <- species
+    
+    # Calculate KO_copy_average for each KO value
+    result <- gene_copy_average(df, KO_values, species, species_num_genomes_df$num_genomes[species_num_genomes_df$species == species])
+    
+    # Add the result to the data frame
+    result_df[col_name] <- round(result, 2)
+  }
+  
+  # Construct the output file name based on the KO_values list
+  output_file <- paste("CorPGA_gene_copies_", deparse(substitute(KO_values)), ".csv", sep = "")
+  
+  # Write the data frame into a file
+  write_csv(result_df, file.path(dir, output_file))
+}
+
+# Call the function to calculate KO counts and write to CSVs
+calculate_and_write_gene_counts(KOHits, dir, species_values, num_genomes_values, M00854)
+calculate_and_write_gene_counts(KOHits, dir, species_values, num_genomes_values, M00855)
+calculate_and_write_gene_counts(KOHits, dir, species_values, num_genomes_values, M00854_M00855)
+```
+
+### What is the number of unique genes that code for all steps in a module for Cgl linked to the original annotation?
+
+```{r}
+unique_genes_for_Module <- function(df, KO_values, species, annot, calls) {
+  result <- df %>%
+    filter(grepl(species, db_name)) %>%
+    filter(enzyme %in% KO_values) %>%
+    group_by(gene_caller_id) %>%
+    summarize(enzyme_definition = paste(enzyme_definition, collapse = ", "),
+              enzyme = paste(enzyme, collapse = ", "))
+  
+  result <- left_join(result, annot, join_by(gene_caller_id == gene_callers_id))
+  result <- left_join(result, calls, join_by(gene_caller_id == gene_callers_id))
+  result <- result %>% 
+    select(-source.x, -source.y, -version)
+    
+  output_file <- paste(substitute(species), "_unique_genes_", deparse(substitute(KO_values)), ".csv", sep = "")
+  
+  # Write the data frame into a file
+  write_csv(result, file.path(dir, output_file))
+}
+
+annot_GCF_000011325.1 <- read_delim("data/Anvio8/Parsed_NCBI/annot_GCF_000011325.1.txt", show_col_types = FALSE)
+calls_GCF_000011325.1 <- read_delim("data/Anvio8/Parsed_NCBI/calls_GCF_000011325.1.txt", show_col_types = FALSE)
+
+unique_genes_for_Module(KOHits, M00854, "Cgl_ATCC_13032", annot_GCF_000011325.1, calls_GCF_000011325.1)
+unique_genes_for_Module(KOHits, M00855, "Cgl_ATCC_13032", annot_GCF_000011325.1, calls_GCF_000011325.1)
+unique_genes_for_Module(KOHits, M00854_M00855, "Cgl_ATCC_13032", annot_GCF_000011325.1, calls_GCF_000011325.1)
+```
+
+## Exploration of GCs of interest
+
+This function allows to explored the generated summary dataset for any GC of interest. It generates a subset of the dataset, a fasta file with the protein alignment and a identity percent distance matrix foe any selected GC:
+```{r}
+info_for_GC <- function(Summary, output_path, GC, gene) {
+  data <- Summary %>% 
+    filter(gene_cluster_id == GC) %>% 
+    mutate(fasta_lines = paste0(">", gene_cluster_id, "|", genome_name, "|callers_id:", gene_callers_id, "\n", aa_sequence))
+  
+  if (!file.exists(output_path)) {
+    dir.create(output_path, recursive = TRUE)
+  }
+  output_fasta <- file.path(output_path, paste0(GC, "_", gene, ".fasta"))
+  output_csv <- file.path(output_path, paste0(GC, "_", gene, ".csv"))
+  
+  writeLines(data$fasta_lines, con = output_fasta)
+  write_csv(data, file = output_csv)
+  
+  dist=dist.alignment(read.alignment(output_fasta,"fasta"), matrix = "identity")
+  mat <- 100*(1-dist^2) # convert to identity percent since the dist matrix contains the squared root of the pairwise distances
+  mat <- as.matrix(mat)
+  df <- melt(mat)
+  df$value <- as.numeric(df$value)
+  df$Var1 <- sub(".*\\|(.*?)\\|.*", "\\1", df$Var1)
+  df$Var2 <- sub(".*\\|(.*?)\\|.*", "\\1", df$Var2)
+  
+  if (nrow(df) > 1) {
+    plot <- ggplot(df, aes(x=Var1, y=Var2, fill=value)) + 
+      geom_tile() +
+      scale_fill_viridis(direction = -1, option = "A", begin = 0.2, limits=c(40, 100), na.value = 'white') +
+      labs(x="", y="") +
+      scale_y_discrete(expand=c(0,0), position = "right") +
+      scale_x_discrete(expand=c(0,0)) +
+      theme_bw() +
+      theme(axis.text.x = element_markdown(angle = 45, hjust = 1, size=6),
+            axis.text.y = element_markdown(size=6))
+    
+    output_plot <- file.path(output_path, paste0(GC, "_", gene, ".jpg"))
+    ggsave(plot, filename = output_plot, height = 20, width = 20, device ='jpg', dpi = 600)
+  }
+
+  num_seqs <- nrow(data)
+  num_genomes <- data$num_genomes_gene_cluster_has_hits[1]
+  protein_id <- ifelse("Cgl_ATCC_13032" %in% data$genome_name, data$accession[data$genome_name=="Cgl_ATCC_13032"][1], NA)
+  KO <- ifelse("Cgl_ATCC_13032" %in% data$genome_name, data$KOfam_ACC[data$genome_name=="Cgl_ATCC_13032"][1], NA)
+  index <- data$combined_homogeneity_index[1]
+  
+  cat(protein_id, gene, GC, KO, "has", num_seqs, "aa sequences across", num_genomes, "genomes with", index ,"combined homogeneity. \n")
+}
+```
+
+```{r}
+output_path <- "data/Anvio8/Metabolic_Analysis/GC_fastas"
+
+info_for_GC(Summary, output_path, "GC_00000647", "aroT") #Aromatics AT that complements M00024 and M00025
+info_for_GC(Summary, output_path, "GC_00000128", "hisC") #AT present in all
+info_for_GC(Summary, output_path, "GC_00000502", "hisB") #GC present, but K01693 annotation missing in Cac_KPL2660, Cac_KPL3802, Cac_KPL3926 and all Ctu
+info_for_GC(Summary, output_path, "GC_00000644", "argD") #AT in the Arg/Lys pathways missing in some Ctus
+info_for_GC(Summary, output_path, "GC_00000383", "glyA") #Present in all
+info_for_GC(Summary, output_path, "GC_00000924", "ald") #Alanine dehydrogenase
+info_for_GC(Summary, output_path, "GC_00000496", "alaT") #AT present in all
+info_for_GC(Summary, output_path, "GC_00000603", "aspT") #AT present in all (No KO number)
+info_for_GC(Summary, output_path, "GC_00000103", "gdhA") #GDH Partial extra copy in Cac_KPL3802. Only partial in Cpr_KPL2804, Cpr_KPL2811, Cpr_KPL3889
+info_for_GC(Summary, output_path, "GC_00005127", "gltB") #GOGAT Only in Cgl, Ckr and Cam
+info_for_GC(Summary, output_path, "GC_00005070", "gltD") #GOGAT Only in Cgl, Ckr and Cam
+info_for_GC(Summary, output_path, "GC_00000073", "glnA") #
+info_for_GC(Summary, output_path, "GC_00000214", "glnA2") #
+info_for_GC(Summary, output_path, "GC_00001022", "glnAx") #
+info_for_GC(Summary, output_path, "GC_00003183", "glnAx") #
+info_for_GC(Summary, output_path, "GC_00004638", "avtA") #Only in Cgl, Cdi, Ckr and Cam
+info_for_GC(Summary, output_path, "GC_00000590", "asnB") #Also called LtsA. It might not have asparagine synthase activity
+info_for_GC(Summary, output_path, "GC_00000872", "glsK") #Ckr and Cam have their own GC for K01425. Cdi does not have K01425. 
+info_for_GC(Summary, output_path, "GC_00001514", "ansA") #K01424 All Cpr & Cps
+info_for_GC(Summary, output_path, "GC_00002481", "ansA") #K01424 All Cac, Ctu & Csi
+info_for_GC(Summary, output_path, "GC_00002732", "ansA") #K01424 All Cac & most Ctu (Missing in Ctu_MSK207, Ctu_KPL3807 & Ctu_MSK074)
+info_for_GC(Summary, output_path, "GC_00004683", "ansA") #K01424 Only in Cgl, Cdi, Ckr and Cam. Cgl labelled as L-asparaginase/archaeal Glu-tRNAGln amidotransferase subunit D.
+info_for_GC(Summary, output_path, "GC_00000510", "carA") #Carbamoyl-P synthase
+info_for_GC(Summary, output_path, "GC_00000411", "carB") #Carbamoyl-P synthase
+info_for_GC(Summary, output_path, "GC_00000767", "amtR") #N master regulator
+info_for_GC(Summary, output_path, "GC_00001774", "ureA") #urease subunit gamma
+info_for_GC(Summary, output_path, "GC_00001775", "ureB") #urease subunit beta
+info_for_GC(Summary, output_path, "GC_00001792", "ureC") #urease subunit alpha
+info_for_GC(Summary, output_path, "GC_00007530", "ureE") #urease accessory protein
+info_for_GC(Summary, output_path, "GC_00007211", "ureF") #urease accessory protein
+info_for_GC(Summary, output_path, "GC_00001781", "ureG") #urease accessory protein
+info_for_GC(Summary, output_path, "GC_00006274", "ureD") #urease accessory protein
+
+info_for_GC(Summary, output_path, "GC_00001076", "cysZ") 
+info_for_GC(Summary, output_path, "GC_00000371", "cysZ") 
+info_for_GC(Summary, output_path, "GC_00001598", "cysZ") 
+info_for_GC(Summary, output_path, "GC_00002233", "cysZ") 
+info_for_GC(Summary, output_path, "GC_00002528", "cysZ") 
+info_for_GC(Summary, output_path, "GC_00003187", "cysZ") 
+info_for_GC(Summary, output_path, "GC_00006756", "cysZ") 
+info_for_GC(Summary, output_path, "GC_00007124", "cysZ") 
+info_for_GC(Summary, output_path, "GC_00010016", "cysZ") 
+info_for_GC(Summary, output_path, "GC_00011283", "cysZ") 
+info_for_GC(Summary, output_path, "GC_00006612", "cysZ") 
+info_for_GC(Summary, output_path, "GC_00001997", "cysZ") 
+info_for_GC(Summary, output_path, "GC_00009495", "cysZ") 
+info_for_GC(Summary, output_path, "GC_00010341", "cysZ") 
+info_for_GC(Summary, output_path, "GC_00008677", "cysY") 
+info_for_GC(Summary, output_path, "GC_00002569", "cysY") 
+info_for_GC(Summary, output_path, "GC_00003025", "cysY") 
+info_for_GC(Summary, output_path, "GC_00005778", "cysY") 
+info_for_GC(Summary, output_path, "GC_00010446", "cysY") 
+info_for_GC(Summary, output_path, "GC_00010469", "cysY") 
+info_for_GC(Summary, output_path, "GC_00001061", "cysN") 
+info_for_GC(Summary, output_path, "GC_00001058", "cysD") 
+info_for_GC(Summary, output_path, "GC_00002998", "cysH") 
+info_for_GC(Summary, output_path, "GC_00002484", "cysH") 
+info_for_GC(Summary, output_path, "GC_00005242", "cysH") 
+info_for_GC(Summary, output_path, "GC_00000686", "cysI") 
+info_for_GC(Summary, output_path, "GC_00000017", "fpr") 
+```
+
+## Exploration of a specific genomic region
+
+### Generate list of gene_callers_id for a list of KOs/GCs in all genomes
+
+```{r}
+KOList <- c("K07090", "K03795", "K00956", "K00957", "K00390", "K00392", "K00528")
+
+KOselection <- Summary %>%
+  filter(KOfam_ACC %in% KOList) %>%
+  arrange(genome_name,gene_callers_id) %>%
+  mutate(KO_GC_id=paste(KOfam_ACC, gene_cluster_id, gene_callers_id, sep="_")) %>%
+  select(KO_GC_id, genome_name, gene_callers_id)
+
+KOselectionWide <- spread(KOselection, genome_name, gene_callers_id)
+KOselectionWide$KO_GC <- sub("_[^_]+$", "", KOselectionWide$KO_GC_id)
+
+KOselectionWide_summary <- KOselectionWide %>%
+  select(-KO_GC_id) %>%
+  group_by(KO_GC) %>%
+  summarise(across(everything(), ~ if (any(!is.na(.))) toString(na.omit(.)) else NA_character_)) %>%
+  arrange(desc(Cgl_ATCC_13032)) %>% 
+  separate(KO_GC, into = c("KO", "GC"), sep = "_", extra = "merge")
+
+write_csv(KOselectionWide_summary, file.path(dir, "ARS/SummaryARS_KOs.csv"))
+```
+
+```{r}
+GCList <- KOselectionWide_summary$GC
+
+GCselection <- Summary %>%
+  filter(gene_cluster_id %in% GCList) %>%
+  arrange(genome_name,gene_callers_id) %>%
+  mutate(KO_GC_id=paste(KOfam_ACC, gene_cluster_id, gene_callers_id, sep="_")) %>%
+  select(KO_GC_id, genome_name, gene_callers_id)
+
+GCselectionWide <- spread(GCselection, genome_name, gene_callers_id)
+GCselectionWide$KO_GC <- sub("_[^_]+$", "", GCselectionWide$KO_GC_id)
+
+GCselectionWide_summary <- GCselectionWide %>%
+  select(-KO_GC_id) %>%
+  group_by(KO_GC) %>%
+  summarise(across(everything(), ~ if (any(!is.na(.))) toString(na.omit(.)) else NA_character_)) %>%
+  arrange(desc(Cgl_ATCC_13032)) %>% 
+  separate(KO_GC, into = c("KO", "GC"), sep = "_", extra = "merge")
+
+write_csv(GCselectionWide_summary, file.path(dir, "ARS/SummaryARS_GCs.csv"))
+```
+
+### Generate list of gene_callers_id/annotations around a specific gene
+
+```{r}
+folder_path <- "data/Anvio8/Parsed_prokka"
+txt_files <- list.files(path = folder_path, pattern = '^annot_Cps_.*\\.txt$', full.names = TRUE)
+
+dfs <- list()
+
+for (file in txt_files) {
+  df <- read_delim(file, delim = "\t", escape_double = FALSE, trim_ws = TRUE)  
+  df <- df %>% mutate(strain_name = gsub("^annot_|\\.txt$", "", basename(file)))
+  dfs <- c(dfs, list(df))
+}
+
+annotation_table <- bind_rows(dfs) %>%
+  select(-source, -e_value)
+
+selected_gene <- annotation_table %>%
+  filter(accession == "fprA") %>%
+  select(strain_name, gene_callers_id) %>%
+  group_by(strain_name) %>%
+  expand(gene_callers_id = seq(min(gene_callers_id) - 20, max(gene_callers_id) + 20))
+
+annotation_region_table <- annotation_table %>%
+  inner_join(selected_gene, by = c("gene_callers_id", "strain_name")) %>%
+  group_by(strain_name) %>%
+  mutate(row_num = row_number()) %>%
+  mutate(label = paste(gene_callers_id, accession, `function`, sep = "|")) %>%
+  select(row_num, strain_name, label)
+
+wide_table <- spread(annotation_region_table, key = strain_name, value = label)
+write_csv(wide_table, file.path(dir, "ARS/SummaryARS_region.csv"))
+```
+
+### Extract the DNA sequence and annotations in between two genes
+
+```{bash}
+#conda activate mafft 
+
+path_i="data/Anvio8/Prokka_out"
+path_o="data/Anvio8/Metabolic_Analysis/Pathway_Exploration/ARS/Alignments_hchA-fprA"
+mkdir -p $path_o
+
+gene_1="hchA"
+gene_2="fprA"
+species="Cps"
+label="ASR_Cps_region"
+
+fasta_files=()
+
+for file in $path_i/$species*.gff; do
+    filename=$(basename "$file")
+    filename_noext="${filename%.*}"
+    fasta_output="$path_o/${filename_noext}_region_sequence.fasta"
+
+    awk '/^##FASTA/{flag=1;next} {if(!flag) print}' "$file" > "$path_o/${filename_noext}_annotations.gff"
+    awk '/^##FASTA/{flag=1} {if(flag) print}' "$file" > "$path_o/${filename_noext}_sequence_temp.fasta"
+    grep -v '^##FASTA' "$path_o/${filename_noext}_sequence_temp.fasta" > "$path_o/${filename_noext}_sequence.fasta"
+    rm "$path_o/${filename_noext}_sequence_temp.fasta"
+
+    grep -E 'Name='$gene_1'|Name='$gene_2 "$path_o/${filename_noext}_annotations.gff" | sort -k4,4n | awk 'NR==1 {start=$4} NR==2 {end=$5} END {print $1 "\t" start "\t" end}' > "$path_o/${filename_noext}_region_coordinates.bed"
+    bedtools intersect -a "$path_o/${filename_noext}_annotations.gff" -b "$path_o/${filename_noext}_region_coordinates.bed" -wa > "$path_o/${filename_noext}_region_annotations.gff"
+    bedtools getfasta -fi "$path_o/${filename_noext}_sequence.fasta" -bed "$path_o/${filename_noext}_region_coordinates.bed" | awk -v filename="$filename_noext" '/^>/ {print ">" filename "|" substr($0, 2)} !/^>/' > "$fasta_output"
+
+    fasta_files+=("$fasta_output")
+done
+
+cat "${fasta_files[@]}" > "$path_o/$label.fasta"
+mafft --adjustdirection --reorder "$path_o/$label.fasta" > "$path_o/${label}_align.fasta"
+sed 's/|.*//;s/_R_//' "$path_o/${label}_align.fasta" > "$path_o/${label}_align_clean.fasta"
+```
+
+```{bash}
+filename="$path_o/${label}_align_clean_blank.fasta"
+cat "$path_o/${label}_align_clean.fasta" > "$filename"
+echo ">Genes" >> "$filename"
+echo "$(printf 'N%.0s' {1..11579})" >> "$filename"
+# N line added to visualize only gaps to the consensus
+```
+
+```{r}
+plot_ASR <- msavisr("data/Anvio8/Metabolic_Analysis/Pathway_Exploration/ARS/Alignments_hchA-fprA/ASR_Cps_region_align_clean_blank_R.fasta", 
+                myref="",
+                refontop = FALSE,
+                basecolors=c("gray30","gray30","white"))
+
+plot_ASR <- plot_ASR + 
+  theme(legend.position = "none",
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.text.y=element_text(size=12))
+
+saveRDS(plot_ASR, "data/Anvio8/Metabolic_Analysis/Pathway_Exploration/ARS/Alignments_hchA-fprA/plot_ASR.rds")
+```
+
+```{r}
+#Manual list of gene coordinates generated by searching individual genes in the aligned fasta
+genes <- list(c("--------Genes", 11579:10901, "8_hchA"), 
+              c("--------Genes", 8816:7815, "7_cysZ"), 
+              c("--------Genes", 7806:6988, "6_cysY"), 
+              c("--------Genes", 6971:5595, "5_cysN"),
+              c("--------Genes", 5595:4513, "4_cysD"),
+              c("--------Genes", 4516:3458, "3_cysH"),
+              c("--------Genes", 3461:1788, "2_cysI"),
+              c("--------Genes", 1424:1, "1_fpr2")
+)
+
+plot_ASRGenes <- msavisr("data/Anvio8/Metabolic_Analysis/Pathway_Exploration/ARS/Alignments_hchA-fprA/ASR_Cps_region_align_clean_blank_RGenes.fasta", 
+                myref="--------Genes",
+                refontop = FALSE,
+                basecolors=c("gray30","gray30","white"),
+                myroi = genes, hroi=1,
+                roicolors = c("#9fd122","#00a84a","#f88502","#00a9f2","#6f88c9","#a94488","#c8c3e3", "gray80"))
+
+plot_ASRGenes <- plot_ASRGenes + 
+  annotate("text", x=678, y=1, label= "fpr2", size=7, fontface=2) +
+  annotate("text", x=2624, y=1, label= "cysI", size=7, fontface=2) +
+  annotate("text", x=3987, y=1, label= "cysH", size=7, fontface=2) +
+  annotate("text", x=5054, y=1, label= "cysD", size=7, fontface=2) +
+  annotate("text", x=6283, y=1, label= "cysN", size=7, fontface=2) +
+  annotate("text", x=7397, y=1, label= "cysY", size=7, fontface=2) +
+  annotate("text", x=8315, y=1, label= "cysZ", size=7, fontface=2) +
+  annotate("text", x=11240, y=1, label= "hchA", size=7, fontface=2) +
+  theme(legend.position = "none",
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.text.y=element_text(size=12))
+
+plot_ASR <- readRDS("data/Anvio8/Metabolic_Analysis/Pathway_Exploration/ARS/Alignments_hchA-fprA/plot_ASR.rds")
+FinalFigure <- ggarrange(plot_ASRGenes, plot_ASR, ncol = 1, heights = c(0.20, 1))
+FinalFigure
+ggsave(FinalFigure, file="data/Anvio8/Metabolic_Analysis/Pathway_Exploration/ARS/ASR_Cps_region.svg", height=10, width=20, dpi = 150)
+```
+
+```{r}
+#Reversed genes
+genes <- list(c("Genes", 1:678, "1_hchA"), 
+              c("Genes", 2763:3764, "2_cysZ"), 
+              c("Genes", 3773:4591, "3_cysY"), 
+              c("Genes", 4608:5984, "4_cysN"),
+              c("Genes", 5984:7066, "5_cysD"),
+              c("Genes", 7063:8121, "6_cysH"),
+              c("Genes", 8118:9791, "7_cysI"),
+              c("Genes", 10155:11579, "8_fpr2")
+)
+
+# Old colors
+# roicolors = c("black","darkgreen","purple","cyan","pink","red","orange","yellow")
+```
+
+
+```{r}
+gff_dir = "data/Anvio8/Metabolic_Analysis/Pathway_Exploration/ARS/Alignments_hchA-fprA/Cps_MSK311_region_annotations.gff" 
+gff <- read_delim(gff_dir, delim = "\t", trim_ws = TRUE, col_names = c("seqname", "source", "feature", "start", "end", "score", "strand", "frame", "att")) %>%
+  select(att, start, end)
+
+gff$name <- "Genes"
+gff$length <- 11385
+gff$offset <- 0
+gff$height <- 0.4
+
+gff$gene_name <- ifelse(str_detect(gff$att, "gene="),str_extract(gff$att, "(?<=gene=).*?(?=;)"), "HP")
+
+gff$description <- c("hchA", NA, NA, NA, NA, "cysZ", "cysY", "cysN", "cysD", "cysH", "cysI", "fpr2")
+gff$color <- c("grey", "grey", "grey", "grey", "grey","darkgreen", "purple", "cyan", "pink", "red", "orange", "yellow")
+
+
+gff$new_start <- gff$start - 42252
+gff$new_end <- gff$end - 42252
+  
+gff <- gff %>%
+  select(name, length, offset, height, color, description, new_start, new_end)
+
+seq_ASR <- pdomvisr(gff) + theme(legend.position = "none")
+
+seq_ASR
+```
+
+
+
+## Blast Validations
+
+```{bash}
+#| eval: FALSE
+
+path_o="data/Anvio8/Metabolic_Analysis/Blast_Validations/Databases"
+mkdir -p "$path_o"
+
+path_i="data/Anvio8/Prokka_out/"
+./scripts/process_files_forblastDB.sh $path_i .fna $path_o "NovCor_FullSequence"
+./scripts/process_files_forblastDB.sh $path_i .ffn $path_o "NovCor_Annotated_nt"
+./scripts/process_files_forblastDB.sh $path_i .faa $path_o "NovCor_Annotated_aa"
+
+path_i="data/Anvio8/Parsed_NCBI/"
+./scripts/process_files_forblastDB.sh $path_i .fa $path_o "NCBIStrains_FullSequence"
+```
+
+The directory "data/Anvio8/Metabolic_Analysis/NovCor_v03/Blast_Validations/Databases" had to be moved out of Box for the makeblastdb command to work
+
+```{bash}
+#| eval: FALSE
+
+#cd <local/path/Blast_Validations/Databases>
+
+makeblastdb -in NovCor_FullSequence -title "NovCor_FullSequence" -input_type fasta -parse_seqids -dbtype 'nucl'
+makeblastdb -in NovCor_Annotated_nt -title "NovCor_Annotated_nt" -input_type fasta -parse_seqids -dbtype 'nucl'
+makeblastdb -in NovCor_Annotated_aa -title "NovCor_Annotated_aa" -input_type fasta -parse_seqids -dbtype 'prot'
+
+makeblastdb -in NCBIStrains_FullSequence -title "NCBIStrains_FullSequence" -input_type fasta -parse_seqids -dbtype 'nucl'
+```
+
+```{bash}
+#| eval: FALSE
+
+path_o="data/Anvio8/Metabolic_Analysis/Blast_Validations"
+
+tblastn -db $path_o/Databases/NovCor_FullSequence \
+        -query $path_o/Cgl_gdhA.faa \
+        -out $path_o/Cgl_gdhA_vs_NovCor_FullSequence.csv \
+        -outfmt "10 std qcovs delim=,"
+        
+tblastn -db $path_o/Databases/NovCor_Annotated_nt \
+        -query $path_o/Cgl_gdhA.faa \
+        -out $path_o/Cgl_gdhA_vs_NovCor_Annotated_nt.csv \
+        -outfmt "10 std qcovs delim=,"       
+
+blastp -db $path_o/Databases/NovCor_Annotated_aa \
+        -query $path_o/Cgl_gdhA.faa \
+        -out $path_o/Cgl_gdhA_vs_NovCor_Annotated_aa.csv \
+        -outfmt "10 std qcovs delim=,"  
+        
+tblastn -db $path_o/Databases/NCBIStrains_FullSequence \
+        -query $path_o/Cgl_gdhA.faa \
+        -out $path_o/Cgl_gdhA_NCBIStrains_vs_FullSequence.csv \
+        -outfmt "10 std qcovs delim=,"
+        
+        
+tblastn -db $path_o/Databases/NovCor_FullSequence \
+        -query $path_o/Cgl_urease.faa \
+        -out $path_o/Cgl_urease_vs_NovCor_FullSequence.csv \
+        -outfmt "10 std qcovs delim=,"
+        
+tblastn -db $path_o/Databases/NovCor_Annotated_nt \
+        -query $path_o/Cgl_urease.faa \
+        -out $path_o/Cgl_urease_vs_NovCor_Annotated_nt.csv \
+        -outfmt "10 std qcovs delim=,"       
+
+blastp -db $path_o/Databases/NovCor_Annotated_aa \
+        -query $path_o/Cgl_urease.faa \
+        -out $path_o/Cgl_urease_vs_NovCor_Annotated_aa.csv \
+        -outfmt "10 std qcovs delim=,"  
+        
+tblastn -db $path_o/Databases/NCBIStrains_FullSequence \
+        -query $path_o/Cgl_urease.faa \
+        -out $path_o/Cgl_urease_NCBIStrains_vs_FullSequence.csv \
+        -outfmt "10 std qcovs delim=,"
+```
+
+```{r}
+Cgl_gdhA_vs_NovCor_FullSequence <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_gdhA_vs_NovCor_FullSequence.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
+Cgl_gdhA_vs_NovCor_Annotated_nt <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_gdhA_vs_NovCor_Annotated_nt.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
+Cgl_gdhA_vs_NovCor_Annotated_aa <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_gdhA_vs_NovCor_Annotated_aa.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
+Cgl_gdhA_vs_NovCor_FullSequence <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_gdhA_vs_NovCor_FullSequence.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
+
+Cgl_urease_vs_NovCor_FullSequence <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_urease_vs_NovCor_FullSequence.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
+Cgl_urease_vs_NovCor_Annotated_nt <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_urease_vs_NovCor_Annotated_nt.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
+Cgl_urease_vs_NovCor_Annotated_aa <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_urease_vs_NovCor_Annotated_aa.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
+Cgl_urease_vs_NovCor_FullSequence <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_urease_vs_NovCor_FullSequence.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
+```
