@@ -72,7 +72,7 @@ write_delim(AnvioClusters_Cac, "/analysis_PPanGGOLiN/Cac_PAN_SUMMARY.tsv", col_n
 [**IMPORTANT**]{.underline}**:** The gene_callers_id provided by anvi'o don't match the original ones in the prokka annotation. The prokka annotated genomes were parsed into two text files, one for gene calls and one for annotations, with the script `gff_parser.py`. By default prokka annotates also tRNAs, rRNAs and CRISPR regions. However, `gff_parser.py` will only utilize open reading frames reported by Prodigal in the prokka output in order to be compatible with the pangenomic anvi'o pipeline. While parsing new gene_callers_id are generated only for the ORFs that will be imported into anvi'o. Fortunately, `anvi-get-sequences-for-gene-calls` can be used to export new .gff files with only the ORFs and these can be used for PPanGGOLiN, instead of the original prokka ones:
 
 ```{bash, eval=FALSE}
-#conda activate anvio-7
+#conda activate anvio-7.1
 mkdir -p "/analysis_Anvio7/Pangenomic_Results/Exported_gffs"
 
 path_f="/analysis_Anvio7/Contigs_db"
@@ -187,7 +187,7 @@ ppanggolin write -p "/analysis_PPanGGOLiN/Cpr_anno_output/Cpr.h5" -o "/analysis_
 
 ## Summary of used parameters
 
-The `info` subcommand indicates, for each steps of the analysis, the PPanGGOLiN parameters that were used and the source of the data if appropriate. This is useful for methods sections on manuscripts.
+The `info` subcommand indicates, for each steps of the analysis, the PPanGGOLiN parameters that were used and the source of the data if appropriate. 
 
 ```{bash, eval=FALSE}
 #conda activate PPanGGOLiN
@@ -200,7 +200,7 @@ ppanggolin info -p "/analysis_PPanGGOLiN/Ctu_anno_output/Ctu.h5" --parameters --
 ppanggolin info -p "/analysis_PPanGGOLiN/Cpr_anno_output/Cpr.h5" --parameters --content --status
 ```
 
-# Import PPanGGOLiN Partitions into anvio
+# Import PPanGGOLiN Partitions into anvi'o
 
 The `pangenomeGraph.gexf` file can be opened with Gephi, and the Data Table exported as a `gephi_table.csv`. This can be used to easily explore the PPanGGOLiN output with the same gene IDs anvi'o uses. The `matrix.csv` should be used with caution, since records PPanGGOLiN internal gene IDs, that are different from the anvi'o ones.
 
@@ -263,7 +263,7 @@ write_delim(Cac_partitions, "/analysis_PPanGGOLiN/Output_Cac/partitions/partitio
 This will import the PPanGGOLiN partitions (from `partitions.txt`) as a collection of bins named **PPanGGOLiNpartitions** in each profile-db:
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7
+#conda activate anvio-7.1
 anvi-import-collection "/analysis_Anvio7/Pangenomic_Results/Cps/partitions_Cps.txt" \
                        -p "/analysis_Anvio7/Pangenomic_Results/Cps/PAN_Cps-PAN.db" \
                        -C "PPanGGOLiNpartitions" --bins-info "/analysis_Anvio7/main_outputs/PPanGGOLiN_bin_colors.txt"
@@ -281,7 +281,7 @@ anvi-import-collection "/analysis_Anvio7/Pangenomic_Results/Cac/partitions_Cac.t
 We can also import this data (from `partitions.txt`) as a PPanGGOLiN layer into in each profile-db:
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7
+#conda activate anvio-7.1
 anvi-import-misc-data "/analysis_Anvio7/Pangenomic_Results/Cps/partitions_Cps.txt" \
                        -p "/analysis_Anvio7/Pangenomic_Results/Cps/PAN_Cps-PAN.db" -t items
 anvi-import-misc-data "/analysis_Anvio7/Pangenomic_Results/Cpr/partitions_Cpr.txt" \
@@ -297,7 +297,7 @@ anvi-import-misc-data "/analysis_Anvio7/Pangenomic_Results/Cac/partitions_Cac.tx
 We can see the collections and bins created in a pangenomic database using the command `anvi-show-collections-and-bins`:
 
 ```{bash, eval = FALSE}
-#conda activate anvio-7
+#conda activate anvio-7.1
 anvi-show-collections-and-bins -p "/analysis_Anvio7/Pangenomic_Results/Cps/PAN_Cps-PAN.db" --debug 
 
 anvi-show-collections-and-bins -p "/analysis_Anvio7/Pangenomic_Results/Cpr/PAN_Cpr-PAN.db" --debug 

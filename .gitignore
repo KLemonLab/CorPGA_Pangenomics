@@ -27,4 +27,8 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 **/.DS_Store
+<<<<<<< HEAD
 data
+=======
+/data
+>>>>>>> 16367534409b4d087c33ef9e525b14552afa14e8
