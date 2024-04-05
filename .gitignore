@@ -29,4 +29,6 @@ vignettes/*.pdf
 **/.DS_Store
 
 /data
-
+/.quarto/
+_freeze/
+_notebooks/
