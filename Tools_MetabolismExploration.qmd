@@ -1,4 +1,4 @@
-# Metabolism Exploration {.unnumbered}
+# Metabolism Exploration Tool {.unnumbered}
 
 ```{r}
 #| echo: FALSE
