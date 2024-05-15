@@ -27,7 +27,7 @@ for (file in filelist) {
   # Saving input files as objects
   Pangenome <- read.delim(fileDataPath)
   
-  # Rendering '05_BasicNotebook.Rmd':
+  # Rendering 'SupplementalMethods_COGS.Rmd':
   rmarkdown::render(input = "SupplementalMethods_COGS.Rmd",
                     output_file = paste0("SupplementalMethods_COGS_", Species, ".html"),
                     params = list(folder = syncfolder))
