@@ -1,0 +1,207 @@
+---
+title: "Supplemental Methods: Glycogen"
+author: 
+- Tommy Tran, (KLemonLab) Tommy.Tran@bcm.edu
+- Isabel Escapa, (KLemonLab) Isabel.FernandezEscapa@bcm.edu
+output:
+  rmdformats::robobook:
+    use_bookdown: true
+    code_folding: show
+---
+
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy(c('r', 'bash'))
+```
+
+```{r}
+# Load the tidyverse and readxl libraries
+library(tidyverse)
+library(readxl)
+library(ggpubr)
+```
+
+# Independent Experiment Glycogen Assays (Luminescence)
+
+XXXXXXXXXX
+
+```{r}
+######### Reading Data and Basic Clean-up ######### 
+
+# XXXXXXXXXXX
+#experiment <- "240322_Gly"
+#experiment <- "240325_Gly"
+experiment <- "240331_Gly"
+
+# Read data from an Excel file into two separate data frames: data_lum from the "csvLum" sheet and data_OD from the "csvOD" sheet
+data_lum <- read_excel(file.path(paste0("data/glycogen/", experiment, ".xlsx")), sheet = "csvLum")
+data_OD <- read_excel(file.path(paste0("data/glycogen/", experiment, ".xlsx")), sheet = "csvOD")
+data_norm <- read_excel(file.path(paste0("data/glycogen/", experiment, ".xlsx")), sheet = "csvNorm")
+
+# Filter out rows where "Reject" column is "F" and where "Type" column is not "Empty" in the data_lum data frame, and remove the "Reject" column for both dataframes
+data_lum <- data_lum %>% 
+  filter(Reject=="F") %>%
+  filter(Type!="Empty") %>%
+  filter(Species!="Cna") %>%
+  select(-Reject)
+
+data_OD <- data_OD %>% 
+  filter(Reject=="F") %>%
+  filter(Species!="Cna") %>%
+  select(-Reject)
+
+data_norm <- data_norm %>% 
+  filter(Species!="Cna")
+
+# Split the data_lum data frame into two separate data frames: data_lum_samples containing rows where "Type" is "Sample" and data_lum_standards containing rows where "Type" is "Standard", and remove unnecessary columns
+data_lum_samples <- data_lum %>% 
+  filter(Type=="Sample")
+
+data_lum_standards <- data_lum %>% 
+  filter(Type=="Standard") %>%
+  select(-Species, -Strain)
+
+# Convert the "Amy" column in data_lum_standards to a factor and "Glycogen" column to numeric
+data_lum_standards$Amy <- as.factor(data_lum_standards$Amy)
+data_lum_standards$Glycogen <- as.numeric(data_lum_standards$Glycogen)
+```
+
+```{r fig.height=8, fig.width=15}
+# Function to analyze a single timepoint
+analyze_glycogen <- function(time, data_lum_standards, data_lum_samples) {
+  # Filter the data_lum_standards data frame for rows where "TimePoint" is equal to the specified time
+  time_standard <- data_lum_standards %>% 
+    filter(TimePoint == time) %>%
+    group_by(Glycogen) %>%
+    mutate(Difference = ifelse(Amy == "T", Lum - lag(Lum), NA)) %>%
+    filter(!is.na(Difference))
+
+  # Fit a linear model (lm) with "Difference" as the dependent variable and "Glycogen" as the independent variable
+  lmStandard <- lm(Difference ~ Glycogen, time_standard) 
+
+  # Extract coefficients from the linear model
+  coefficients <- lmStandard$coefficients
+
+  # Filter the data_lum_samples data frame for rows where "TimePoint" is equal to the specified time
+  time_samples <- data_lum_samples %>%
+    filter(TimePoint == time) %>%
+    mutate(Glycogen = (Lum - coefficients[1]) / coefficients[2])
+
+  # Group the data by Strain and Amy, calculate the mean Lum value within each group
+  time_samples_diff <- time_samples %>% 
+    group_by(Species, Amy) %>%
+    summarise(LumAvg = mean(Lum)) %>%
+    mutate(Difference = ifelse(Amy == "T", LumAvg - lag(LumAvg), NA)) %>%
+    filter(!is.na(Difference)) %>%
+    mutate(Glycogen = (Difference - coefficients[1]) / coefficients[2]) %>%
+    select(-Amy, -LumAvg) %>%
+    mutate(TimePoint = time)
+
+  # Adds individual IDs to the replicas, with and without Amy.
+  time_samples <- time_samples %>%
+    arrange(Species, Amy)
+  time_samples$Replica <- as.factor(rep(1:6, length.out = nrow(time_samples)))
+
+  return(list(time_samples_diff = time_samples_diff))
+}
+```
+
+```{r fig.height=30, fig.width=15}
+# Loop through different values of time
+all_results <- list()
+
+for (time_point in unique(data_lum_standards$TimePoint)) {
+  result <- analyze_glycogen(time_point, data_lum_standards, data_lum_samples)
+  all_results[[paste0("Time_", time_point)]] <- result
+
+# Combine all time_samples_diff dataframes into a single dataframe
+full_Lum_df <- do.call(rbind, lapply(all_results, function(result) result$time_samples_diff))
+
+full_Lum_df <- left_join(full_Lum_df, data_norm) %>%
+  mutate(GlycogenNorm = Glycogen/ODNorm)
+}
+```
+
+```{r}
+full_Lum_df$Species <- factor(full_Lum_df$Species, levels=c("Cpr", "Cps", "Cac", "Ctu", "Cgl"))
+full_Lum_df$TimePoint <- factor(full_Lum_df$TimePoint)
+full_Lum_df$Date <- data_OD$Date[1]
+
+write.csv(full_Lum_df, paste0("data/glycogen/Lum/", experiment,"_Lum.csv"), row.names = F)
+write.csv(data_OD, paste0("data/glycogen/OD/", experiment,"_OD.csv"), row.names = F)
+```
+
+
+# Summary Plots and Stats
+
+```{r}
+folder_OD <- "data/glycogen/OD"
+file_list_OD <- list.files(folder_OD, pattern = "_OD.csv", full.names = TRUE)
+df_list_OD <- lapply(file_list_OD, read.csv)
+df_OD <- bind_rows(df_list_OD)
+
+folder_lum <- "data/glycogen/Lum"
+file_list_lum <- list.files(folder_lum, pattern = "_Lum.csv", full.names = TRUE)
+df_list_lum <- lapply(file_list_lum, read.csv)
+df_lum <- bind_rows(df_list_lum)
+```
+
+```{r}
+# Group by Species, Time, and Media, calculate the average 
+avg_data_OD <- df_OD %>%
+  group_by(Species, Time) %>%
+  summarise(AvgOD = mean(GrowthOD, na.rm = TRUE),
+            SE = sd(GrowthOD, na.rm = TRUE) / sqrt(sum(!is.na(GrowthOD))))
+
+avg_data_Lum <- df_lum %>%
+  group_by(Species, TimePoint) %>%
+  summarise(AvgLum = mean(Glycogen, na.rm = TRUE),
+            SE = sd(Glycogen, na.rm = TRUE) / sqrt(sum(!is.na(Glycogen))))
+
+avg_data_Lum_Norm <- df_lum %>%
+  group_by(Species, TimePoint) %>%
+  summarise(AvgLum = mean(GlycogenNorm, na.rm = TRUE),
+            SE = sd(GlycogenNorm, na.rm = TRUE) / sqrt(sum(!is.na(GlycogenNorm))))
+
+avg_data_OD$Species <- factor(avg_data_OD$Species, levels=c("Cpr", "Cps", "Cac", "Ctu", "Cgl"))
+avg_data_Lum$Species <- factor(avg_data_Lum$Species, levels=c("Cpr", "Cps", "Cac", "Ctu", "Cgl"))
+avg_data_Lum$TimePoint <- factor(avg_data_Lum$TimePoint)
+avg_data_Lum_Norm$Species <- factor(avg_data_Lum_Norm$Species, levels=c("Cpr", "Cps", "Cac", "Ctu", "Cgl"))
+avg_data_Lum_Norm$TimePoint <- factor(avg_data_Lum_Norm$TimePoint)
+```
+
+```{r}
+plot_avg_OD600 <- ggplot(avg_data_OD, aes(x = Time, y = AvgOD, color = Species)) +
+  geom_line() +
+  geom_point() +
+  geom_errorbar(aes(ymin = AvgOD - SE, ymax = AvgOD + SE), width = 0.2) +
+  labs(title = "Glycogen Bacterial Growth Curves",
+       x = "Time (hours)",
+       y = "Average OD600",
+       color = "Species",
+  ) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold", margin = margin(b = 10)),
+    plot.caption = element_text(size = 10, margin = margin(t = 10))
+  )
+plot_avg_OD600
+```
+
+```{r}
+plot_avg_Lum_Norm <- ggplot(avg_data_Lum_Norm, aes(x = TimePoint, y = AvgLum, fill = Species)) +
+  geom_bar(position = position_dodge(), stat = "identity", color = "black") +
+  geom_errorbar(aes(ymin = AvgLum - SE, ymax = AvgLum + SE), position = position_dodge(width = 0.9), width = 0.2) +
+  labs(title = "OD Normalized Glycogen Concentration",
+       x = "Time (hours)",
+       y = "Average Normalized Glycogen",
+       color = "Species",
+  ) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold", margin = margin(b = 10)),
+    plot.caption = element_text(size = 10, margin = margin(t = 10))
+  )
+plot_avg_Lum_Norm
+```
+
+
