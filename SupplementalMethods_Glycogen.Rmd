@@ -253,46 +253,7 @@ avg_data_Lum$TimePoint <- factor(avg_data_Lum$TimePoint)
 avg_data_Lum_Norm$TimePoint <- factor(avg_data_Lum_Norm$TimePoint)
 ```
 
-```{r}
-# Create a line plot of average OD600 over time for each species
-plot_avg_OD600 <- ggplot(avg_data_OD, aes(x = Time, y = AvgOD, color = Species)) +
-  geom_line() + # Add lines to connect points
-  geom_point() + # Add points to represent data
-  geom_errorbar(aes(ymin = AvgOD - SE, ymax = AvgOD + SE), width = 0.2) + # Add error bars
-  labs(
-    title = "Glycogen Bacterial Growth Curves",
-    x = "Time (hours)",
-    y = "Average OD600",
-    color = "Species"
-  ) +
-  theme_bw() + # Use a black and white theme
-  theme(
-    plot.title = element_text(size = 14, face = "bold", margin = margin(b = 10)),
-    plot.caption = element_text(size = 10, margin = margin(t = 10))
-  )
-plot_avg_OD600 # Display the plot
-```
-
-```{r}
-# Create a bar plot of average normalized glycogen concentration over time for each species
-plot_avg_Lum_Norm <- ggplot(avg_data_Lum_Norm, aes(x = TimePoint, y = AvgLum, fill = Species)) +
-  geom_bar(position = position_dodge(), stat = "identity", color = "black") + # Add bars with dodge position
-  geom_errorbar(aes(ymin = AvgLum - SE, ymax = AvgLum + SE), position = position_dodge(width = 0.9), width = 0.2) + # Add error bars
-  labs(
-    title = "OD Normalized Glycogen Concentration",
-    x = "Time (hours)",
-    y = "Average Normalized Glycogen",
-    color = "Species"
-  ) +
-  theme_bw() + # Use a black and white theme
-  theme(
-    plot.title = element_text(size = 14, face = "bold", margin = margin(b = 10)),
-    plot.caption = element_text(size = 10, margin = margin(t = 10))
-  )
-plot_avg_Lum_Norm # Display the plot
-```
-
-# Draft final fingure
+# Final Figure
 
 ```{r}
 # Load the necessary libraries
@@ -302,46 +263,50 @@ library(grid)
 # Create a line plot of average OD600 over time for each species
 plot_avg_OD600 <- ggplot(avg_data_OD, aes(x = Time, y = AvgOD, color = Species)) +
   geom_line() + # Add lines to connect points
-  geom_point() + # Add points to represent data
+  geom_point(size=3) + # Add points to represent data
   geom_errorbar(aes(ymin = AvgOD - SE, ymax = AvgOD + SE), width = 0.2) + # Add error bars
   labs(
     title = "Glycogen Bacterial Growth Curves",
     y = "Average OD600"
   ) +
-  theme_bw() + # Use a black and white theme
+  scale_color_manual(values=c("#5b5b5b", "#2e67f2", "#AA35E3", "#c5bdf1", "#c5bdf1")) +
+  scale_y_continuous(expand=c(0,0)) +
+  scale_x_continuous(expand=c(0,2)) +
+  theme_classic() + # Use a black and white theme
   theme(
     plot.title = element_text(size = 14, face = "bold", margin = margin(b = 10)),
     plot.caption = element_text(size = 10, margin = margin(t = 10)),
     legend.position = "none", # Remove the legend
     axis.title.x = element_blank(), # Remove x-axis title
     plot.margin = margin(1, 1, 1, 1, "cm") # Adjust plot margins
-  ) +
-  annotate("text", x = Inf, y = Inf, label = "A", hjust = 1, vjust = 1, size = 5, fontface = "bold")
+  )
 
 # Create a bar plot of average normalized glycogen concentration over time for each species
 plot_avg_Lum_Norm <- ggplot(avg_data_Lum_Norm, aes(x = TimePoint, y = AvgLum, fill = Species)) +
   geom_bar(position = position_dodge(), stat = "identity", color = "black") + # Add bars with dodge position
-  geom_errorbar(aes(ymin = AvgLum - SE, ymax = AvgLum + SE), position = position_dodge(width = 0.9), width = 0.2) + # Add error bars
+  geom_errorbar(aes(ymin = AvgLum, ymax = AvgLum + SE), position = position_dodge(width = 0.9), width = 0.2) + # Add error bars
   labs(
     title = "OD Normalized Glycogen Concentration",
     y = "Average Normalized Glycogen",
     color = "Species"
   ) +
-  theme_bw() + # Use a black and white theme
+  scale_fill_manual(values=c("#5b5b5b", "#2e67f2", "#AA35E3", "#c5bdf1", "#c5bdf1")) +
+  scale_y_continuous(expand=c(0,0), limits = c(0, 13)) +
+  theme_classic() + # Use a black and white theme
   theme(
     plot.title = element_text(size = 14, face = "bold", margin = margin(b = 10)),
     plot.caption = element_text(size = 10, margin = margin(t = 10)),
     axis.title.x = element_blank(), # Remove x-axis title
     plot.margin = margin(1, 1, 1, 1, "cm") # Adjust plot margins
-  ) +
-  annotate("text", x = Inf, y = Inf, label = "B", hjust = 1, vjust = 1, size = 5, fontface = "bold")
+  )
 
 # Combine the plots using ggarrange
-combined_plot <- ggarrange(plot_avg_OD600, plot_avg_Lum_Norm, ncol = 2, common.legend = TRUE, legend = "right")
+combined_plot <- ggarrange(plot_avg_OD600, plot_avg_Lum_Norm, ncol = 2, labels=c("A", "B"), widths = c(0.8, 0.7))
 
 # Save the combined plot as a PNG file
 ggsave("data/glycogen/Figure/combined_plot.png", combined_plot, width = 10, height = 6, dpi = 300)
 
+combined_plot
 ```
 
 
