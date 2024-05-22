@@ -34,7 +34,7 @@ output:
     
     -   [*Corynebacterium tuberculostearicum*](SupplementalMethods_COGS_Ctu.html)
 
-
+-   Supplemental methods for the [[Glycogen analysis]{.underline}](SupplementalMethods_Glycogen.html).
 
 
 <img src="images/klemonlab_photo.jpg" align="left" width="200" height="90"/>

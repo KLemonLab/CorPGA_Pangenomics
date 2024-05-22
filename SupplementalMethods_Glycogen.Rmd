@@ -20,14 +20,65 @@ library(readxl)
 library(ggpubr)
 ```
 
+### Wet lab instructions (Hide this)
+
+1.	Streak species of interest on brain heart infusion + tween and let grow 36-48 hours
+2.	Prepare 4.5 ml PBS buffer in 5 ml tubes 
+3.	Pick 15-20 single colonies and inoculate into 5 ml with PBS buffer
+4.	Perform 2x full washes with PBS buffer, centrifuge at 13000x RPM 4 C for 10 min each
+5.	Measure OD600 1:10, 20 ul sample with 180 ul buffer
+6.	Normalize to an OD600 = 2, measure OD 1:2 100 ul sample, 100 ul buffer
+7.	Inoculate OD600 = 2, 1.25 ml sample to 50 ml media in 250 ml flasks per species
+8.	Measure OD600 at 24 hr, 28 hr, 32 hr, and 48 hr
+11.	Aliquot 4 ml from 50 ml sample into a 5 ml tube and centrifuge at 13k RPM, 4 C, for 10 min
+12.	Resuspend with 4 ml PBS and wash 2x with 1X PBS buffer, 13k RPM, 4 C, 10 min
+13.	Place glycogen enzymes out to thaw on ice during washes
+14.	After washing resuspend in 400 ul PBS and measure OD600 1:10, 20 ul : 180 ul
+15.	Normalize 600 ul at OD600 = 0.5
+16.	Use 100 ul to measure OD600 and record
+17.	Aliquot 300 ul of sample and 150 ul HCL to bead beating tube(s)
+18.	Place tubes in non-shaking dry bath at 95 C for 5 minutes
+19.	Bead beat 3x at 6.5 m/s for 45 seconds each time (make sure lids are tight)
+20.	Add 150 ul Tris buffer to each tube 
+21.	Centrifuge at 16000 RCF, 4 C, for 20 minutes
+22.	Prepare Amylase reagent and transfer standards to 96 plate reader wells
+23.	After centrifugation transfer 200 ul of supernatant to a clean 1.5 ml tube
+24.	Aliquot 25 ul of samples to 96 well plate
+25.	Add 25 ul of + Amy or Glucoamylase buffer to wells that are controls
+26.	Incubate at room temperature for 1 hr
+27.	Prepare glucose detection reagent
+28.	Aliquot 50 ul of digestion reagent to both samples and controls read in 1 hr
+29.	Run luminescence in a compatible plate reader
+
+---
+
+
+This study involved a detailed procedure to analyze the growth and glycogen concentration of bacterial species. To measure glycogen the Glycogen-Gly Assay kit from Promega was used (Catalog #: J5051). The species of interest were first streaked on brain heart infusion supplemented with tween and allowed to grow for 36-48 hours. Subsequently, single colonies were picked and inoculated into tubes containing 4.5 ml of PBS buffer. The samples underwent two full washes with PBS buffer and were centrifuged at 13000 RPM at 4°C for 10 minutes each time.
+
+The optical density at 600 nm (OD600) was measured and normalized to 2. The normalized samples were then inoculated into 50 ml nCDM + 5% glucose in 250 ml flasks and the OD600 was measured at 24, 28, 32, and 48 hours. A 4 ml aliquot from each sample was centrifuged, resuspended in PBS, and washed twice. During the washes, glycogen enzymes were thawed on ice.
+
+After washing, the samples were resuspended in PBS and the OD600 was measured and normalized to 0.5. A 300 µl aliquot of each sample was combined with 150 µl of HCL in a bead-beating tube and heated in a non-shaking dry bath at 95°C for 5 minutes. The samples were bead-beaten three times at 6.5 m/s for 45 seconds each time. After bead-beating, 150 µl of Tris buffer was added to each tube.
+
+The samples were then centrifuged at 16000 RCF at 4°C for 20 minutes. The supernatant was transferred to a clean tube and aliquoted into a 96-well plate. Amylase reagent was prepared and standards were transferred to the plate reader wells. The samples were incubated at room temperature for 1 hour. After incubation, a glucose detection reagent was prepared and added to the samples and controls. Luminescence was measured using a compatible plate reader. The results provide insights into the growth and glycogen concentration of the bacterial species under study.
+
+## Plate reader output excel file set up
+
+We made 3 new tabs within the excel named `csvOD`, `csvNorm`, and `csvLum`. These tabs will act as the initial data R will read. The templates of the 3 tab files will be as described:
+
+The `csvOD` contains the columns Date, Species, Strain, Time, Media, Reject and GrowthOD. 
+The `csvNorm` contains the columns Speces, TimePoint, Date, and ODNorm. 
+The`csvLum` contains the columns Date, TimePoint, Well_ID, Type, Amy, Species, Strain, Reject, Glycogen, and Lum. 
+
+Examples of the tabs can be found in the `.xlsx` file within the directory `data/glycogen`.
+
 # Independent Experiment Glycogen Assays (Luminescence)
 
-XXXXXXXXXX
+This analysis was ran three different times based on three independent experiments on different dates. This data can be found in `data/glycogen` as `.xlsx` files. 
 
 ```{r}
 ######### Reading Data and Basic Clean-up ######### 
 
-# XXXXXXXXXXX
+# Defining the experiment variable three times but only the last definition ("240331_Gly") will be used in the subsequent code.
 #experiment <- "240322_Gly"
 #experiment <- "240325_Gly"
 experiment <- "240331_Gly"
@@ -122,11 +173,19 @@ full_Lum_df <- left_join(full_Lum_df, data_norm) %>%
 ```
 
 ```{r}
+# Convert the 'Species' column to a factor with specified levels
 full_Lum_df$Species <- factor(full_Lum_df$Species, levels=c("Cpr", "Cps", "Cac", "Ctu", "Cgl"))
+
+# Convert the 'TimePoint' column to a factor with default level ordering
 full_Lum_df$TimePoint <- factor(full_Lum_df$TimePoint)
+
+# Assign the first 'Date' value from 'data_OD' to all rows in 'full_Lum_df'
 full_Lum_df$Date <- data_OD$Date[1]
 
+# Write the 'full_Lum_df' dataframe to a CSV file, excluding row names
 write.csv(full_Lum_df, paste0("data/glycogen/Lum/", experiment,"_Lum.csv"), row.names = F)
+
+# Write the 'data_OD' dataframe to a CSV file, excluding row names
 write.csv(data_OD, paste0("data/glycogen/OD/", experiment,"_OD.csv"), row.names = F)
 ```
 
@@ -134,74 +193,157 @@ write.csv(data_OD, paste0("data/glycogen/OD/", experiment,"_OD.csv"), row.names 
 # Summary Plots and Stats
 
 ```{r}
+# Define the directory path for OD data
 folder_OD <- "data/glycogen/OD"
+
+# Create a list of full file names for all '_OD.csv' files in the directory
 file_list_OD <- list.files(folder_OD, pattern = "_OD.csv", full.names = TRUE)
+
+# Read each file into a list of dataframes
 df_list_OD <- lapply(file_list_OD, read.csv)
+
+# Combine all dataframes in the list into a single dataframe
 df_OD <- bind_rows(df_list_OD)
 
+# Define the directory path for Lum data
 folder_lum <- "data/glycogen/Lum"
+
+# Create a list of full file names for all '_Lum.csv' files in the directory
 file_list_lum <- list.files(folder_lum, pattern = "_Lum.csv", full.names = TRUE)
+
+# Read each file into a list of dataframes
 df_list_lum <- lapply(file_list_lum, read.csv)
+
+# Combine all dataframes in the list into a single dataframe
 df_lum <- bind_rows(df_list_lum)
 ```
 
 ```{r}
-# Group by Species, Time, and Media, calculate the average 
+# Group the OD data by Species and Time, then calculate the average OD and standard error
 avg_data_OD <- df_OD %>%
   group_by(Species, Time) %>%
-  summarise(AvgOD = mean(GrowthOD, na.rm = TRUE),
-            SE = sd(GrowthOD, na.rm = TRUE) / sqrt(sum(!is.na(GrowthOD))))
+  summarise(
+    AvgOD = mean(GrowthOD, na.rm = TRUE), # Calculate the average OD, removing NA values
+    SE = sd(GrowthOD, na.rm = TRUE) / sqrt(sum(!is.na(GrowthOD))) # Calculate standard error
+  )
 
+# Group the Lum data by Species and TimePoint, then calculate the average Luminescence and standard error
 avg_data_Lum <- df_lum %>%
   group_by(Species, TimePoint) %>%
-  summarise(AvgLum = mean(Glycogen, na.rm = TRUE),
-            SE = sd(Glycogen, na.rm = TRUE) / sqrt(sum(!is.na(Glycogen))))
+  summarise(
+    AvgLum = mean(Glycogen, na.rm = TRUE), # Calculate the average Glycogen, removing NA values
+    SE = sd(Glycogen, na.rm = TRUE) / sqrt(sum(!is.na(Glycogen))) # Calculate standard error
+  )
 
+# Group the normalized Lum data by Species and TimePoint, then calculate the average normalized Luminescence and standard error
 avg_data_Lum_Norm <- df_lum %>%
   group_by(Species, TimePoint) %>%
-  summarise(AvgLum = mean(GlycogenNorm, na.rm = TRUE),
-            SE = sd(GlycogenNorm, na.rm = TRUE) / sqrt(sum(!is.na(GlycogenNorm))))
+  summarise(
+    AvgLum = mean(GlycogenNorm, na.rm = TRUE), # Calculate the average normalized Glycogen, removing NA values
+    SE = sd(GlycogenNorm, na.rm = TRUE) / sqrt(sum(!is.na(GlycogenNorm))) # Calculate standard error
+  )
 
+# Convert the 'Species' column in all average data frames to a factor with specified levels
 avg_data_OD$Species <- factor(avg_data_OD$Species, levels=c("Cpr", "Cps", "Cac", "Ctu", "Cgl"))
 avg_data_Lum$Species <- factor(avg_data_Lum$Species, levels=c("Cpr", "Cps", "Cac", "Ctu", "Cgl"))
-avg_data_Lum$TimePoint <- factor(avg_data_Lum$TimePoint)
 avg_data_Lum_Norm$Species <- factor(avg_data_Lum_Norm$Species, levels=c("Cpr", "Cps", "Cac", "Ctu", "Cgl"))
+
+# Convert the 'TimePoint' column in Lum data frames to a factor with default level ordering
+avg_data_Lum$TimePoint <- factor(avg_data_Lum$TimePoint)
 avg_data_Lum_Norm$TimePoint <- factor(avg_data_Lum_Norm$TimePoint)
 ```
 
 ```{r}
+# Create a line plot of average OD600 over time for each species
 plot_avg_OD600 <- ggplot(avg_data_OD, aes(x = Time, y = AvgOD, color = Species)) +
-  geom_line() +
-  geom_point() +
-  geom_errorbar(aes(ymin = AvgOD - SE, ymax = AvgOD + SE), width = 0.2) +
-  labs(title = "Glycogen Bacterial Growth Curves",
-       x = "Time (hours)",
-       y = "Average OD600",
-       color = "Species",
+  geom_line() + # Add lines to connect points
+  geom_point() + # Add points to represent data
+  geom_errorbar(aes(ymin = AvgOD - SE, ymax = AvgOD + SE), width = 0.2) + # Add error bars
+  labs(
+    title = "Glycogen Bacterial Growth Curves",
+    x = "Time (hours)",
+    y = "Average OD600",
+    color = "Species"
   ) +
-  theme_bw() +
+  theme_bw() + # Use a black and white theme
   theme(
     plot.title = element_text(size = 14, face = "bold", margin = margin(b = 10)),
     plot.caption = element_text(size = 10, margin = margin(t = 10))
   )
-plot_avg_OD600
+plot_avg_OD600 # Display the plot
 ```
 
 ```{r}
+# Create a bar plot of average normalized glycogen concentration over time for each species
 plot_avg_Lum_Norm <- ggplot(avg_data_Lum_Norm, aes(x = TimePoint, y = AvgLum, fill = Species)) +
-  geom_bar(position = position_dodge(), stat = "identity", color = "black") +
-  geom_errorbar(aes(ymin = AvgLum - SE, ymax = AvgLum + SE), position = position_dodge(width = 0.9), width = 0.2) +
-  labs(title = "OD Normalized Glycogen Concentration",
-       x = "Time (hours)",
-       y = "Average Normalized Glycogen",
-       color = "Species",
+  geom_bar(position = position_dodge(), stat = "identity", color = "black") + # Add bars with dodge position
+  geom_errorbar(aes(ymin = AvgLum - SE, ymax = AvgLum + SE), position = position_dodge(width = 0.9), width = 0.2) + # Add error bars
+  labs(
+    title = "OD Normalized Glycogen Concentration",
+    x = "Time (hours)",
+    y = "Average Normalized Glycogen",
+    color = "Species"
   ) +
-  theme_bw() +
+  theme_bw() + # Use a black and white theme
   theme(
     plot.title = element_text(size = 14, face = "bold", margin = margin(b = 10)),
     plot.caption = element_text(size = 10, margin = margin(t = 10))
   )
-plot_avg_Lum_Norm
+plot_avg_Lum_Norm # Display the plot
 ```
+
+# Draft final fingure
+
+```{r}
+# Load the necessary libraries
+library(ggpubr)
+library(grid)
+
+# Create a line plot of average OD600 over time for each species
+plot_avg_OD600 <- ggplot(avg_data_OD, aes(x = Time, y = AvgOD, color = Species)) +
+  geom_line() + # Add lines to connect points
+  geom_point() + # Add points to represent data
+  geom_errorbar(aes(ymin = AvgOD - SE, ymax = AvgOD + SE), width = 0.2) + # Add error bars
+  labs(
+    title = "Glycogen Bacterial Growth Curves",
+    y = "Average OD600"
+  ) +
+  theme_bw() + # Use a black and white theme
+  theme(
+    plot.title = element_text(size = 14, face = "bold", margin = margin(b = 10)),
+    plot.caption = element_text(size = 10, margin = margin(t = 10)),
+    legend.position = "none", # Remove the legend
+    axis.title.x = element_blank(), # Remove x-axis title
+    plot.margin = margin(1, 1, 1, 1, "cm") # Adjust plot margins
+  ) +
+  annotate("text", x = Inf, y = Inf, label = "A", hjust = 1, vjust = 1, size = 5, fontface = "bold")
+
+# Create a bar plot of average normalized glycogen concentration over time for each species
+plot_avg_Lum_Norm <- ggplot(avg_data_Lum_Norm, aes(x = TimePoint, y = AvgLum, fill = Species)) +
+  geom_bar(position = position_dodge(), stat = "identity", color = "black") + # Add bars with dodge position
+  geom_errorbar(aes(ymin = AvgLum - SE, ymax = AvgLum + SE), position = position_dodge(width = 0.9), width = 0.2) + # Add error bars
+  labs(
+    title = "OD Normalized Glycogen Concentration",
+    y = "Average Normalized Glycogen",
+    color = "Species"
+  ) +
+  theme_bw() + # Use a black and white theme
+  theme(
+    plot.title = element_text(size = 14, face = "bold", margin = margin(b = 10)),
+    plot.caption = element_text(size = 10, margin = margin(t = 10)),
+    axis.title.x = element_blank(), # Remove x-axis title
+    plot.margin = margin(1, 1, 1, 1, "cm") # Adjust plot margins
+  ) +
+  annotate("text", x = Inf, y = Inf, label = "B", hjust = 1, vjust = 1, size = 5, fontface = "bold")
+
+# Combine the plots using ggarrange
+combined_plot <- ggarrange(plot_avg_OD600, plot_avg_Lum_Norm, ncol = 2, common.legend = TRUE, legend = "right")
+
+# Save the combined plot as a PNG file
+ggsave("data/glycogen/Figure/combined_plot.png", combined_plot, width = 10, height = 6, dpi = 300)
+
+```
+
+
 
 
