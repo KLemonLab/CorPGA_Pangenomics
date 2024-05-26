@@ -269,7 +269,7 @@ plot_avg_OD600 <- ggplot(avg_data_OD, aes(x = Time, y = AvgOD, color = Species))
     title = "Glycogen Bacterial Growth Curves",
     y = "Average OD600"
   ) +
-  scale_color_manual(values=c("#5b5b5b", "#2e67f2", "#AA35E3", "#c5bdf1", "#c5bdf1")) +
+  scale_color_manual(values=c("#FF8C00", "#FF0000", "#6A329F", "#3B54A4", "#000000")) +
   scale_y_continuous(expand=c(0,0)) +
   scale_x_continuous(expand=c(0,2)) +
   theme_classic() + # Use a black and white theme
@@ -290,7 +290,7 @@ plot_avg_Lum_Norm <- ggplot(avg_data_Lum_Norm, aes(x = TimePoint, y = AvgLum, fi
     y = "Average Normalized Glycogen",
     color = "Species"
   ) +
-  scale_fill_manual(values=c("#5b5b5b", "#2e67f2", "#AA35E3", "#c5bdf1", "#c5bdf1")) +
+  scale_fill_manual(values=c("#FF8C00", "#FF0000", "#6A329F", "#3B54A4", "#000000")) +
   scale_y_continuous(expand=c(0,0), limits = c(0, 13)) +
   theme_classic() + # Use a black and white theme
   theme(
