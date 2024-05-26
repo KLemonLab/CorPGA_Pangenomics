@@ -40,7 +40,7 @@ output:
 
 <img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="right" width="200" height="90"/>
 
-```{html}
+<div>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
   var links = document.getElementsByTagName("a");
@@ -50,3 +50,4 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 });
 </script>
+</div>
