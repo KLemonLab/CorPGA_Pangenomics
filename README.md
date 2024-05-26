@@ -27,6 +27,8 @@ https://klemonlab.github.io/CorPGA_Pangenomics/
     -   [*Corynebacterium accolens*](https://klemonlab.github.io/CorPGA_Pangenomics/SupplementalMethods_COGS_Cac.html)
     
     -   [*Corynebacterium tuberculostearicum*](https://klemonlab.github.io/CorPGA_Pangenomics/SupplementalMethods_COGS_Ctu.html)
+    
+- Supplemental methods for the [Glycogen analysis](SupplementalMethods_Glycogen.html).
 
 [Lemon Lab](https://www.bcm.edu/research/faculty-labs/katherine-lemon-lab)
 
