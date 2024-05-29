@@ -266,10 +266,9 @@ plot_avg_OD600 <- ggplot(avg_data_OD, aes(x = Time, y = AvgOD, color = Species))
   geom_point(size=3) + # Add points to represent data
   geom_errorbar(aes(ymin = AvgOD - SE, ymax = AvgOD + SE), width = 0.2) + # Add error bars
   labs(
-    title = "Glycogen Bacterial Growth Curves",
     y = "Average OD600"
   ) +
-  scale_color_manual(values=c("#FF8C00", "#FF0000", "#6A329F", "#3B54A4", "#000000")) +
+  scale_color_manual(values=c("#FF8C00", "#FF0000", "#6A329F", "#3B54A4", "grey50")) +
   scale_y_continuous(expand=c(0,0)) +
   scale_x_continuous(expand=c(0,2)) +
   theme_classic() + # Use a black and white theme
@@ -286,11 +285,10 @@ plot_avg_Lum_Norm <- ggplot(avg_data_Lum_Norm, aes(x = TimePoint, y = AvgLum, fi
   geom_bar(position = position_dodge(), stat = "identity", color = "black") + # Add bars with dodge position
   geom_errorbar(aes(ymin = AvgLum, ymax = AvgLum + SE), position = position_dodge(width = 0.9), width = 0.2) + # Add error bars
   labs(
-    title = "OD Normalized Glycogen Concentration",
     y = "Average Normalized Glycogen",
     color = "Species"
   ) +
-  scale_fill_manual(values=c("#FF8C00", "#FF0000", "#6A329F", "#3B54A4", "#000000")) +
+  scale_fill_manual(values=c("#FF8C00", "#FF0000", "#6A329F", "#3B54A4", "grey50")) +
   scale_y_continuous(expand=c(0,0), limits = c(0, 13)) +
   theme_classic() + # Use a black and white theme
   theme(
