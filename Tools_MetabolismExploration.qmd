@@ -43,7 +43,7 @@ Modules <- Modules %>%
 Directory for outputs:
 ```{r}
 dir <- "data/Anvio8/Metabolic_Analysis/Pathway_Exploration"
-dir.create(file.path(dir), recursive = TRUE, showWarnings=FALSE)
+dir.create(file.path(dir), recursive = TRUE, showWarnings = FALSE)
 ```
 
 Species info:
@@ -63,7 +63,7 @@ Modules_AverageBySpecies <- Modules %>%
   summarise(average_stepwise_module_completeness = round(mean(stepwise_module_completeness), 2)) %>%
   filter(!is.na(module_name))
 
-Modules_AverageBySpecies$species_name <- factor(Modules_AverageBySpecies$species_name, levels=species_values)
+Modules_AverageBySpecies$species_name <- factor(Modules_AverageBySpecies$species_name, levels = species_values)
 Modules_AverageBySpecies <- Modules_AverageBySpecies %>% arrange(species_name)
 
 Modules_AverageBySpecies_Wide <- Modules_AverageBySpecies %>%
@@ -349,8 +349,8 @@ info_for_GC <- function(Summary, output_path, GC, gene) {
   writeLines(data$fasta_lines, con = output_fasta)
   write_csv(data, file = output_csv)
   
-  dist=dist.alignment(read.alignment(output_fasta,"fasta"), matrix = "identity")
-  mat <- 100*(1-dist^2) # convert to identity percent since the dist matrix contains the squared root of the pairwise distances
+  dist = dist.alignment(read.alignment(output_fasta,"fasta"), matrix = "identity")
+  mat <- 100*(1 - dist^2) # convert to identity percent since the dist matrix contains the squared root of the pairwise distances
   mat <- as.matrix(mat)
   df <- melt(mat)
   df$value <- as.numeric(df$value)
@@ -358,24 +358,24 @@ info_for_GC <- function(Summary, output_path, GC, gene) {
   df$Var2 <- sub(".*\\|(.*?)\\|.*", "\\1", df$Var2)
   
   if (nrow(df) > 1) {
-    plot <- ggplot(df, aes(x=Var1, y=Var2, fill=value)) + 
+    plot <- ggplot(df, aes(x = Var1, y = Var2, fill = value)) + 
       geom_tile() +
-      scale_fill_viridis(direction = -1, option = "A", begin = 0.2, limits=c(40, 100), na.value = 'white') +
-      labs(x="", y="") +
-      scale_y_discrete(expand=c(0,0), position = "right") +
-      scale_x_discrete(expand=c(0,0)) +
+      scale_fill_viridis(direction = -1, option = "A", begin = 0.2, limits = c(40, 100), na.value = 'white') +
+      labs(x = "", y = "") +
+      scale_y_discrete(expand = c(0,0), position = "right") +
+      scale_x_discrete(expand = c(0,0)) +
       theme_bw() +
-      theme(axis.text.x = element_markdown(angle = 45, hjust = 1, size=6),
-            axis.text.y = element_markdown(size=6))
+      theme(axis.text.x = element_markdown(angle = 45, hjust = 1, size = 6),
+            axis.text.y = element_markdown(size = 6))
     
     output_plot <- file.path(output_path, paste0(GC, "_", gene, ".jpg"))
-    ggsave(plot, filename = output_plot, height = 20, width = 20, device ='jpg', dpi = 600)
+    ggsave(plot, filename = output_plot, height = 20, width = 20, device = 'jpg', dpi = 600)
   }
 
   num_seqs <- nrow(data)
   num_genomes <- data$num_genomes_gene_cluster_has_hits[1]
-  protein_id <- ifelse("Cgl_ATCC_13032" %in% data$genome_name, data$accession[data$genome_name=="Cgl_ATCC_13032"][1], NA)
-  KO <- ifelse("Cgl_ATCC_13032" %in% data$genome_name, data$KOfam_ACC[data$genome_name=="Cgl_ATCC_13032"][1], NA)
+  protein_id <- ifelse("Cgl_ATCC_13032" %in% data$genome_name, data$accession[data$genome_name == "Cgl_ATCC_13032"][1], NA)
+  KO <- ifelse("Cgl_ATCC_13032" %in% data$genome_name, data$KOfam_ACC[data$genome_name == "Cgl_ATCC_13032"][1], NA)
   index <- data$combined_homogeneity_index[1]
   
   cat(protein_id, gene, GC, KO, "has", num_seqs, "aa sequences across", num_genomes, "genomes with", index ,"combined homogeneity. \n")
@@ -457,7 +457,7 @@ KOList <- c("K07090", "K03795", "K00956", "K00957", "K00390", "K00392", "K00528"
 KOselection <- Summary %>%
   filter(KOfam_ACC %in% KOList) %>%
   arrange(genome_name,gene_callers_id) %>%
-  mutate(KO_GC_id=paste(KOfam_ACC, gene_cluster_id, gene_callers_id, sep="_")) %>%
+  mutate(KO_GC_id = paste(KOfam_ACC, gene_cluster_id, gene_callers_id, sep = "_")) %>%
   select(KO_GC_id, genome_name, gene_callers_id)
 
 KOselectionWide <- spread(KOselection, genome_name, gene_callers_id)
@@ -479,7 +479,7 @@ GCList <- KOselectionWide_summary$GC
 GCselection <- Summary %>%
   filter(gene_cluster_id %in% GCList) %>%
   arrange(genome_name,gene_callers_id) %>%
-  mutate(KO_GC_id=paste(KOfam_ACC, gene_cluster_id, gene_callers_id, sep="_")) %>%
+  mutate(KO_GC_id = paste(KOfam_ACC, gene_cluster_id, gene_callers_id, sep = "_")) %>%
   select(KO_GC_id, genome_name, gene_callers_id)
 
 GCselectionWide <- spread(GCselection, genome_name, gene_callers_id)
@@ -577,16 +577,16 @@ echo "$(printf 'N%.0s' {1..11579})" >> "$filename"
 
 ```{r}
 plot_ASR <- msavisr("data/Anvio8/Metabolic_Analysis/Pathway_Exploration/ARS/Alignments_hchA-fprA/ASR_Cps_region_align_clean_blank_R.fasta", 
-                myref="",
+                myref = "",
                 refontop = FALSE,
-                basecolors=c("gray30","gray30","white"))
+                basecolors = c("gray30","gray30","white"))
 
 plot_ASR <- plot_ASR + 
   theme(legend.position = "none",
-        axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(),
-        axis.text.y=element_text(size=12))
+        axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_text(size = 12))
 
 saveRDS(plot_ASR, "data/Anvio8/Metabolic_Analysis/Pathway_Exploration/ARS/Alignments_hchA-fprA/plot_ASR.rds")
 ```
@@ -604,31 +604,31 @@ genes <- list(c("--------Genes", 11579:10901, "8_hchA"),
 )
 
 plot_ASRGenes <- msavisr("data/Anvio8/Metabolic_Analysis/Pathway_Exploration/ARS/Alignments_hchA-fprA/ASR_Cps_region_align_clean_blank_RGenes.fasta", 
-                myref="--------Genes",
+                myref = "--------Genes",
                 refontop = FALSE,
-                basecolors=c("gray30","gray30","white"),
-                myroi = genes, hroi=1,
+                basecolors = c("gray30","gray30","white"),
+                myroi = genes, hroi = 1,
                 roicolors = c("#9fd122","#00a84a","#f88502","#00a9f2","#6f88c9","#a94488","#c8c3e3", "gray80"))
 
 plot_ASRGenes <- plot_ASRGenes + 
-  annotate("text", x=678, y=1, label= "fpr2", size=7, fontface=2) +
-  annotate("text", x=2624, y=1, label= "cysI", size=7, fontface=2) +
-  annotate("text", x=3987, y=1, label= "cysH", size=7, fontface=2) +
-  annotate("text", x=5054, y=1, label= "cysD", size=7, fontface=2) +
-  annotate("text", x=6283, y=1, label= "cysN", size=7, fontface=2) +
-  annotate("text", x=7397, y=1, label= "cysY", size=7, fontface=2) +
-  annotate("text", x=8315, y=1, label= "cysZ", size=7, fontface=2) +
-  annotate("text", x=11240, y=1, label= "hchA", size=7, fontface=2) +
+  annotate("text", x = 678, y = 1, label = "fpr2", size = 7, fontface = 2) +
+  annotate("text", x = 2624, y = 1, label = "cysI", size = 7, fontface = 2) +
+  annotate("text", x = 3987, y = 1, label = "cysH", size = 7, fontface = 2) +
+  annotate("text", x = 5054, y = 1, label = "cysD", size = 7, fontface = 2) +
+  annotate("text", x = 6283, y = 1, label = "cysN", size = 7, fontface = 2) +
+  annotate("text", x = 7397, y = 1, label = "cysY", size = 7, fontface = 2) +
+  annotate("text", x = 8315, y = 1, label = "cysZ", size = 7, fontface = 2) +
+  annotate("text", x = 11240, y = 1, label = "hchA", size = 7, fontface = 2) +
   theme(legend.position = "none",
-        axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(),
-        axis.text.y=element_text(size=12))
+        axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_text(size = 12))
 
 plot_ASR <- readRDS("data/Anvio8/Metabolic_Analysis/Pathway_Exploration/ARS/Alignments_hchA-fprA/plot_ASR.rds")
 FinalFigure <- ggarrange(plot_ASRGenes, plot_ASR, ncol = 1, heights = c(0.20, 1))
 FinalFigure
-ggsave(FinalFigure, file="data/Anvio8/Metabolic_Analysis/Pathway_Exploration/ARS/ASR_Cps_region.svg", height=10, width=20, dpi = 150)
+ggsave(FinalFigure, file = "data/Anvio8/Metabolic_Analysis/Pathway_Exploration/ARS/ASR_Cps_region.svg", height = 10, width = 20, dpi = 150)
 ```
 
 ```{r}
