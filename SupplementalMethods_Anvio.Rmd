@@ -557,7 +557,7 @@ Modules_Means$styled_genome_name <- factor(Modules_Means$styled_genome_name, lev
 
 ```{r}
 getPalette <- colorRampPalette(brewer.pal(8, "Set1"))
-colorsSpecies <- c("#FF8C00", "#FF0000", "#6A329F", "#3B54A4", "grey80")
+colorsSpecies <- c("#FF8C00", "#FF0000", "#6A329F", "#3B54A4", "#DAE9F8")
 
 legend <-ggplot(Modules_Means, aes(x=module_category, y=mean_stepwise_module_completeness, fill=module_category)) +
   geom_bar(stat="identity") + 
