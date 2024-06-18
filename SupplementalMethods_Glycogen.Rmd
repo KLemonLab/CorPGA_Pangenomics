@@ -20,39 +20,6 @@ library(readxl)
 library(ggpubr)
 ```
 
-### Wet lab instructions (Hide this)
-
-1.	Streak species of interest on brain heart infusion + tween and let grow 36-48 hours
-2.	Prepare 4.5 ml PBS buffer in 5 ml tubes 
-3.	Pick 15-20 single colonies and inoculate into 5 ml with PBS buffer
-4.	Perform 2x full washes with PBS buffer, centrifuge at 13000x RPM 4 C for 10 min each
-5.	Measure OD600 1:10, 20 ul sample with 180 ul buffer
-6.	Normalize to an OD600 = 2, measure OD 1:2 100 ul sample, 100 ul buffer
-7.	Inoculate OD600 = 2, 1.25 ml sample to 50 ml media in 250 ml flasks per species
-8.	Measure OD600 at 24 hr, 28 hr, 32 hr, and 48 hr
-11.	Aliquot 4 ml from 50 ml sample into a 5 ml tube and centrifuge at 13k RPM, 4 C, for 10 min
-12.	Resuspend with 4 ml PBS and wash 2x with 1X PBS buffer, 13k RPM, 4 C, 10 min
-13.	Place glycogen enzymes out to thaw on ice during washes
-14.	After washing resuspend in 400 ul PBS and measure OD600 1:10, 20 ul : 180 ul
-15.	Normalize 600 ul at OD600 = 0.5
-16.	Use 100 ul to measure OD600 and record
-17.	Aliquot 300 ul of sample and 150 ul HCL to bead beating tube(s)
-18.	Place tubes in non-shaking dry bath at 95 C for 5 minutes
-19.	Bead beat 3x at 6.5 m/s for 45 seconds each time (make sure lids are tight)
-20.	Add 150 ul Tris buffer to each tube 
-21.	Centrifuge at 16000 RCF, 4 C, for 20 minutes
-22.	Prepare Amylase reagent and transfer standards to 96 plate reader wells
-23.	After centrifugation transfer 200 ul of supernatant to a clean 1.5 ml tube
-24.	Aliquot 25 ul of samples to 96 well plate
-25.	Add 25 ul of + Amy or Glucoamylase buffer to wells that are controls
-26.	Incubate at room temperature for 1 hr
-27.	Prepare glucose detection reagent
-28.	Aliquot 50 ul of digestion reagent to both samples and controls read in 1 hr
-29.	Run luminescence in a compatible plate reader
-
----
-
-
 This study involved a detailed procedure to analyze the growth and glycogen concentration of bacterial species. To measure glycogen the Glycogen-Gly Assay kit from Promega was used (Catalog #: J5051). The species of interest were first streaked on brain heart infusion supplemented with tween and allowed to grow for 36-48 hours. Subsequently, single colonies were picked and inoculated into tubes containing 4.5 ml of PBS buffer. The samples underwent two full washes with PBS buffer and were centrifuged at 13000 RPM at 4°C for 10 minutes each time.
 
 The optical density at 600 nm (OD600) was measured and normalized to 2. The normalized samples were then inoculated into 50 ml nCDM + 5% glucose in 250 ml flasks and the OD600 was measured at 24, 28, 32, and 48 hours. A 4 ml aliquot from each sample was centrifuged, resuspended in PBS, and washed twice. During the washes, glycogen enzymes were thawed on ice.
