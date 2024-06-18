@@ -6,7 +6,8 @@ output:
   rmdformats::robobook:
     use_bookdown: true
     code_folding: show
-bibliography: referencesGET_HOMOLOGUES.bib
+bibliography: references.bib
+csl: references_style.csl
 ---
 
 ```{r klippy, echo=FALSE, include=TRUE}
@@ -1234,18 +1235,19 @@ Options that control clustering:
 | -S     | skip clusters with occupancy \<S                          |
 | -P     | percentage of genomes that must comply presence/absence   |
 
-<img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
+# References {.unnumbered}
 
-------------------------------------------------------------------------
+<div id="refs"></div>
 
-------------------------------------------------------------------------
+<br>
 
-------------------------------------------------------------------------
+<img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="240" height="110"/>
 
-------------------------------------------------------------------------
+----------------------------------------------------------------------
 
-<center>
+----------------------------------------------------------------------
 
-<h3>[REFERENCES]{.underline}</h3>
+----------------------------------------------------------------------
 
-</center>
+----------------------------------------------------------------------
+

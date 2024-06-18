@@ -8,7 +8,8 @@ output:
   rmdformats::robobook:
     use_bookdown: true
     code_folding: show
-bibliography: referencesAnvio.bib
+bibliography: references.bib
+csl: references_style.csl
 ---
 
 ```{r klippy, echo=FALSE, include=TRUE}
@@ -328,7 +329,7 @@ The output files were used for the COG functional analysis based on PPanGGOLiN p
 
 ## Estimation of KEGG module completeness
 
-Using `anvi-estimate-metabolism` we predicted KEGG module completeness as described in [@kanehisa2011a] for the the organisms listed in `CorPGA_MetabolicAnalysis_GenomeList_v01.txt`. This list includes:
+Using `anvi-estimate-metabolism` we predicted KEGG module completeness as described in [@kanehisa2011] for the the organisms listed in `CorPGA_MetabolicAnalysis_GenomeList_v01.txt`. This list includes:
 
 -   The 102 *Corynebacterium* genomes selected for metabolic analysis (Cac_ATCC_49726 & Cps_090104 were excluded for this analysis, as well as all three *C. macginleyi* genomes)
 -   Plus 27 for the 28 *Dolosigranulum pigrum* genomes described in [@floresramos2021] (KPL3086 was not included in the analysis due to being highly similar to KPL3065).
@@ -719,18 +720,18 @@ anvi-summarize -p $path_i/All4CorRefs/PAN_All4CorRefs-PAN.db \
                -C All4CorRefs
 ```
 
-<img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
+# References {.unnumbered}
 
-------------------------------------------------------------------------
+<div id="refs"></div>
 
-------------------------------------------------------------------------
+<br>
 
-------------------------------------------------------------------------
+<img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="240" height="110"/>
 
-------------------------------------------------------------------------
+----------------------------------------------------------------------
 
-<center>
+----------------------------------------------------------------------
 
-<h3>[REFERENCES]{.underline}</h3>
+----------------------------------------------------------------------
 
-</center>
+----------------------------------------------------------------------

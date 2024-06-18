@@ -7,6 +7,8 @@ output:
   rmdformats::robobook:
     use_bookdown: true
     code_folding: show
+bibliography: references.bib
+csl: references_style.csl
 ---
 
 ```{r klippy, echo=FALSE, include=TRUE}
@@ -274,6 +276,20 @@ ggsave("data/glycogen/Figure/combined_plot.png", combined_plot, width = 10, heig
 combined_plot
 ```
 
+# References {.unnumbered}
 
+<div id="refs"></div>
+
+<br>
+
+<img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="240" height="110"/>
+
+----------------------------------------------------------------------
+
+----------------------------------------------------------------------
+
+----------------------------------------------------------------------
+
+----------------------------------------------------------------------
 
 

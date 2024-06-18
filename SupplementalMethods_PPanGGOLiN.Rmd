@@ -7,7 +7,8 @@ output:
   rmdformats::robobook:
     use_bookdown: true
     code_folding: show
-bibliography: referencesPPanGGOLiN.bib
+bibliography: references.bib
+csl: references_style.csl
 ---
 
 ```{r klippy, echo=FALSE, include=TRUE}
@@ -15,7 +16,7 @@ klippy::klippy(c('r', 'bash'))
 ```
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(warning = FALSE, message = FALSE, eval=FALSE) 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, eval = FALSE) 
 library(tidyverse)
 library(knitr)
 ```
@@ -345,18 +346,19 @@ anvi-show-collections-and-bins -p "/analysis_Anvio7/Pangenomic_Results/Cac/PAN_C
 | Cloud            | 766/2907                      | `r round(100*(766/2907),1)`%  |
 | None             | 3/2907                        | `r round(100*(3/2907),1)`%    |
 
-<img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
+# References {.unnumbered}
 
-------------------------------------------------------------------------
+<div id="refs"></div>
 
-------------------------------------------------------------------------
+<br>
 
-------------------------------------------------------------------------
+<img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="240" height="110"/>
 
-------------------------------------------------------------------------
+----------------------------------------------------------------------
 
-<center>
+----------------------------------------------------------------------
 
-<h3>[REFERENCES]{.underline}</h3>
+----------------------------------------------------------------------
 
-</center>
+----------------------------------------------------------------------
+

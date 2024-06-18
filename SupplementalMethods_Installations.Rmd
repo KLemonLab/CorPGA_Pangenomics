@@ -235,14 +235,17 @@ Now you can try an example run by entering:
  bin/iqtree -s example.phy
 ```
 
-<img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="200" height="90"/>
+<br>
 
+<img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="240" height="110"/>
 
+----------------------------------------------------------------------
 
+----------------------------------------------------------------------
 
+----------------------------------------------------------------------
 
-
-
+----------------------------------------------------------------------
 
 
 
