@@ -28,9 +28,11 @@ library(gridtext)
 library(kableExtra)
 library(seqinr)
 library(reshape2)
+library(plotly)
+library(htmlwidgets)
 ```
 
-This notebook contains analyses using anvi'o version 8 [@Eren2021] (development branch). For more in-depth information about anvi'o go to their official online site here: <https://anvio.org/>
+This notebook contains analyses using anvi'o version 8 [@Eren2021; @delmont2018] (development branch). For more in-depth information about anvi'o go to their official online site here: <https://anvio.org/>
 
 # Functional annotations
 
@@ -38,9 +40,9 @@ We use as input (`path_i`) the anvi'o contigs database files (`.db`) that were g
 
 ## COG annotation
 
-First we downloaded and set up the NCBI's Clusters of Orthologous Groups database[@Tatusov2000, @Galperin2021] using `anvi-setup-ncbi-cogs`. The default is the latest version, which is COG20, meaning that anvi'o will use the NCBI's 2020 release of COGs to setup the database.
+First we downloaded and set up the NCBI's Clusters of Orthologous Groups database [@Tatusov2000, @Galperin2021] using `anvi-setup-ncbi-cogs`. The default is the latest version, which is COG20, meaning that anvi'o will use the NCBI's 2020 release of COGs to setup the database.
 
-The `anvi-run-ncbi-cogs` command was used to annotate the contig databases. We used DIAMOND as searching method[@buchfink2014] with the recommended "sensitive" option.
+The `anvi-run-ncbi-cogs` command was used to annotate the contig databases. We used DIAMOND as searching method [@buchfink2014] with the recommended "sensitive" option.
 
 ```{bash, eval = FALSE}
 #conda activate anvio-dev
@@ -54,7 +56,7 @@ done
 
 ## KEGG annotation
 
-First we downloaded and set up the KEGG KOfam[@Kanehisa2000; @Kanehisa2023] database using `anvi-setup-kegg-data`. We used the snapshot of the KEGG database dated 2023-09-22 (hash a2b5bde358bb). It contains 479 modules with 15116 entries.
+First we downloaded and set up the KEGG KOfam [@Kanehisa2000; @Kanehisa2023] database using `anvi-setup-kegg-data`. We used the snapshot of the KEGG database dated 2023-09-22 (hash a2b5bde358bb). It contains 479 modules with 15116 entries.
 
 The program `anvi-run-kegg-kofams` annotates genes in a given anvi'o contigs database with KEGG Orthology (KO) numbers via hits to the KEGG KOfam database. We used `-E` lower than 1e-15.
 
@@ -85,7 +87,7 @@ for (file in files_to_move) {
 
 ## PFAM annotation
 
-First you need to download and set up the PFAM database[@Bateman2000; @Mistry2021] using `anvi-setup-pfams`: this is something you will do only once. We used Pfam version 36.0 (2023-07).
+First you need to download and set up the PFAM database [@Bateman2000; @Mistry2021] using `anvi-setup-pfams`: this is something you will do only once. We used Pfam version 36.0 (2023-07).
 
 The program `anvi-run-kegg-pfam` annotates genes in a given anvi'o contigs database with the PFAM database.
 
@@ -329,11 +331,11 @@ The output files were used for the COG functional analysis based on PPanGGOLiN p
 
 ## Estimation of KEGG module completeness
 
-Using `anvi-estimate-metabolism` we predicted KEGG module completeness as described in [@kanehisa2011] for the the organisms listed in `CorPGA_MetabolicAnalysis_GenomeList_v01.txt`. This list includes:
+Using `anvi-estimate-metabolism` we predicted KEGG module completeness as described in [@veseli2023] for the the organisms listed in `CorPGA_MetabolicAnalysis_GenomeList_v01.txt`. This list includes:
 
 -   The 102 *Corynebacterium* genomes selected for metabolic analysis (Cac_ATCC_49726 & Cps_090104 were excluded for this analysis, as well as all three *C. macginleyi* genomes)
 -   Plus 27 for the 28 *Dolosigranulum pigrum* genomes described in [@floresramos2021] (KPL3086 was not included in the analysis due to being highly similar to KPL3065).
--   As well as the 9 reference genomes with original NCBI annotations listed in Table S5.
+-   As well as the 9 reference genomes with original NCBI annotations listed in **Table S3D**.
 
 We generated outputs both in long tabular and matrix format with the KO hits and KEGG modules completeness scores.
 
@@ -357,7 +359,7 @@ anvi-estimate-metabolism -e $txt_file \
 
 ## Module Enrichment Analysis
 
-The `CorPGA_modules.txt` file generated in the previous step is used by `anvi-compute-metabolic-enrichment` to calculate KEGG module enrichment[@shaiber2020] across different groups of genomes. We used the `-G` flag to indicate the grouping options defined in the corresponding `txt_file`:
+The `CorPGA_modules.txt` file generated in the previous step is used by `anvi-compute-metabolic-enrichment` to calculate KEGG module enrichment [@shaiber2020] across different groups of genomes. We used the `-G` flag to indicate the grouping options defined in the corresponding `txt_file`:
 
 -   `CorPGA_MetabolicAnalysis_Groups_4Cor.txt`includes 102 genomes for the 4 nasal *Corynebacterium* grouped by their species.
 -   `CorPGA_MetabolicAnalysis_Groups_CorDpi.txt` adds to the previous file an extra group with the 27 *D. pigrum* genomes.
@@ -406,7 +408,7 @@ anvi-compute-metabolic-enrichment -M "$csv_file_modules" \
 
 ## KO Enrichment Analysis
 
-We used `anvi-display-functions` to perform this functional enrichment[@shaiber2020]. It runs the enrichment for the desired annotations (in this case KOfam). It saves the output to a system temp file that can be recovered, renamed and saved into the same `path_o` along with the database file.
+We used `anvi-display-functions` to perform this functional enrichment [@shaiber2020]. It runs the enrichment for the desired annotations (in this case KOfam). It saves the output to a system temp file that can be recovered, renamed and saved into the same `path_o` along with the database file.
 
 The same `txt_file_groups` where used to to indicate grouping options equivalent to the ones used for the enrichment at the module level.
 
@@ -531,6 +533,7 @@ write.csv(Modules_MatrixbySpecies, "data/Anvio8/Metabolic_Analysis/CorPGA-module
 ### Code for Table 3
 
 ```{r}
+# Read modules data and select only the genomes for the four nasal Corynebacterium species and Dolosigranulum pigrum. Made appropriate labeling columns
 Modules <- read_delim("data/Anvio8/Metabolic_Analysis/CorPGA_modules.txt", show_col_types = FALSE, col_types = cols(unique_enzymes_hit_counts = col_character(), gene_caller_ids_in_module = col_character())) %>% 
   filter(!grepl("^GCF", genome_name)) %>%
   mutate(module_class_short = paste0("(", substr(module_class, 1, 1), ")")) %>%
@@ -538,11 +541,13 @@ Modules <- read_delim("data/Anvio8/Metabolic_Analysis/CorPGA_modules.txt", show_
   unite(modules_label, c(module_class_short, module_category, module_subcategory), sep = "_", remove = FALSE) %>% 
   mutate_at(c("species_name", "genome_name", "module", "module_name", "module_category", "module_subcategory", "module_class", "modules_label"), factor)
 
+# Summary tally table of fully complete modules by species
 ModulesTable <- Modules %>%
   filter(stepwise_module_completeness == 1) %>%
   group_by(module_category, module_subcategory, module, module_name, species_name) %>%
   tally() 
 
+# Table converted to wide and percentages calculated based on number of genomes per species
 ModulesTableWide <- ModulesTable %>%
   pivot_wider(names_from = species_name, values_from = n, values_fill = 0)
 
@@ -552,31 +557,33 @@ ModulesTableWide$Cac = round(100*(ModulesTableWide$Cac/33), 1)
 ModulesTableWide$Ctu = round(100*(ModulesTableWide$Ctu/8), 1)
 ModulesTableWide$Dpi = round(100*(ModulesTableWide$Dpi/27), 1)
 
+# Modules with less than 12.5% across all species eliminated
 ModulesTableWide <- ModulesTableWide %>%
   select(module_category, module_subcategory, module, module_name, Cpr, Cps, Cac, Ctu, Dpi) %>%
   filter(rowSums(across(c(Cpr, Cps, Cac, Ctu, Dpi)) > 12.5) > 0)
 
-write_csv(ModulesTableWide, "data/Anvio8/Metabolic_Analysis/Fig_Tables/TableKEGG.csv")
-kable(ModulesTableWide)
-```
-
-```{r}
+# Version of the table to calculate the percentage of complete modules across the four Corynebacterium species:
 ModulesData <- ModulesTable %>%
   filter(species_name != "Dpi") %>%
   group_by(module_category, module_subcategory, module, module_name) %>%
   summarise(total = sum(n)) %>%
   mutate(percent = 100*total/102)
+
+write_csv(ModulesTableWide, "data/Anvio8/Metabolic_Analysis/Fig_Tables/TableKEGG.csv")
+kable(ModulesTableWide)
 ```
 
 ### Code for Figure 5
 
 ```{r}
+# Reading strain order and label formatting 
 StrainOrder <- read_csv("data/genome_lists/CorPGA_MetabolicAnalysis_PlotOrder.csv", show_col_types = FALSE)
 
+# Calculating mean_pathwise_module_completeness and preparing plot labels 
 Modules_Means = Modules %>% 
   group_by(modules_label, genome_name, .drop = FALSE) %>%
-  summarise(mean_stepwise_module_completeness = mean(stepwise_module_completeness)) %>%
-  mutate(mean_stepwise_module_completeness = coalesce(mean_stepwise_module_completeness, 0)) %>%
+  summarise(mean_pathwise_module_completeness = mean(pathwise_module_completeness)) %>%
+  mutate(mean_pathwise_module_completeness = coalesce(mean_pathwise_module_completeness, 0)) %>%
   mutate(species_name = str_extract(genome_name, "^[^_]+")) %>%
   mutate(module_category = str_extract(modules_label, "^[^_]+_[^_]+")) %>%
   mutate(module_category = str_replace_all(module_category, "_", " ")) %>%
@@ -584,28 +591,27 @@ Modules_Means = Modules %>%
   mutate_at(c("module_category", "modules_final_label"), factor) 
 
 Modules_Means <- left_join(Modules_Means, StrainOrder, by = "genome_name")
-
 Modules_Means$species_name <- factor(Modules_Means$species_name, levels = c("Cpr","Cps","Cac","Ctu","Dpi"))
 Modules_Means$genome_name <- factor(Modules_Means$genome_name, levels = StrainOrder$genome_name)
 Modules_Means$styled_genome_name <- factor(Modules_Means$styled_genome_name, levels = StrainOrder$styled_genome_name)
+
+# Note. If using stepwise_module_completeness instead of pathwise_module_completeness some modules can become = o for all genomes and might be a good idea to remove those before creating the Modules_Means table. Code for reference only, but not used in final figure creation.
+Modules_cleaned <- Modules %>%
+  group_by(module) %>%
+  filter(!all(stepwise_module_completeness == 0)) %>%
+  mutate(across(where(is.factor), droplevels))
+
+all_zero <- setdiff(Modules$module, Modules_cleaned$module)
+all_zero
 ```
 
 ```{r}
+# Colors for plot
 getPalette <- colorRampPalette(brewer.pal(8, "Set1"))
 colorsSpecies <- c("#FF8C00", "#FF0000", "#6A329F", "#3B54A4", "#DAE9F8")
 
-legend <- ggplot(Modules_Means, aes(x = module_category, y = mean_stepwise_module_completeness, fill = module_category)) +
-  geom_bar(stat = "identity") + 
-  scale_fill_manual(values = getPalette(12)) + 
-  theme(legend.title = element_blank(),
-        legend.position = "bottom",
-        legend.text = element_text(size = 7),
-        legend.key.size = unit(0.3,"line")) +
-  guides(fill = guide_legend(ncol = 3))
-```
-
-```{r fig.height=9.0625, fig.width=6.875, message=FALSE, warning=FALSE}
-plot <- ggplot(Modules_Means, aes(x = modules_final_label, y = styled_genome_name, fill = mean_stepwise_module_completeness)) + 
+# Heatmap plot
+plot <- ggplot(Modules_Means, aes(x = modules_final_label, y = styled_genome_name, fill = mean_pathwise_module_completeness)) + 
   geom_tile(color = "white") +
   facet_grid2(species_name ~ module_category, scales = "free", space = "free", switch = "both",
               strip = strip_themed(background_x = elem_list_rect(fill = getPalette(12)),
@@ -618,7 +624,7 @@ plot <- ggplot(Modules_Means, aes(x = modules_final_label, y = styled_genome_nam
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         strip.background = element_rect(colour = "black", fill = NA),
-        strip.text.y.left = element_text(angle = 0, size = 12, face = "bold"),
+        strip.text.y.left = element_text(angle = 0, size = 12, face = "bold.italic"),
         strip.text.x = element_text(size = 0),
         axis.text.y.right = element_markdown(size = 4, color = "black"),
         axis.text.x = element_text(angle = 45, hjust = 1, size = 6, color = "black"),
@@ -629,32 +635,42 @@ plot <- ggplot(Modules_Means, aes(x = modules_final_label, y = styled_genome_nam
         legend.position = c(0.97, -0.19),
         legend.justification = c(0.4, 0),
         legend.background = element_blank()) +
-  guides(fill = guide_colourbar(title = "\nAverage\nstepwise\nmodule\ncompleteness", 
+  guides(fill = guide_colourbar(title = "\nAverage\npathwise\nmodule\ncompleteness", 
                                 title.position = "left", title.hjust = 0.5, barwidth = 0.8, barheight = 3))
-```
 
-```{r}
+# Module categories legend
+legend <- ggplot(Modules_Means, aes(x = module_category, y = mean_pathwise_module_completeness, fill = module_category)) +
+  geom_bar(stat = "identity") + 
+  scale_fill_manual(values = getPalette(12)) + 
+  theme(legend.title = element_blank(),
+        legend.position = "bottom",
+        legend.text = element_text(size = 7),
+        legend.key.size = unit(0.3,"line")) +
+  guides(fill = guide_legend(ncol = 3))
+
+# Strains origen legend
 text <- "<span style='font-size:10px'>USA isolate: </span> <span style='color:#ed1c24; font-size:14px;'>▲</span><br><span style='font-size:10px'>BWA isolate: </span> <span style='color:#6ca9d4; font-size:18px;'>●</span>"
 text.p <- textbox_grob(text)
 ```
 
 ```{r fig.height=9.0625, fig.width=6.875, message=FALSE, warning=FALSE}
+# Final figure
 Figure <- ggarrange(plot + theme(plot.margin = unit(c(0.5,0,1.5,3), "lines")), 
                     ggarrange(
-                      as_ggplot(get_legend(legend)) + theme(plot.margin = unit(c(-1,0,1,1), "lines")),
+                      as_ggplot(get_legend(legend)) + theme(plot.margin = unit(c(-1,0,1,2), "lines")),
                       as_ggplot(text.p) + theme(plot.margin = unit(c(0,0,2,1.5), "lines")),
                       nrow = 1, widths = c(0.8,0.2)),
-                    nrow = 2, heights = c(1,0.02))
+                    nrow = 2, heights = c(1,0.03))
 Figure
 ggsave(plot = Figure, filename = "data/Anvio8/Metabolic_Analysis/Fig_Tables/CorPGA_Heatmap.jpg", height = 9.0625, width = 6.875, device = 'jpg', dpi = 600)
 ```
 
-### Code for percentages in Figure 5
+#### Code for percentages in Figure 5
 
 ```{r}
 Modules_MeansSummary = Modules_Means %>% 
   group_by(modules_final_label, species_name, .drop = TRUE) %>%
-  summarise(mean_bySpecies = mean(mean_stepwise_module_completeness))
+  summarise(mean_bySpecies = mean(mean_pathwise_module_completeness))
 ```
 
 ```{r fig.height=10, fig.width=12, message=FALSE, warning=FALSE}
@@ -671,15 +687,12 @@ summaryPlot
 ```
 
 ```{r}
-library(plotly)
-library(htmlwidgets)
-
 saveWidget(ggplotly(summaryPlot), "data/Anvio8/Metabolic_Analysis/Fig_Tables/Heatmap_Percents_Interactive.html", selfcontained = TRUE)
 ```
 
 ## Pangenomic level analysis
 
-This list includes a total of 107 genomes: the 102 *Corynebacterium* genomes selected for metabolic analysis (Cac_ATCC_49726 & Cps_090104 were excluded for this analysis) plus:
+This list includes a total of 107 genomes: the 102 *Corynebacterium* genomes selected for metabolic analysis (Cac_ATCC_49726 & Cps_090104 were excluded for this analysis) plus the 5 *Corynebacterium* listed in **Table S3D**:
 
 -   *Corynebacterium glutamicum* ATCC 13032 (Kyowa Hakko) ([GCF_000011325.1](https://www.ncbi.nlm.nih.gov/nuccore/NC_003450.3))
 
@@ -722,16 +735,17 @@ anvi-summarize -p $path_i/All4CorRefs/PAN_All4CorRefs-PAN.db \
 
 # References {.unnumbered}
 
-<div id="refs"></div>
+::: {#refs}
+:::
 
 <br>
 
 <img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" width="240" height="110"/>
 
-----------------------------------------------------------------------
+------------------------------------------------------------------------
 
-----------------------------------------------------------------------
+------------------------------------------------------------------------
 
-----------------------------------------------------------------------
+------------------------------------------------------------------------
 
-----------------------------------------------------------------------
+------------------------------------------------------------------------

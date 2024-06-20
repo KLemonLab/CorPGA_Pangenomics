@@ -1794,8 +1794,7 @@ margin-left: 0 !important;
 <p>We annotated the genomes in two different ways for proper compatibility and strain labeling with both GET_HOMOLOGUES and anvi’o.</p>
 <div id="prokka-annotations-for-get_homologues" class="section level2" number="1.1">
 <h2><span class="header-section-number">1.1</span> Prokka annotations for GET_HOMOLOGUES</h2>
-<p>This step annotates all the <code>.fasta</code> files in the selected input folder (<code>path_i</code>) and places all the output annotated files in the output folder (<code>path_o</code>).
-Output files headers get updated with –genus ‘Corynebacterium’ –species ‘sp’ and –strain based on the file name. We used default parameters, including gene recognition and translation initiation site identification with Prodigal <span class="citation">(Hyatt et al., 2010)</span>.</p>
+<p>This step annotates all the <code>.fasta</code> files in the selected input folder (<code>path_i</code>) and places all the output annotated files in the output folder (<code>path_o</code>). Output files headers get updated with –genus ‘Corynebacterium’ –species ‘sp’ and –strain based on the file name. We used default parameters, including gene recognition and translation initiation site identification with Prodigal <span class="citation">(Hyatt et al., 2010)</span>.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co">#conda activate Prokka</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="va">path_i</span><span class="op">=</span><span class="st">&quot;data/genomes&quot;</span></span>
@@ -1896,7 +1895,7 @@ Output files headers get updated with –genus ‘Corynebacterium’ –species 
 </div>
 <div id="ncbi-annotations" class="section level1" number="2">
 <h1><span class="header-section-number">2</span> NCBI annotations</h1>
-<p>The 9 genome assemblies listed in <code>CorPGA_AnnotationNCBI_GenomeList_v01a.csv</code> and included in <code>data/genomes_NCBIAnnotation</code> where used as references for comparisons on the KEGG metabolic analysis only. These genomes were not part of the phylogenetic/pangenomic analysis, and we were interested in keeping the original NCBI annotations in the anvi’o contig databases.</p>
+<p>The 9 genome assemblies listed in <strong>Table S3D</strong> <code>CorPGA_AnnotationNCBI_GenomeList_v01a.csv</code> and included in <code>data/genomes_NCBIAnnotation</code> where used as references for comparisons on the KEGG metabolic analysis only. These genomes were not part of the phylogenetic/pangenomic analysis, and we were interested in keeping the original NCBI annotations in the anvi’o contig databases.</p>
 <p>They were downloaded from NCBI in <code>.gbff</code> format and processed as follows:</p>
 <div id="parsing-.gbff-files-downloaded-from-ncbi" class="section level2" number="2.1">
 <h2><span class="header-section-number">2.1</span> Parsing .gbff files downloaded from NCBI</h2>
