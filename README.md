@@ -4,12 +4,13 @@ Public Link: https://klemonlab.github.io/CorPGA_Pangenomics/
 
 Link to bioRxiv: https://www.biorxiv.org/content/10.1101/2023.06.05.543719v1.full
 
+Input data files provided [here](https://github.com/KLemonLab/CorPGA_Pangenomics/tree/main/data).
 
 ## This repository includes:
 
 -   Supplemental methods for program [installations](https://klemonlab.github.io/CorPGA_Pangenomics/SupplementalMethods_Installations.html).
 
--   Supplemental methods for [Prokka annotations](https://klemonlab.github.io/CorPGA_Pangenomics/SupplementalMethods_Annotations.html) of 107 *Corynebacterium* strain genomes. Input .fasta files provided [here](https://github.com/KLemonLab/CorPGA_Pangenomics/tree/main/Strain_genomes).
+-   Supplemental methods for [Prokka annotations](https://klemonlab.github.io/CorPGA_Pangenomics/SupplementalMethods_Annotations.html) of 107 *Corynebacterium* strain genomes. 
 
 -   Supplemental methods of pangenome analyses performed with [GET_HOMOLOGUES, GET_PHYLOMARKERS and IQ-TREE2](https://klemonlab.github.io/CorPGA_Pangenomics/SupplementalMethods_GET_HOMOLOGUES.html).
 
