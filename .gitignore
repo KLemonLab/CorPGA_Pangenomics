@@ -28,7 +28,9 @@ vignettes/*.pdf
 .Renviron
 **/.DS_Store
 
-/data
+/data/Anvio8
+/data/other
+/data/glycogen
 /.quarto/
 _freeze/
 _notebooks/
