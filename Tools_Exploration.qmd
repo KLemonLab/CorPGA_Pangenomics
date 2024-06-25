@@ -1,4 +1,4 @@
-# Metabolism Exploration Tool {.unnumbered}
+# Exploration Tools {.unnumbered}
 
 ```{r}
 #| echo: FALSE
@@ -10,9 +10,14 @@ library(ggpubr)
 library(reshape2)
 library(viridis)
 library(ggtext)
+library(knitr)
+library(readxl)
+library(janitor)
+library(gplots)
+library(ggVennDiagram)
 ```
 
-## Data input
+## Metabolism Data input
 
 ```{r}
 annot_Cgl <- read_delim("data/Anvio8/Parsed_NCBI/annot_GCF_000011325.1.txt", delim = "\t", escape_double = FALSE, trim_ws = TRUE)
@@ -684,8 +689,6 @@ seq_ASR <- pdomvisr(gff) + theme(legend.position = "none")
 seq_ASR
 ```
 
-
-
 ## Blast Validations
 
 ```{bash}
@@ -775,3 +778,94 @@ Cgl_urease_vs_NovCor_Annotated_nt <- read_csv("data/Anvio8/Metabolic_Analysis/Bl
 Cgl_urease_vs_NovCor_Annotated_aa <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_urease_vs_NovCor_Annotated_aa.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
 Cgl_urease_vs_NovCor_FullSequence <- read_csv("data/Anvio8/Metabolic_Analysis/Blast_Validations/Cgl_urease_vs_NovCor_FullSequence.csv", show_col_types = FALSE, col_names = c("qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore","qcovs"))
 ```
+
+## HMP Counts Data 
+
+Table S7 downloaded from https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6280432/
+
+```{r}
+#Read data
+HMP <- read_excel("data/other/sys006182299st7.xlsx")
+```
+
+```{r}
+# Subset Coryne data
+HMP_4Corynes <- HMP %>% 
+  select(-Kingdom,-Phylum,-Class,-Order,-Family,-Genus,-Reads) %>% 
+  filter(grepl('accolens', `Species/Supraspecies`) | 
+         grepl('propinquum', `Species/Supraspecies`) | 
+         grepl('pseudodiphtheriticum', `Species/Supraspecies`) |
+         grepl('tuberculostearicum', `Species/Supraspecies`)) %>% 
+  filter(!grepl(':', `Species/Supraspecies`)) # Remove this line if we want to keep the Supraspecies 
+
+HMP_4Corynes <- HMP_4Corynes %>% t %>% as.data.frame() %>% row_to_names(1)
+HMP_4Corynes <- HMP_4Corynes %>% mutate_if(is.character, as.numeric)
+```
+
+```{r}
+# Subset of the 4 Corynebacterium with >0 reads == TRUE
+HMP_4Corynes_reads <- HMP_4Corynes %>% 
+  mutate(Cac = ifelse(accolens > 0, TRUE, FALSE)) %>% 
+  mutate(Ctu = ifelse(tuberculostearicum > 0, TRUE, FALSE)) %>% 
+  mutate(Cpr = ifelse(propinquum > 0, TRUE, FALSE)) %>% 
+  mutate(Cps = ifelse(pseudodiphtheriticum > 0, TRUE, FALSE)) %>% 
+  select(c("Cac","Ctu","Cpr","Cps"))
+```
+
+### Venn Diagram
+```{r}
+sample_list <- list(
+  Cpr = row.names(HMP_4Corynes_reads %>% filter(Cpr == "TRUE")),
+  Cac = row.names(HMP_4Corynes_reads %>% filter(Cac == "TRUE")),
+  Ctu = row.names(HMP_4Corynes_reads %>% filter(Ctu == "TRUE")),
+  Cps = row.names(HMP_4Corynes_reads %>% filter(Cps == "TRUE")))
+
+venn <- Venn(sample_list)
+data <- process_data(venn)
+
+p <- ggVennDiagram(sample_list,
+                   label = "percent",
+                   label_percent_digit = 1,
+                   label_alpha = 0, 
+                   set_color = c("#FF8C00","#9400D3","#0000ff","#FF0000"))
+
+p + 
+  #scale_fill_viridis_c(direction = -1, option = "C") +
+  scale_fill_gradientn(colours = c("white", "grey40")) 
+```
+
+### All combinations of species
+```{r}
+# Generate combinations
+combinations <- unlist(lapply(1:4, function(x) combn(names(HMP_4Corynes_reads), x, simplify = FALSE)), recursive = FALSE)
+combinations_mat <- do.call(rbind, combinations)
+```
+
+```{r}
+# Iterate over combinations and create new columns
+Table_combinations <- HMP_4Corynes_reads
+for (i in 1:length(combinations)) {
+  new_col_name <- paste0("Count_",combinations[i])
+  
+  # Check if values are higher or equal to 10
+  present_values <- apply(Table_combinations[, combinations_mat[i, ]], 1, function(row) all(row > 0))
+  
+  # Assign TRUE or FALSE to the new column
+  Table_combinations[[new_col_name]] <- present_values
+}
+
+Table_combinations <- Table_combinations %>% select(-Cac,-Ctu,-Cpr,-Cps)
+Table_combinations_Sums <- colSums(Filter(is.logical, Table_combinations))
+kable(paste(names(Table_combinations_Sums), Table_combinations_Sums, sep = ":"), col.names = "Counts",)
+```
+
+### Samples with a given number of species
+
+```{r}
+HMP_4Corynes_reads$Sum <- rowSums(Filter(is.logical, HMP_4Corynes_reads))
+Table_counts <- HMP_4Corynes_reads %>% 
+  dplyr::count(Sum, sort = FALSE)
+Table_counts$Freq <- round((Table_counts$n/sum(Table_counts$n))*100,2)
+kable(Table_counts)
+```
+
