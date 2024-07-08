@@ -540,7 +540,7 @@ As described above, metabolic enrichment was explored across different genome gr
 ### Table 3
 
 ```{r}
-# Read modules data and select only the genomes for the four nasal Corynebacterium species and Dolosigranulum pigrum. Made appropriate labeling columns
+# Read modules data and select only the genomes for the four nasal Corynebacterium species and Dolosigranulum pigrum. Make appropriate labeling columns
 Modules <- read_delim("data/Anvio8/Metabolic_Analysis/CorPGA_modules.txt", show_col_types = FALSE, col_types = cols(unique_enzymes_hit_counts = col_character(), gene_caller_ids_in_module = col_character())) %>% 
   filter(!grepl("^GCF", genome_name)) %>%
   mutate(module_class_short = paste0("(", substr(module_class, 1, 1), ")")) %>%
@@ -548,7 +548,7 @@ Modules <- read_delim("data/Anvio8/Metabolic_Analysis/CorPGA_modules.txt", show_
   unite(modules_label, c(module_class_short, module_category, module_subcategory), sep = "_", remove = FALSE) %>% 
   mutate_at(c("species_name", "genome_name", "module", "module_name", "module_category", "module_subcategory", "module_class", "modules_label"), factor)
 
-# Summary tally table of fully complete modules by species
+# Summary tally table of fully stepwise complete modules by species
 ModulesTable <- Modules %>%
   filter(stepwise_module_completeness == 1) %>%
   group_by(module_category, module_subcategory, module, module_name, species_name) %>%
@@ -580,7 +580,7 @@ write_csv(ModulesTableWide, "data/Anvio8/Metabolic_Analysis/Fig_Tables/TableKEGG
 kable(ModulesTableWide)
 ```
 
-### Figure 5
+### Figure 8
 
 ```{r}
 # Reading strain order and label formatting 
@@ -674,7 +674,7 @@ Figure
 ggsave(plot = Figure, filename = "data/Anvio8/Metabolic_Analysis/Fig_Tables/CorPGA_Heatmap.jpg", height = 9.0625, width = 6.875, device = 'jpg', dpi = 600)
 ```
 
-#### Percentages in Figure 5
+#### Percentages in Figure 8
 
 ```{r}
 Modules_MeansSummary = Modules_Means %>% 
