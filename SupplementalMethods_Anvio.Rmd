@@ -744,8 +744,7 @@ anvi-summarize -p $path_i/All4CorRefs/PAN_All4CorRefs-PAN.db \
 
 # References {.unnumbered}
 
-::: {#refs}
-:::
+<div id="refs"></div>
 
 <br>
 
