@@ -59,25 +59,25 @@ data_norm <- read_excel(file.path(paste0("data/glycogen/", experiment, ".xlsx"))
 
 # Filter out rows where "Reject" column is "F" and where "Type" column is not "Empty" in the data_lum data frame, and remove the "Reject" column for both dataframes
 data_lum <- data_lum %>% 
-  filter(Reject=="F") %>%
-  filter(Type!="Empty") %>%
-  filter(Species!="Cna") %>%
+  filter(Reject == "F") %>%
+  filter(Type != "Empty") %>%
+  filter(Species != "Cna") %>%
   select(-Reject)
 
 data_OD <- data_OD %>% 
-  filter(Reject=="F") %>%
-  filter(Species!="Cna") %>%
+  filter(Reject == "F") %>%
+  filter(Species != "Cna") %>%
   select(-Reject)
 
 data_norm <- data_norm %>% 
-  filter(Species!="Cna")
+  filter(Species != "Cna")
 
 # Split the data_lum data frame into two separate data frames: data_lum_samples containing rows where "Type" is "Sample" and data_lum_standards containing rows where "Type" is "Standard", and remove unnecessary columns
 data_lum_samples <- data_lum %>% 
-  filter(Type=="Sample")
+  filter(Type == "Sample")
 
 data_lum_standards <- data_lum %>% 
-  filter(Type=="Standard") %>%
+  filter(Type == "Standard") %>%
   select(-Species, -Strain)
 
 # Convert the "Amy" column in data_lum_standards to a factor and "Glycogen" column to numeric
@@ -143,7 +143,7 @@ full_Lum_df <- left_join(full_Lum_df, data_norm) %>%
 
 ```{r}
 # Convert the 'Species' column to a factor with specified levels
-full_Lum_df$Species <- factor(full_Lum_df$Species, levels=c("Cpr", "Cps", "Cac", "Ctu", "Cgl"))
+full_Lum_df$Species <- factor(full_Lum_df$Species, levels = c("Cpr", "Cps", "Cac", "Ctu", "Cgl"))
 
 # Convert the 'TimePoint' column to a factor with default level ordering
 full_Lum_df$TimePoint <- factor(full_Lum_df$TimePoint)
@@ -213,9 +213,9 @@ avg_data_Lum_Norm <- df_lum %>%
   )
 
 # Convert the 'Species' column in all average data frames to a factor with specified levels
-avg_data_OD$Species <- factor(avg_data_OD$Species, levels=c("Cpr", "Cps", "Cac", "Ctu", "Cgl"))
-avg_data_Lum$Species <- factor(avg_data_Lum$Species, levels=c("Cpr", "Cps", "Cac", "Ctu", "Cgl"))
-avg_data_Lum_Norm$Species <- factor(avg_data_Lum_Norm$Species, levels=c("Cpr", "Cps", "Cac", "Ctu", "Cgl"))
+avg_data_OD$Species <- factor(avg_data_OD$Species, levels = c("Cpr", "Cps", "Cac", "Ctu", "Cgl"))
+avg_data_Lum$Species <- factor(avg_data_Lum$Species, levels = c("Cpr", "Cps", "Cac", "Ctu", "Cgl"))
+avg_data_Lum_Norm$Species <- factor(avg_data_Lum_Norm$Species, levels = c("Cpr", "Cps", "Cac", "Ctu", "Cgl"))
 
 # Convert the 'TimePoint' column in Lum data frames to a factor with default level ordering
 avg_data_Lum$TimePoint <- factor(avg_data_Lum$TimePoint)
@@ -232,14 +232,14 @@ library(grid)
 # Create a line plot of average OD600 over time for each species
 plot_avg_OD600 <- ggplot(avg_data_OD, aes(x = Time, y = AvgOD, color = Species)) +
   geom_line() + # Add lines to connect points
-  geom_point(size=3) + # Add points to represent data
+  geom_point(size = 3) + # Add points to represent data
   geom_errorbar(aes(ymin = AvgOD - SE, ymax = AvgOD + SE), width = 0.2) + # Add error bars
   labs(
     y = "Average OD600"
   ) +
-  scale_color_manual(values=c("#FF8C00", "#FF0000", "#6A329F", "#3B54A4", "grey50")) +
-  scale_y_continuous(expand=c(0,0)) +
-  scale_x_continuous(expand=c(0,2)) +
+  scale_color_manual(values = c("#FF8C00", "#FF0000", "#6A329F", "#3B54A4", "grey50")) +
+  scale_y_continuous(expand = c(0,0)) +
+  scale_x_continuous(expand = c(0,2)) +
   theme_classic() + # Use a black and white theme
   theme(
     plot.title = element_text(size = 14, face = "bold", margin = margin(b = 10)),
@@ -257,8 +257,8 @@ plot_avg_Lum_Norm <- ggplot(avg_data_Lum_Norm, aes(x = TimePoint, y = AvgLum, fi
     y = "Average Normalized Glycogen",
     color = "Species"
   ) +
-  scale_fill_manual(values=c("#FF8C00", "#FF0000", "#6A329F", "#3B54A4", "grey50")) +
-  scale_y_continuous(expand=c(0,0), limits = c(0, 13)) +
+  scale_fill_manual(values = c("#FF8C00", "#FF0000", "#6A329F", "#3B54A4", "grey50")) +
+  scale_y_continuous(expand = c(0,0), limits = c(0, 13)) +
   theme_classic() + # Use a black and white theme
   theme(
     plot.title = element_text(size = 14, face = "bold", margin = margin(b = 10)),
@@ -268,7 +268,7 @@ plot_avg_Lum_Norm <- ggplot(avg_data_Lum_Norm, aes(x = TimePoint, y = AvgLum, fi
   )
 
 # Combine the plots using ggarrange
-combined_plot <- ggarrange(plot_avg_OD600, plot_avg_Lum_Norm, ncol = 2, labels=c("A", "B"), widths = c(0.8, 0.7))
+combined_plot <- ggarrange(plot_avg_OD600, plot_avg_Lum_Norm, ncol = 2, labels = c("A", "B"), widths = c(0.8, 0.7))
 
 # Save the combined plot as a PNG file
 ggsave("data/glycogen/Figure/combined_plot.png", combined_plot, width = 10, height = 6, dpi = 300)
