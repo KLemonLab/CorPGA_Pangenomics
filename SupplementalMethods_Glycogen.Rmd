@@ -29,16 +29,6 @@ library(merTools)
 library(tidyverse)
 ```
 
-# Wetlab Methods
-
-This study involved a detailed procedure to analyze the growth and glycogen concentration of bacterial species. To measure glycogen the Glycogen-Gly Assay kit from Promega was used (Catalog #: J5051). The species of interest were first streaked on brain heart infusion supplemented with tween and allowed to grow for 36-48 hours. Subsequently, single colonies were picked and inoculated into tubes containing 4.5 ml of PBS buffer. The samples underwent two full washes with PBS buffer and were centrifuged at 13000 RPM at 4°C for 10 minutes each time.
-
-The optical density at 600 nm (OD600) was measured and normalized to 2. The normalized samples were then inoculated into 50 ml nCDM + 5% glucose in 250 ml flasks and the OD600 was measured at 24, 28, 32, and 48 hours. A 4 ml aliquot from each sample was centrifuged, resuspended in PBS, and washed twice. During the washes, glycogen enzymes were thawed on ice.
-
-After washing, the samples were resuspended in PBS and the OD600 was measured and normalized to 0.5. A 300 µl aliquot of each sample was combined with 150 µl of HCL in a bead-beating tube and heated in a non-shaking dry bath at 95°C for 5 minutes. The samples were bead-beaten three times at 6.5 m/s for 45 seconds each time. After bead-beating, 150 µl of Tris buffer was added to each tube.
-
-The samples were then centrifuged at 16000 RCF at 4°C for 20 minutes. The supernatant was transferred to a clean tube and aliquoted into a 96-well plate. Amylase reagent was prepared and standards were transferred to the plate reader wells. The samples were incubated at room temperature for 1 hour. After incubation, a glucose detection reagent was prepared and added to the samples and controls. Luminescence was measured using a compatible plate reader. The results provide insights into the growth and glycogen concentration of the bacterial species under study.
-
 # Individual Experiment Analysis (N=1)
 
 The analysis was ran three different times based on three independent experiments on different dates. This data can be found in `data/glycogen` as `.xlsx` files with the following 3 tabs:
@@ -48,8 +38,6 @@ The analysis was ran three different times based on three independent experiment
   - **csvLum:** contains the columns Date, TimePoint, Well_ID, Type, Amy, Species, Strain, Reject, Glycogen, and Lum. 
 
 ```{r}
-######### Reading Data and Basic Clean-up ######### 
-
 # Defining the experiment variable (Comment out one experiment at a time)
 #experiment <- "240322_Gly"
 #experiment <- "240325_Gly"
