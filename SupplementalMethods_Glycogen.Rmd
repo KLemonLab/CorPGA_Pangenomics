@@ -9,6 +9,9 @@ output:
     code_folding: show
 bibliography: references.bib
 csl: references_style.csl
+execute:
+  message: FALSE
+  warning: FALSE
 ---
 
 ```{r klippy, echo=FALSE, include=TRUE}
@@ -16,11 +19,17 @@ klippy::klippy(c('r', 'bash'))
 ```
 
 ```{r}
-# Load the tidyverse and readxl libraries
-library(tidyverse)
+# Load libraries
 library(readxl)
 library(ggpubr)
+library(grid)
+library(lme4)
+library(afex)
+library(merTools)
+library(tidyverse)
 ```
+
+# Wetlab Methods
 
 This study involved a detailed procedure to analyze the growth and glycogen concentration of bacterial species. To measure glycogen the Glycogen-Gly Assay kit from Promega was used (Catalog #: J5051). The species of interest were first streaked on brain heart infusion supplemented with tween and allowed to grow for 36-48 hours. Subsequently, single colonies were picked and inoculated into tubes containing 4.5 ml of PBS buffer. The samples underwent two full washes with PBS buffer and were centrifuged at 13000 RPM at 4°C for 10 minutes each time.
 
@@ -30,24 +39,18 @@ After washing, the samples were resuspended in PBS and the OD600 was measured an
 
 The samples were then centrifuged at 16000 RCF at 4°C for 20 minutes. The supernatant was transferred to a clean tube and aliquoted into a 96-well plate. Amylase reagent was prepared and standards were transferred to the plate reader wells. The samples were incubated at room temperature for 1 hour. After incubation, a glucose detection reagent was prepared and added to the samples and controls. Luminescence was measured using a compatible plate reader. The results provide insights into the growth and glycogen concentration of the bacterial species under study.
 
-## Plate reader output excel file set up
+# Individual Experiment Analysis (N=1)
 
-We made 3 new tabs within the excel named `csvOD`, `csvNorm`, and `csvLum`. These tabs will act as the initial data R will read. The templates of the 3 tab files will be as described:
-
-The `csvOD` contains the columns Date, Species, Strain, Time, Media, Reject and GrowthOD. 
-The `csvNorm` contains the columns Speces, TimePoint, Date, and ODNorm. 
-The`csvLum` contains the columns Date, TimePoint, Well_ID, Type, Amy, Species, Strain, Reject, Glycogen, and Lum. 
-
-Examples of the tabs can be found in the `.xlsx` file within the directory `data/glycogen`.
-
-# Independent Experiment Glycogen Assays (Luminescence)
-
-This analysis was ran three different times based on three independent experiments on different dates. This data can be found in `data/glycogen` as `.xlsx` files. 
+The analysis was ran three different times based on three independent experiments on different dates. This data can be found in `data/glycogen` as `.xlsx` files with the following 3 tabs:
+  
+  - **csvOD:** contains the columns Date, Species, Strain, TimePoint, Media, Reject and GrowthOD. 
+  - **csvNorm:** contains the columns Species, TimePoint, Date, and ODNorm. 
+  - **csvLum:** contains the columns Date, TimePoint, Well_ID, Type, Amy, Species, Strain, Reject, Glycogen, and Lum. 
 
 ```{r}
 ######### Reading Data and Basic Clean-up ######### 
 
-# Defining the experiment variable three times but only the last definition ("240331_Gly") will be used in the subsequent code.
+# Defining the experiment variable (Comment out one experiment at a time)
 #experiment <- "240322_Gly"
 #experiment <- "240325_Gly"
 experiment <- "240331_Gly"
@@ -57,7 +60,7 @@ data_lum <- read_excel(file.path(paste0("data/glycogen/", experiment, ".xlsx")),
 data_OD <- read_excel(file.path(paste0("data/glycogen/", experiment, ".xlsx")), sheet = "csvOD")
 data_norm <- read_excel(file.path(paste0("data/glycogen/", experiment, ".xlsx")), sheet = "csvNorm")
 
-# Filter out rows where "Reject" column is "F" and where "Type" column is not "Empty" in the data_lum data frame, and remove the "Reject" column for both dataframes
+# Filter out rows where "Reject" column is "F" and where "Type" column is not "Empty" in the data_lum data frame, and remove the "Reject" column for both dataframes. Remove species "Cna", as this strain was not included on the manuscript.
 data_lum <- data_lum %>% 
   filter(Reject == "F") %>%
   filter(Type != "Empty") %>%
@@ -85,7 +88,7 @@ data_lum_standards$Amy <- as.factor(data_lum_standards$Amy)
 data_lum_standards$Glycogen <- as.numeric(data_lum_standards$Glycogen)
 ```
 
-```{r fig.height=8, fig.width=15}
+```{r}
 # Function to analyze a single timepoint
 analyze_glycogen <- function(time, data_lum_standards, data_lum_samples) {
   # Filter the data_lum_standards data frame for rows where "TimePoint" is equal to the specified time
@@ -95,7 +98,7 @@ analyze_glycogen <- function(time, data_lum_standards, data_lum_samples) {
     mutate(Difference = ifelse(Amy == "T", Lum - lag(Lum), NA)) %>%
     filter(!is.na(Difference))
 
-  # Fit a linear model (lm) with "Difference" as the dependent variable and "Glycogen" as the independent variable
+  # Fit a linear model (lm) for the standards with "Difference" as the dependent variable and "Glycogen" as the independent variable
   lmStandard <- lm(Difference ~ Glycogen, time_standard) 
 
   # Extract coefficients from the linear model
@@ -125,7 +128,7 @@ analyze_glycogen <- function(time, data_lum_standards, data_lum_samples) {
 }
 ```
 
-```{r fig.height=30, fig.width=15}
+```{r}
 # Loop through different values of time
 all_results <- list()
 
@@ -152,14 +155,35 @@ full_Lum_df$TimePoint <- factor(full_Lum_df$TimePoint)
 full_Lum_df$Date <- data_OD$Date[1]
 
 # Write the 'full_Lum_df' dataframe to a CSV file, excluding row names
-write.csv(full_Lum_df, paste0("data/glycogen/Lum/", experiment,"_Lum.csv"), row.names = F)
+#write.csv(full_Lum_df, paste0("data/glycogen/Lum/", experiment,"_Lum.csv"), row.names = F)
 
 # Write the 'data_OD' dataframe to a CSV file, excluding row names
-write.csv(data_OD, paste0("data/glycogen/OD/", experiment,"_OD.csv"), row.names = F)
+#write.csv(data_OD, paste0("data/glycogen/OD/", experiment,"_OD.csv"), row.names = F)
 ```
 
+## Saving files
 
-# Summary Plots and Stats
+```{r}
+# Create subfolders for output files
+Lum_folder <- "data/glycogen/Lum"
+if (!file.exists("data/glycogen/Lum")) {
+  dir.create("data/glycogen/Lum", recursive = TRUE)
+}
+
+OD_folder <- "data/glycogen/OD"
+if (!file.exists("data/glycogen/OD")) {
+  dir.create("data/glycogen/OD", recursive = TRUE)
+}
+
+# Save data frames as CSV files in their output folders
+write.csv(full_Lum_df, file.path(Lum_folder, paste0(experiment, "_Lum.csv")), row.names = FALSE)
+write.csv(data_OD, file.path(OD_folder, paste0(experiment, "_OD.csv")), row.names = FALSE)
+
+# Cleaning-up all objects from the environment
+rm(list = ls())
+```
+
+# Combined Analysis (N=3)
 
 ```{r}
 # Define the directory path for OD data
@@ -185,95 +209,156 @@ df_list_lum <- lapply(file_list_lum, read.csv)
 
 # Combine all dataframes in the list into a single dataframe
 df_lum <- bind_rows(df_list_lum)
+
+# Convert the 'Species' column in all average data frames to a factor with specified levels
+df_OD$Species <- factor(df_OD$Species, levels = c("Cpr", "Cps", "Cac", "Ctu", "Cgl"))
+df_lum$Species <- factor(df_lum$Species, levels = c("Cpr", "Cps", "Cac", "Ctu", "Cgl"))
+
+# Convert the 'TimePoint' column in Lum data frame to a factor with default level ordering
+df_lum$TimePoint <- factor(df_lum$TimePoint)
+
+# Define colors
+species_colors <- c("#FF8C00", "#FF0000", "#6A329F", "#3B54A4", "grey50")
 ```
 
+## Growth (OD600)
 ```{r}
-# Group the OD data by Species and Time, then calculate the average OD and standard error
+# Group the OD data by Species and TimePoint, then calculate the average OD and standard error
 avg_data_OD <- df_OD %>%
-  group_by(Species, Time) %>%
+  group_by(Species, TimePoint) %>%
   summarise(
     AvgOD = mean(GrowthOD, na.rm = TRUE), # Calculate the average OD, removing NA values
     SE = sd(GrowthOD, na.rm = TRUE) / sqrt(sum(!is.na(GrowthOD))) # Calculate standard error
   )
-
-# Group the Lum data by Species and TimePoint, then calculate the average Luminescence and standard error
-avg_data_Lum <- df_lum %>%
-  group_by(Species, TimePoint) %>%
-  summarise(
-    AvgLum = mean(Glycogen, na.rm = TRUE), # Calculate the average Glycogen, removing NA values
-    SE = sd(Glycogen, na.rm = TRUE) / sqrt(sum(!is.na(Glycogen))) # Calculate standard error
-  )
-
-# Group the normalized Lum data by Species and TimePoint, then calculate the average normalized Luminescence and standard error
-avg_data_Lum_Norm <- df_lum %>%
-  group_by(Species, TimePoint) %>%
-  summarise(
-    AvgLum = mean(GlycogenNorm, na.rm = TRUE), # Calculate the average normalized Glycogen, removing NA values
-    SE = sd(GlycogenNorm, na.rm = TRUE) / sqrt(sum(!is.na(GlycogenNorm))) # Calculate standard error
-  )
-
-# Convert the 'Species' column in all average data frames to a factor with specified levels
-avg_data_OD$Species <- factor(avg_data_OD$Species, levels = c("Cpr", "Cps", "Cac", "Ctu", "Cgl"))
-avg_data_Lum$Species <- factor(avg_data_Lum$Species, levels = c("Cpr", "Cps", "Cac", "Ctu", "Cgl"))
-avg_data_Lum_Norm$Species <- factor(avg_data_Lum_Norm$Species, levels = c("Cpr", "Cps", "Cac", "Ctu", "Cgl"))
-
-# Convert the 'TimePoint' column in Lum data frames to a factor with default level ordering
-avg_data_Lum$TimePoint <- factor(avg_data_Lum$TimePoint)
-avg_data_Lum_Norm$TimePoint <- factor(avg_data_Lum_Norm$TimePoint)
 ```
 
-# Final Figure
-
 ```{r}
-# Load the necessary libraries
-library(ggpubr)
-library(grid)
-
 # Create a line plot of average OD600 over time for each species
-plot_avg_OD600 <- ggplot(avg_data_OD, aes(x = Time, y = AvgOD, color = Species)) +
+plot_avg_OD600 <- ggplot(avg_data_OD, aes(x = TimePoint, y = AvgOD, color = Species)) +
   geom_line() + # Add lines to connect points
-  geom_point(size = 3) + # Add points to represent data
+  geom_point(size = 2) + # Add points to represent data
   geom_errorbar(aes(ymin = AvgOD - SE, ymax = AvgOD + SE), width = 0.2) + # Add error bars
   labs(
-    y = "Average OD600"
-  ) +
-  scale_color_manual(values = c("#FF8C00", "#FF0000", "#6A329F", "#3B54A4", "grey50")) +
+    y = "Average OD600",
+    x = "Time"
+    ) +
+  scale_color_manual(values = species_colors) +
   scale_y_continuous(expand = c(0,0)) +
   scale_x_continuous(expand = c(0,2)) +
-  theme_classic() + # Use a black and white theme
+  theme_classic() + 
   theme(
-    plot.title = element_text(size = 14, face = "bold", margin = margin(b = 10)),
-    plot.caption = element_text(size = 10, margin = margin(t = 10)),
     legend.position = "none", # Remove the legend
-    axis.title.x = element_blank(), # Remove x-axis title
     plot.margin = margin(1, 1, 1, 1, "cm") # Adjust plot margins
   )
+plot_avg_OD600
+```
 
+## Luminesce
+```{r}
+# Mixed linear model with GlycogenNorm as fixed effect and TimePoint as a random effect. Using "Ctu" as reference (first factor level)
+df_lum$Species <- factor(df_lum$Species, levels = c("Ctu", "Cgl", "Cpr", "Cps", "Cac")) 
+model <- lmer(GlycogenNorm ~ Species 
+              + (1|TimePoint),
+              data = df_lum)
+
+anova(model)
+summary(model)
+
+# Model predicted confident intervals
+pred <- predictInterval(model, level = 0.95, n.sims = 1000, which = "full")
+df_lum_pred <- cbind(df_lum, pred)
+
+# Group Lum data by Species and TimePoint, then calculate the all average values
+avg_data_Lum <- df_lum_pred %>%
+group_by(Species, TimePoint) %>%
+  summarise(
+    AvgLum = mean(GlycogenNorm, na.rm = TRUE), # Calculate the average normalized Glycogen, removing NA values
+    SE = sd(GlycogenNorm, na.rm = TRUE) / sqrt(sum(!is.na(GlycogenNorm))), # Calculate standard error
+    mean_fit = mean(fit), 
+    mean_lwr = mean(lwr),
+    mean_upr = mean(upr),
+    .groups = 'drop')
+
+df_lum$Species <- factor(df_lum$Species, levels = c("Cpr", "Cps", "Cac", "Ctu", "Cgl"))
+```
+
+```{r}
+# Create a dot boxplot of normalized glycogen concentration over time for each species
+plot_Lum <- ggplot(df_lum, aes(x = TimePoint, y = GlycogenNorm, fill = Species)) +
+  geom_boxplot() + 
+  labs(
+    y = "Normalized Glycogen",
+    x = "Time"
+  ) +
+  scale_fill_manual(values = species_colors) +
+  scale_y_continuous(expand = c(0,0)) +
+  theme_classic() + 
+  theme(
+    plot.margin = margin(1, 1, 1, 1, "cm") # Adjust plot margins
+  )
+plot_Lum
+```
+
+```{r}
+#Create Luminesce plot with stats
+plot_Lum_Stats <- ggplot(avg_data_Lum, aes(x = TimePoint, fill = Species)) +
+  geom_boxplot(aes(lower = AvgLum - SE, upper = AvgLum + SE, middle = AvgLum, ymin = mean_lwr, ymax = mean_upr), stat = "identity") +
+  labs(
+    y = "Normalized Glycogen",
+    x = "Time"
+  ) +
+  scale_fill_manual(values = species_colors) +
+  scale_y_continuous(expand = c(0,0)) +
+  theme_classic() + 
+  theme(
+    plot.margin = margin(1, 1, 1, 1, "cm") # Adjust plot margins
+  )
+plot_Lum_Stats
+```
+
+```{r}
 # Create a bar plot of average normalized glycogen concentration over time for each species
-plot_avg_Lum_Norm <- ggplot(avg_data_Lum_Norm, aes(x = TimePoint, y = AvgLum, fill = Species)) +
+plot_avg_Lum <- ggplot(avg_data_Lum, aes(x = TimePoint, y = AvgLum, fill = Species)) +
   geom_bar(position = position_dodge(), stat = "identity", color = "black") + # Add bars with dodge position
   geom_errorbar(aes(ymin = AvgLum, ymax = AvgLum + SE), position = position_dodge(width = 0.9), width = 0.2) + # Add error bars
   labs(
     y = "Average Normalized Glycogen",
-    color = "Species"
-  ) +
-  scale_fill_manual(values = c("#FF8C00", "#FF0000", "#6A329F", "#3B54A4", "grey50")) +
+    x = "Time"
+    ) +
+  scale_fill_manual(values = species_colors) +
   scale_y_continuous(expand = c(0,0), limits = c(0, 13)) +
-  theme_classic() + # Use a black and white theme
+  theme_classic() + 
   theme(
-    plot.title = element_text(size = 14, face = "bold", margin = margin(b = 10)),
-    plot.caption = element_text(size = 10, margin = margin(t = 10)),
-    axis.title.x = element_blank(), # Remove x-axis title
-    plot.margin = margin(1, 1, 1, 1, "cm") # Adjust plot margins
-  )
+    plot.margin = margin(1, 1, 1, 1, "cm")
+  ) # Adjust plot margins
+plot_avg_Lum
+```
 
+## Saving files
+
+```{r}
 # Combine the plots using ggarrange
-combined_plot <- ggarrange(plot_avg_OD600, plot_avg_Lum_Norm, ncol = 2, labels = c("A", "B"), widths = c(0.8, 0.7))
+combined_plot <- ggarrange(plot_avg_OD600, plot_Lum, ncol = 2, labels = c("A", "B"), widths = c(0.5, 0.5))
+combined_plot
+```
+
+```{r}
+# Create subfolders for output files
+outputs_folder <- "data/glycogen/Outputs"
+if (!file.exists("data/glycogen/Outputs")) {
+  dir.create("data/glycogen/Outputs", recursive = TRUE)
+}
+
+# Save data frames as CSV files in their output folders
+write.csv(df_lum, file.path(outputs_folder,"CorPGA_Lum.csv"), row.names = FALSE)
+write.csv(df_OD, file.path(outputs_folder, "CorPGA_OD.csv"), row.names = FALSE)
+
 
 # Save the combined plot as a PNG file
-ggsave("data/glycogen/Figure/combined_plot.png", combined_plot, width = 10, height = 6, dpi = 300)
+ggsave(file.path(outputs_folder, "CorPGA_GlycogenPlots.png"), combined_plot, width = 10, height = 6, dpi = 300)
 
-combined_plot
+# Save the combined plot as a SVG file
+ggsave(file.path(outputs_folder, "CorPGA_GlycogenPlots.svg"), combined_plot, width = 10, height = 6, dpi = 300)
 ```
 
 # References {.unnumbered}
@@ -291,5 +376,16 @@ combined_plot
 ----------------------------------------------------------------------
 
 ----------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
 
 
