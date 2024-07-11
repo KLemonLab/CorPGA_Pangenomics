@@ -12,11 +12,15 @@ bibliography: references.bib
 csl: references_style.csl
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
 ```{r klippy, echo=FALSE, include=TRUE}
 klippy::klippy(c('r', 'bash'))
 ```
 
-```{r libraries, echo=FALSE, message=FALSE}
+```{r libraries}
 library(tidyverse)
 library(ggtext)
 library(ggh4x)
@@ -30,6 +34,7 @@ library(seqinr)
 library(reshape2)
 library(plotly)
 library(htmlwidgets)
+library(seqvisr)
 ```
 
 This notebook contains analyses using anvi'o version 8 [@Eren2021; @delmont2018] (development branch). For more in-depth information about anvi'o go to their official online site here: <https://anvio.org/>
@@ -527,7 +532,7 @@ averaged_df <- map_dfc(prefixes, ~ {
 # Combine the non-numerical columns and the averaged columns by species
 Modules_MatrixbySpecies <- bind_cols(Modules_MatrixbyGenome %>% select(all_of(non_numeric_cols)), averaged_df)
 
-write.csv(Modules_MatrixbySpecies, "data/Anvio8/Metabolic_Analysis/CorPGA-module_stepwise_completeness-MATRIXbySpecies.csv", row.names = F)
+write.csv(Modules_MatrixbySpecies, "data/Anvio8/Metabolic_Analysis/Fig_Tables/CorPGA-module_stepwise_completeness-MATRIXbySpecies.csv", row.names = F)
 ```
 
 ### Table S4
@@ -653,25 +658,26 @@ legend <- ggplot(Modules_Means, aes(x = module_category, y = mean_stepwise_modul
   scale_fill_manual(values = getPalette(12)) + 
   theme(legend.title = element_blank(),
         legend.position = "bottom",
-        legend.text = element_text(size = 7),
+        legend.text = element_text(size = 6),
         legend.key.size = unit(0.3,"line")) +
   guides(fill = guide_legend(ncol = 3))
 
 # Strains origen legend
-text <- "<span style='font-size:10px'>USA isolate: </span> <span style='color:#ed1c24; font-size:14px;'>▲</span><br><span style='font-size:10px'>BWA isolate: </span> <span style='color:#6ca9d4; font-size:18px;'>●</span>"
+text <- "<span style='font-size:9px'> USA isolate:</span> <span style='color:#ed1c24; font-size:13px;'>▲</span><br><span style='font-size:9px'> BWA isolate:</span> <span style='color:#6ca9d4; font-size:17px;'>●</span>"
 text.p <- textbox_grob(text)
 ```
 
-```{r fig.height=9.0625, fig.width=6.875, message=FALSE, warning=FALSE}
+```{r fig.height=9, fig.width=6, message=FALSE, warning=FALSE}
 # Final figure
 Figure <- ggarrange(plot + theme(plot.margin = unit(c(0.5,0,1.5,3), "lines")), 
                     ggarrange(
                       as_ggplot(get_legend(legend)) + theme(plot.margin = unit(c(-1,0,1,2), "lines")),
                       as_ggplot(text.p) + theme(plot.margin = unit(c(0,0,2,1.5), "lines")),
                       nrow = 1, widths = c(0.8,0.2)),
-                    nrow = 2, heights = c(1,0.03))
+                    nrow = 2, heights = c(1,0.02))
 Figure
-ggsave(plot = Figure, filename = "data/Anvio8/Metabolic_Analysis/Fig_Tables/CorPGA_Heatmap.jpg", height = 9.0625, width = 6.875, device = 'jpg', dpi = 600)
+ggsave(plot = Figure, filename = "data/Anvio8/Metabolic_Analysis/Fig_Tables/CorPGA_Heatmap.png", height = 9, width = 6, device = 'png', dpi = 600)
+ggsave(plot = Figure, filename = "data/Anvio8/Metabolic_Analysis/Fig_Tables/CorPGA_Heatmap.svg", height = 9, width = 6, device = 'svg', dpi = 600)
 ```
 
 #### Percentages in Figure 8
@@ -697,6 +703,135 @@ summaryPlot
 
 ```{r}
 saveWidget(ggplotly(summaryPlot), "data/Anvio8/Metabolic_Analysis/Fig_Tables/Heatmap_Percents_Interactive.html", selfcontained = TRUE)
+```
+
+### Figure 7A
+
+The `Assimilatory sulfate reduction, sulfate => H2S` module (M00176) had a stepwise completion score = 0.5 in most of the *Corynebacterium* genomes. However, this module was completely absent in all the *C. pseudodiphtheriticum* strains from the U.S. and 4 from Botswana. We look for KO assignments for the enzymes encoded in the *fpr2cysIXHDNYZ* operon [@Rückert2005] that are not part of the M00176 module definition. Genes annotated as K00528 (*fpr*) were identified in all the *Corynebacterium* genomes. A manual exploration of the gene annotations in the genomic region around the *fpr* in all *C. pseudodiphtheriticum* strains, allowed us to identified *hchA* as a common gene downstream the *fpr2cysIXHDNYZ* operon.
+
+This code uses `BEDTools` [@Quinlan2010; @Quinlan2014] to extract annotations and sequences for the *fpr* to *hchA* region for all *C. pseudodiphtheriticum* genomes:
+
+```{bash, eval = FALSE}
+path_i="data/Anvio8/Prokka_out"
+path_o="data/Anvio8/Metabolic_Analysis/Fig_Tables/Alignment_hchA-fprA"
+mkdir -p $path_o
+
+gene_1="hchA"
+gene_2="fprA"
+species="Cps"
+label="ASR_Cps_region"
+
+fasta_files=()
+
+for file in $path_i/$species*.gff; do
+    filename=$(basename "$file")
+    filename_noext="${filename%.*}"
+    fasta_output="$path_o/${filename_noext}_region_sequence.fasta"
+
+    awk '/^##FASTA/{flag=1;next} {if(!flag) print}' "$file" > "$path_o/${filename_noext}_annotations.gff"
+    awk '/^##FASTA/{flag=1} {if(flag) print}' "$file" > "$path_o/${filename_noext}_sequence_temp.fasta"
+    grep -v '^##FASTA' "$path_o/${filename_noext}_sequence_temp.fasta" > "$path_o/${filename_noext}_sequence.fasta"
+    rm "$path_o/${filename_noext}_sequence_temp.fasta"
+
+    grep -E 'Name='$gene_1'|Name='$gene_2 "$path_o/${filename_noext}_annotations.gff" | sort -k4,4n | awk 'NR==1 {start=$4} NR==2 {end=$5} END {print $1 "\t" start "\t" end}' > "$path_o/${filename_noext}_region_coordinates.bed"
+    bedtools intersect -a "$path_o/${filename_noext}_annotations.gff" -b "$path_o/${filename_noext}_region_coordinates.bed" -wa > "$path_o/${filename_noext}_region_annotations.gff"
+    bedtools getfasta -fi "$path_o/${filename_noext}_sequence.fasta" -bed "$path_o/${filename_noext}_region_coordinates.bed" | awk -v filename="$filename_noext" '/^>/ {print ">" filename "|" substr($0, 2)} !/^>/' > "$fasta_output"
+
+    fasta_files+=("$fasta_output")
+done
+```
+
+We use MAFFT [@Katoh2002; @Katoh2013] to align the extracted sequences.
+
+```{bash, eval = FALSE}
+#conda activate mafft 
+
+cat "${fasta_files[@]}" > "$path_o/$label.fasta"
+mafft --adjustdirection --reorder "$path_o/$label.fasta" > "$path_o/${label}_align.fasta"
+sed 's/|.*//;s/_R_//' "$path_o/${label}_align.fasta" > "$path_o/${label}_align_clean.fasta" #Clean up header names
+```
+
+We used AliView [@Larsson2014] to inspect the output file and to reverse complement the alignment to match the operon order. We saved the reversed complemented version of the alignment as `ASR_Cps_region_align_clean_R.fasta`.
+
+Next we count the alignment length and create a reference sequence with all Ns and header named "Genes". This will be used as a base for gene labeling and as a reference so visualize only the gaps to the consensus. 
+
+```{bash, eval = FALSE}
+count=$(awk 'NR==2 {print length($0)}' "$path_o/${label}_align_clean_R.fasta") 
+filename="$path_o/${label}_reference.fasta"
+
+echo ">--------Genes" >> "$filename"
+echo "$(printf 'N%.0s' $(seq 1 $count))" >> "$filename"
+
+cat "$path_o/${label}_reference.fasta" "$path_o/${label}_align_clean_R.fasta" > "$path_o/${label}_align_clean_R_Ref.fasta"
+
+echo ">" >> "$filename"
+echo "$(printf '-%.0s' $(seq 1 $count))" >> "$filename"
+```
+
+The version of the alignment file with the reference sequence is the input for the visualization with the `msavisr` package [@vragh2022].
+
+```{r, eval = FALSE}
+plot_ASR <- msavisr("data/Anvio8/Metabolic_Analysis/Fig_Tables/Alignment_hchA-fprA/ASR_Cps_region_align_clean_R_Ref.fasta", 
+                myref = "--------Genes",
+                refontop = TRUE,
+                basecolors = c("gray30","gray30","white"))
+
+plot_ASR <- plot_ASR + 
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_text(size = 12))
+
+saveRDS(plot_ASR, "data/Anvio8/Metabolic_Analysis/Fig_Tables/Alignment_hchA-fprA/ASR_plot.rds")
+```
+
+This code creates a reference sequence with gene locations and length proportional to the corresponding gene coordinates to use as a label.
+
+```{r}
+#Manual list of gene coordinates generated by searching individual genes in the aligned fasta
+genes <- list(c("--------Genes", 11579:10901, "8_hchA"), 
+              c("--------Genes", 8816:7815, "7_cysZ"), 
+              c("--------Genes", 7806:6988, "6_cysY"), 
+              c("--------Genes", 6971:5595, "5_cysN"),
+              c("--------Genes", 5595:4513, "4_cysD"),
+              c("--------Genes", 4516:3458, "3_cysH"),
+              c("--------Genes", 3461:1788, "2_cysI"),
+              c("--------Genes", 1424:1, "1_fpr2")
+)
+
+plot_ASRlabels <- msavisr("data/Anvio8/Metabolic_Analysis/Fig_Tables/Alignment_hchA-fprA/ASR_Cps_region_reference.fasta", 
+                myref = "--------Genes",
+                refontop = FALSE,
+                basecolors = c("gray30","gray30","white"),
+                myroi = genes, hroi = 1,
+                roicolors = c("#9fd122","#00a84a","#f88502","#00a9f2","#6f88c9","#a94488","#c8c3e3", "gray80"))
+
+# Values manually calculated to place the labels in the middle of each gene 
+plot_ASRlabels <- plot_ASRlabels + 
+  annotate("text", x = 678, y = 1, label = "fpr2", size = 7, fontface = 2) +
+  annotate("text", x = 2624, y = 1, label = "cysI", size = 7, fontface = 2) +
+  annotate("text", x = 3987, y = 1, label = "cysH", size = 7, fontface = 2) +
+  annotate("text", x = 5054, y = 1, label = "cysD", size = 7, fontface = 2) +
+  annotate("text", x = 6283, y = 1, label = "cysN", size = 7, fontface = 2) +
+  annotate("text", x = 7397, y = 1, label = "cysY", size = 7, fontface = 2) +
+  annotate("text", x = 8315, y = 1, label = "cysZ", size = 7, fontface = 2) +
+  annotate("text", x = 11240, y = 1, label = "hchA", size = 7, fontface = 2) +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_text(size = 12))
+```
+
+This generates the combined figure that was edited in Ilustrator for final edits, including adding symbols for the strains geographic location.
+
+```{r}
+plot_ASR <- readRDS("data/Anvio8/Metabolic_Analysis/Fig_Tables/Alignment_hchA-fprA/ASR_plot.rds")
+FinalFigure <- ggarrange(plot_ASRlabels, plot_ASR, ncol = 1, heights = c(0.20, 1))
+FinalFigure
+ggsave(FinalFigure, file = "data/Anvio8/Metabolic_Analysis/Fig_Tables/Alignment_hchA-fprA/ASR_Cps_region.svg", height = 10, width = 20, dpi = 150)
+ggsave(FinalFigure, file = "data/Anvio8/Metabolic_Analysis/Fig_Tables/Alignment_hchA-fprA/ASR_Cps_region.png", height = 10, width = 20, dpi = 150)
 ```
 
 ## Pangenomic level analysis
@@ -744,7 +879,8 @@ anvi-summarize -p $path_i/All4CorRefs/PAN_All4CorRefs-PAN.db \
 
 # References {.unnumbered}
 
-<div id="refs"></div>
+::: {#refs}
+:::
 
 <br>
 
