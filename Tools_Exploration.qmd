@@ -645,6 +645,7 @@ FinalFigure
 ggsave(FinalFigure, file = "data/Anvio8/Metabolic_Analysis/Pathway_Exploration/ARS/ASR_Cps_region.svg", height = 10, width = 20, dpi = 150)
 ```
 
+Coordinates of the genes on the operon before doing the reverse complement:
 ```{r}
 #Reversed genes
 genes <- list(c("Genes", 1:678, "1_hchA"), 
@@ -661,7 +662,7 @@ genes <- list(c("Genes", 1:678, "1_hchA"),
 # roicolors = c("black","darkgreen","purple","cyan","pink","red","orange","yellow")
 ```
 
-
+Other way to visualize the region
 ```{r}
 gff_dir = "data/Anvio8/Metabolic_Analysis/Pathway_Exploration/ARS/Alignments_hchA-fprA/Cps_MSK311_region_annotations.gff" 
 gff <- read_delim(gff_dir, delim = "\t", trim_ws = TRUE, col_names = c("seqname", "source", "feature", "start", "end", "score", "strand", "frame", "att")) %>%
