@@ -9,10 +9,11 @@ output:
     code_folding: show
 bibliography: references.bib
 csl: references_style.csl
-execute:
-  message: FALSE
-  warning: FALSE
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
 
 ```{r klippy, echo=FALSE, include=TRUE}
 klippy::klippy(c('r', 'bash'))
@@ -220,23 +221,23 @@ avg_data_OD <- df_OD %>%
   )
 ```
 
-```{r}
+```{r fig.height=6, fig.width=6}
 # Create a line plot of average OD600 over time for each species
 plot_avg_OD600 <- ggplot(avg_data_OD, aes(x = TimePoint, y = AvgOD, color = Species)) +
   geom_line() + # Add lines to connect points
   geom_point(size = 2) + # Add points to represent data
   geom_errorbar(aes(ymin = AvgOD - SE, ymax = AvgOD + SE), width = 0.2) + # Add error bars
   labs(
-    y = "Average OD600",
-    x = "Time"
-    ) +
+    y = expression("Suspension turbidity (OD"[600]*")"),
+    x = "Time (hours)"
+  ) +
   scale_color_manual(values = species_colors) +
   scale_y_continuous(expand = c(0,0)) +
   scale_x_continuous(expand = c(0,2)) +
   theme_classic() + 
   theme(
     legend.position = "none", # Remove the legend
-    plot.margin = margin(1, 1, 1, 1, "cm") # Adjust plot margins
+    plot.margin = margin(0.5, 0.5, 0.5, 0.5, "cm") # Adjust plot margins
   )
 plot_avg_OD600
 ```
@@ -270,55 +271,57 @@ group_by(Species, TimePoint) %>%
 df_lum$Species <- factor(df_lum$Species, levels = c("Cpr", "Cps", "Cac", "Ctu", "Cgl"))
 ```
 
-```{r}
+```{r fig.height=6, fig.width=6}
 # Create a dot boxplot of normalized glycogen concentration over time for each species
 plot_Lum <- ggplot(df_lum, aes(x = TimePoint, y = GlycogenNorm, fill = Species)) +
   geom_boxplot() + 
   labs(
-    y = "Normalized Glycogen",
-    x = "Time"
+    y = "Glycogen (ug/ml) per normalized culture density ",
+    x = "Time (hours)"
   ) +
   scale_fill_manual(values = species_colors) +
   scale_y_continuous(expand = c(0,0)) +
   theme_classic() + 
   theme(
-    plot.margin = margin(1, 1, 1, 1, "cm") # Adjust plot margins
+    legend.position = "none", # Remove the legend
+    plot.margin = margin(0.5, 0.5, 0.5, 0.5, "cm") # Adjust plot margins
   )
 plot_Lum
 ```
 
-```{r}
+```{r fig.height=6, fig.width=6}
 #Create Luminesce plot with stats
 plot_Lum_Stats <- ggplot(avg_data_Lum, aes(x = TimePoint, fill = Species)) +
   geom_boxplot(aes(lower = AvgLum - SE, upper = AvgLum + SE, middle = AvgLum, ymin = mean_lwr, ymax = mean_upr), stat = "identity") +
   labs(
-    y = "Normalized Glycogen",
-    x = "Time"
+    y = "Glycogen (ug/ml) per normalized culture density ",
+    x = "Time (hours)"
   ) +
   scale_fill_manual(values = species_colors) +
   scale_y_continuous(expand = c(0,0)) +
   theme_classic() + 
   theme(
-    plot.margin = margin(1, 1, 1, 1, "cm") # Adjust plot margins
+    legend.position = "none", # Remove the legend
+    plot.margin = margin(0.5, 0.5, 0.5, 0.5, "cm") # Adjust plot margins
   )
 plot_Lum_Stats
 ```
 
-```{r}
+```{r fig.height=6, fig.width=6}
 # Create a bar plot of average normalized glycogen concentration over time for each species
 plot_avg_Lum <- ggplot(avg_data_Lum, aes(x = TimePoint, y = AvgLum, fill = Species)) +
   geom_bar(position = position_dodge(), stat = "identity", color = "black") + # Add bars with dodge position
   geom_errorbar(aes(ymin = AvgLum, ymax = AvgLum + SE), position = position_dodge(width = 0.9), width = 0.2) + # Add error bars
   labs(
-    y = "Average Normalized Glycogen",
-    x = "Time"
+    y = "Glycogen (ug/ml) per normalized culture density ",
+    x = "Time (hours)"
     ) +
   scale_fill_manual(values = species_colors) +
   scale_y_continuous(expand = c(0,0), limits = c(0, 13)) +
   theme_classic() + 
   theme(
-    plot.margin = margin(1, 1, 1, 1, "cm")
-  ) # Adjust plot margins
+    plot.margin = margin(0.5, 0.5, 0.5, 0.5, "cm") # Adjust plot margins
+  )
 plot_avg_Lum
 ```
 
@@ -326,7 +329,10 @@ plot_avg_Lum
 
 ```{r}
 # Combine the plots using ggarrange
-combined_plot <- ggarrange(plot_avg_OD600, plot_Lum, ncol = 2, labels = c("A", "B"), widths = c(0.5, 0.5))
+combined_plot <- ggarrange(as_ggplot(get_legend(plot_avg_Lum)),
+                           plot_avg_OD600, 
+                           plot_Lum, 
+                           ncol = 3, widths = c(0.1, 0.5, 0.5))
 combined_plot
 ```
 
