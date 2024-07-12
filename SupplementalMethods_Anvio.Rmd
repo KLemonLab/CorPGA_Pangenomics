@@ -836,7 +836,7 @@ ggsave(FinalFigure, file = "data/Anvio8/Metabolic_Analysis/Fig_Tables/Alignment_
 
 ## GC level analysis
 
-We performed pangenomic level analysis in 107 genomes: the 102 *Corynebacterium* genomes selected for metabolic analysis (Cac_ATCC_49726 & Cps_090104 were excluded for this analysis) plus the 5 *Corynebacterium* listed in **Table S1D**:
+We performed pangenomic level analysis in 107 genomes: the 102 nasal *Corynebacterium* genomes selected for metabolic analysis (Cac_ATCC_49726 & Cps_090104 were excluded for this analysis) plus the 5 *Corynebacterium* listed in **Table S1D**:
 
 -   *Corynebacterium glutamicum* ATCC 13032 (Kyowa Hakko) ([GCF_000011325.1](https://www.ncbi.nlm.nih.gov/nuccore/NC_003450.3))
 
