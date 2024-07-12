@@ -667,7 +667,7 @@ text <- "<span style='font-size:9px'> USA isolate:</span> <span style='color:#ed
 text.p <- textbox_grob(text)
 ```
 
-```{r fig.height=9, fig.width=6, message=FALSE, warning=FALSE}
+```{r fig.height=9, fig.width=6}
 # Final figure
 Figure <- ggarrange(plot + theme(plot.margin = unit(c(0.5,0,1.5,3), "lines")), 
                     ggarrange(
@@ -688,7 +688,7 @@ Modules_MeansSummary = Modules_Means %>%
   summarise(mean_bySpecies = mean(mean_stepwise_module_completeness))
 ```
 
-```{r fig.height=10, fig.width=12, message=FALSE, warning=FALSE}
+```{r fig.height=10, fig.width=12}
 summaryPlot <- ggplot(Modules_MeansSummary, aes(x = mean_bySpecies, y = modules_final_label, fill = species_name)) +
   geom_bar(stat = "identity", position = "dodge") +
   scale_fill_manual(values = colorsSpecies) +
@@ -705,7 +705,7 @@ summaryPlot
 saveWidget(ggplotly(summaryPlot), "data/Anvio8/Metabolic_Analysis/Fig_Tables/Heatmap_Percents_Interactive.html", selfcontained = TRUE)
 ```
 
-### Figure 7A
+### Figure 6A
 
 The `Assimilatory sulfate reduction, sulfate => H2S` module (M00176) had a stepwise completion score = 0.5 in most of the *Corynebacterium* genomes. However, this module was completely absent in all the *C. pseudodiphtheriticum* strains from the U.S. and 4 from Botswana. We look for KO assignments for the enzymes encoded in the *fpr2cysIXHDNYZ* operon [@Rückert2005] that are not part of the M00176 module definition. Genes annotated as K00528 (*fpr*) were identified in all the *Corynebacterium* genomes. A manual exploration of the gene annotations in the genomic region around the *fpr* in all *C. pseudodiphtheriticum* strains, allowed us to identified *hchA* as a common gene downstream the *fpr2cysIXHDNYZ* operon.
 

@@ -3277,8 +3277,8 @@ margin-left: 0 !important;
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="fu">saveWidget</span>(<span class="fu">ggplotly</span>(summaryPlot), <span class="st">&quot;data/Anvio8/Metabolic_Analysis/Fig_Tables/Heatmap_Percents_Interactive.html&quot;</span>, <span class="at">selfcontained =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 </div>
 </div>
-<div id="figure-7a" class="section level3" number="3.4.5">
-<h3><span class="header-section-number">3.4.5</span> Figure 7A</h3>
+<div id="figure-6a" class="section level3" number="3.4.5">
+<h3><span class="header-section-number">3.4.5</span> Figure 6A</h3>
 <p>The <code>Assimilatory sulfate reduction, sulfate =&gt; H2S</code> module (M00176) had a stepwise completion score = 0.5 in most of the <em>Corynebacterium</em> genomes. However, this module was completely absent in all the <em>C. pseudodiphtheriticum</em> strains from the U.S. and 4 from Botswana. We look for KO assignments for the enzymes encoded in the <em>fpr2cysIXHDNYZ</em> operon <span class="citation">(Rückert et al., 2005)</span> that are not part of the M00176 module definition. Genes annotated as K00528 (<em>fpr</em>) were identified in all the <em>Corynebacterium</em> genomes. A manual exploration of the gene annotations in the genomic region around the <em>fpr</em> in all <em>C. pseudodiphtheriticum</em> strains, allowed us to identified <em>hchA</em> as a common gene downstream the <em>fpr2cysIXHDNYZ</em> operon.</p>
 <p>This code uses <code>BEDTools</code> <span class="citation">(Quinlan, 2014; Quinlan and Hall, 2010)</span> to extract annotations and sequences for the <em>fpr</em> to <em>hchA</em> region for all <em>C. pseudodiphtheriticum</em> genomes:</p>
 <div class="sourceCode" id="cb28"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="va">path_i</span><span class="op">=</span><span class="st">&quot;data/Anvio8/Prokka_out&quot;</span></span>
