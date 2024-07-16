@@ -22,12 +22,11 @@ klippy::klippy(c('r', 'bash'))
 ```{r}
 # Load libraries
 library(readxl)
-library(ggpubr)
 library(grid)
 library(lme4)
 library(afex)
-library(merTools)
 library(tidyverse)
+library(ggpubr)
 ```
 
 # Individual Experiment Analysis (N=1)
@@ -228,7 +227,7 @@ plot_avg_OD600 <- ggplot(avg_data_OD, aes(x = TimePoint, y = AvgOD, color = Spec
   geom_point(size = 2) + # Add points to represent data
   geom_errorbar(aes(ymin = AvgOD - SE, ymax = AvgOD + SE), width = 0.2) + # Add error bars
   labs(
-    y = expression("Suspension turbidity (OD"[600]*")"),
+    y = expression("Turbidity (OD"[600]*")"),
     x = "Time (hours)"
   ) +
   scale_color_manual(values = species_colors) +
@@ -236,8 +235,9 @@ plot_avg_OD600 <- ggplot(avg_data_OD, aes(x = TimePoint, y = AvgOD, color = Spec
   scale_x_continuous(expand = c(0,2)) +
   theme_classic() + 
   theme(
+    axis.title = element_text(size = 7),
     legend.position = "none", # Remove the legend
-    plot.margin = margin(0.5, 0.5, 0.5, 0.5, "cm") # Adjust plot margins
+    plot.margin = margin(0.3, 0.2, 0.2, 0.5, "cm") # Adjust plot margins
   )
 plot_avg_OD600
 ```
@@ -253,28 +253,21 @@ model <- lmer(GlycogenNorm ~ Species
 anova(model)
 summary(model)
 
-# Model predicted confident intervals
-pred <- predictInterval(model, level = 0.95, n.sims = 1000, which = "full")
-df_lum_pred <- cbind(df_lum, pred)
-
-# Group Lum data by Species and TimePoint, then calculate the all average values
-avg_data_Lum <- df_lum_pred %>%
+# Group Lum data by Species and TimePoint, then calculate average values
+avg_data_Lum <- df_lum %>%
 group_by(Species, TimePoint) %>%
   summarise(
     AvgLum = mean(GlycogenNorm, na.rm = TRUE), # Calculate the average normalized Glycogen, removing NA values
     SE = sd(GlycogenNorm, na.rm = TRUE) / sqrt(sum(!is.na(GlycogenNorm))), # Calculate standard error
-    mean_fit = mean(fit), 
-    mean_lwr = mean(lwr),
-    mean_upr = mean(upr),
     .groups = 'drop')
-
-df_lum$Species <- factor(df_lum$Species, levels = c("Cpr", "Cps", "Cac", "Ctu", "Cgl"))
 ```
 
-```{r fig.height=6, fig.width=6}
+```{r fig.height=6, fig.width=6} 
+df_lum$Species <- factor(df_lum$Species, levels = c("Cpr", "Cps", "Cac", "Ctu", "Cgl"))
+
 # Create a dot boxplot of normalized glycogen concentration over time for each species
 plot_Lum <- ggplot(df_lum, aes(x = TimePoint, y = GlycogenNorm, fill = Species)) +
-  geom_boxplot() + 
+  geom_boxplot(linewidth = 0.3) + 
   labs(
     y = "Glycogen (ug/ml) per normalized culture density ",
     x = "Time (hours)"
@@ -283,44 +276,32 @@ plot_Lum <- ggplot(df_lum, aes(x = TimePoint, y = GlycogenNorm, fill = Species))
   scale_y_continuous(expand = c(0,0)) +
   theme_classic() + 
   theme(
+    axis.title = element_text(size = 7),
     legend.position = "none", # Remove the legend
-    plot.margin = margin(0.5, 0.5, 0.5, 0.5, "cm") # Adjust plot margins
+    plot.margin = margin(0.3, 0.2, 0.2, 0.5, "cm") # Adjust plot margins
   )
 plot_Lum
 ```
 
 ```{r fig.height=6, fig.width=6}
-#Create Luminesce plot with stats
-plot_Lum_Stats <- ggplot(avg_data_Lum, aes(x = TimePoint, fill = Species)) +
-  geom_boxplot(aes(lower = AvgLum - SE, upper = AvgLum + SE, middle = AvgLum, ymin = mean_lwr, ymax = mean_upr), stat = "identity") +
+avg_data_Lum$Species <- factor(avg_data_Lum$Species, levels = c("Cpr", "Cps", "Cac", "Ctu", "Cgl"))
+
+# Create a bar plot of average normalized glycogen concentration over time for each species (used for legend)
+plot_avg_Lum <- ggplot(avg_data_Lum, aes(x = TimePoint, y = AvgLum, fill = Species)) +
+  geom_bar(position = position_dodge(), stat = "identity", color = "black") + # Add bars with dodge position
   labs(
     y = "Glycogen (ug/ml) per normalized culture density ",
     x = "Time (hours)"
   ) +
   scale_fill_manual(values = species_colors) +
-  scale_y_continuous(expand = c(0,0)) +
-  theme_classic() + 
-  theme(
-    legend.position = "none", # Remove the legend
-    plot.margin = margin(0.5, 0.5, 0.5, 0.5, "cm") # Adjust plot margins
-  )
-plot_Lum_Stats
-```
-
-```{r fig.height=6, fig.width=6}
-# Create a bar plot of average normalized glycogen concentration over time for each species
-plot_avg_Lum <- ggplot(avg_data_Lum, aes(x = TimePoint, y = AvgLum, fill = Species)) +
-  geom_bar(position = position_dodge(), stat = "identity", color = "black") + # Add bars with dodge position
-  geom_errorbar(aes(ymin = AvgLum, ymax = AvgLum + SE), position = position_dodge(width = 0.9), width = 0.2) + # Add error bars
-  labs(
-    y = "Glycogen (ug/ml) per normalized culture density ",
-    x = "Time (hours)"
-    ) +
-  scale_fill_manual(values = species_colors) +
   scale_y_continuous(expand = c(0,0), limits = c(0, 13)) +
   theme_classic() + 
   theme(
-    plot.margin = margin(0.5, 0.5, 0.5, 0.5, "cm") # Adjust plot margins
+    axis.title = element_text(size = 7),
+    legend.title = element_text(size = 8),
+    legend.text = element_text(size = 7, face = "italic"),
+    legend.key.size = unit(0.7,"line"),
+    plot.margin = margin(0.3, 0.2, 0.2, 0.5, "cm") # Adjust plot margins
   )
 plot_avg_Lum
 ```
@@ -329,10 +310,17 @@ plot_avg_Lum
 
 ```{r}
 # Combine the plots using ggarrange
-combined_plot <- ggarrange(as_ggplot(get_legend(plot_avg_Lum)),
+plot_legend <- as_ggplot(get_legend(plot_avg_Lum))
+
+plot_empty <-  ggplot() +
+  theme_void() +
+  theme(plot.background = element_rect(fill = "white", color = "white"))
+
+combined_plot <- ggarrange(plot_empty,
+                           ggarrange(plot_empty, plot_legend, plot_empty, ncol = 1, heights = c(0.5, 0.5, 0.5)),
                            plot_avg_OD600, 
                            plot_Lum, 
-                           ncol = 3, widths = c(0.1, 0.5, 0.5))
+                           ncol = 4, widths = c(0.02, 0.08, 0.5, 0.5), labels = c("","","A","B"), hjust = -1.5, vjust = 1.5)
 combined_plot
 ```
 
@@ -349,10 +337,10 @@ write.csv(df_OD, file.path(outputs_folder, "CorPGA_OD.csv"), row.names = FALSE)
 
 
 # Save the combined plot as a PNG file
-ggsave(file.path(outputs_folder, "CorPGA_GlycogenPlots.png"), combined_plot, width = 10, height = 6, dpi = 300)
+ggsave(file.path(outputs_folder, "CorPGA_GlycogenPlots.png"), combined_plot, width = 6, height = 3, dpi = 600)
 
 # Save the combined plot as a SVG file
-ggsave(file.path(outputs_folder, "CorPGA_GlycogenPlots.svg"), combined_plot, width = 10, height = 6, dpi = 300)
+ggsave(file.path(outputs_folder, "CorPGA_GlycogenPlots.svg"), combined_plot, width = 6, height = 3, dpi = 600)
 ```
 
 # References {.unnumbered}
