@@ -30,7 +30,6 @@ vignettes/*.pdf
 
 /data/Anvio8
 /data/other
-/data/glycogen
 /.quarto/
 _freeze/
 _notebooks/
