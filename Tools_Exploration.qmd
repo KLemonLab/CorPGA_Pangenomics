@@ -166,7 +166,7 @@ is_KO_present_in_all <- function(df, KO, species, num_genomes) {
   #return(result)
 }
 
-KO <- c("K00382")
+KO <- c("K05343")
 
 is_KO_present_in_all(KOHits, KO, "Cac", 33)
 is_KO_present_in_all(KOHits, KO, "Cpr", 19)
@@ -419,6 +419,8 @@ info_for_GC(Summary, output_path, "GC_00000017", "fpr")
 info_for_GC(Summary, output_path, "GC_00000013", "lipB") 
 info_for_GC(Summary, output_path, "GC_00000270", "lipA") 
 info_for_GC(Summary, output_path, "GC_00002064", "gcvH") 
+info_for_GC(Summary, output_path, "GC_00002034", "treS") 
+info_for_GC(Summary, output_path, "GC_00003208", "treS") 
 ```
 
 ```{r}
