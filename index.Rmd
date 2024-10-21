@@ -1,53 +1,45 @@
 ---
-title: "*Corynebacterium* species Pangenomics"
+title: "Metabolic capabilities are highly conserved among human nasal-associated *Corynebacterium* species in pangenomic analyses"
 subtitle: 'KLemonLab'
+author:
+  - Tommy H. Tran, Isabel F. Escapa, Ari Q. Roberts, Wei Gao, Abiola C. Obawemimo, Julia A. Segre, Heidi H. Kong, Sean Conlan, Matthew S. Kelly, Katherine P. Lemon.
 output:
   prettydoc::html_pretty:
     theme: cayman
 ---
 
-# Metabolic capabilities are highly conserved among human nasal-associated *Corynebacterium* species Supplemental Methods
-
-Link to bioRxiv: https://www.biorxiv.org/content/10.1101/2023.06.05.543719v1.full
+Published in mSystems <https://doi.org/10.1128/msystems.01132-24>
 
 Input data files provided [here](https://github.com/KLemonLab/CorPGA_Pangenomics/tree/main/data).
 
-## This repository includes:
+## Supplemental Methods:
 
-- Supplemental methods for program [installations](SupplementalMethods_Installations.html).
+-   Supplemental methods for program [installations](SupplementalMethods_Installations.html).
 
-- Supplemental methods for [Prokka annotations](SupplementalMethods_Prokka_Annotations.html) of 107 *Corynebacterium* strain genomes. 
+-   Supplemental methods for [Prokka annotations](SupplementalMethods_Prokka_Annotations.html) of 107 *Corynebacterium* strain genomes.
 
-- Supplemental methods of pangenome analyses performed with [GET_HOMOLOGUES, GET_PHYLOMARKERS and IQ-TREE2](SupplementalMethods_GET_HOMOLOGUES.html).
+-   Supplemental methods of pangenome analyses performed with [GET_HOMOLOGUES, GET_PHYLOMARKERS and IQ-TREE2](SupplementalMethods_GET_HOMOLOGUES.html).
 
-- Supplemental methods for the [anvi'o pangenomic and metabolic analysis](SupplementalMethods_Anvio.html).
+-   Supplemental methods for the [anvi'o pangenomic and metabolic analysis](SupplementalMethods_Anvio.html).
 
-- Supplemental methods of COG anvi'o annotated gene clusters assignments to the persistent or accessory genome with [PPanGGOLiN analysis](SupplementalMethods_PPanGGOLiN.html).
+-   Supplemental methods of COG anvi'o annotated gene clusters assignments to the persistent or accessory genome with [PPanGGOLiN analysis](SupplementalMethods_PPanGGOLiN.html).
 
-- Supplemental methods for COG functional analysis based on PPanGGOLiN partitions:
+-   Supplemental methods for COG functional analysis based on PPanGGOLiN partitions:
 
-    - [*Corynebacterium propinquum*](SupplementalMethods_COGS_Cpr.html)
+    -   [*Corynebacterium propinquum*](SupplementalMethods_COGS_Cpr.html)
 
-    - [*Corynebacterium pseudodiphtheriticum*](SupplementalMethods_COGS_Cps.html)
-    
-    - [*Corynebacterium accolens*](SupplementalMethods_COGS_Cac.html)
-    
-    - [*Corynebacterium tuberculostearicum*](SupplementalMethods_COGS_Ctu.html)
+    -   [*Corynebacterium pseudodiphtheriticum*](SupplementalMethods_COGS_Cps.html)
 
-- Supplemental methods for the [glycogen acumulation analysis](SupplementalMethods_Glycogen.html).
+    -   [*Corynebacterium accolens*](SupplementalMethods_COGS_Cac.html)
 
-<img src="images/klemonlab_photo.jpg" align="left" width="200" height="90"/>
+    -   [*Corynebacterium tuberculostearicum*](SupplementalMethods_COGS_Ctu.html)
 
-<img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="right" width="200" height="90"/>
+-   Supplemental methods for the [glycogen acumulation analysis](SupplementalMethods_Glycogen.html).
 
-<div>
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-  var links = document.getElementsByTagName("a");
-  for (var i = 0; i < links.length; i++) {
-    links[i].target = "_blank";
-    links[i].rel = "noopener noreferrer";
-  }
-});
-</script>
-</div>
+------------------------------------------------------------------------
+
+[![](images/klemonlab_photo.jpg){align="left" height="250"}](https://www.bcm.edu/research/faculty-labs/katherine-lemon-lab)
+
+<img src="images/Department-of-Molecular-Virology-&amp;-Microbiologyy-Horz-GRAY.png" align="left" height="250"/>
+
+
