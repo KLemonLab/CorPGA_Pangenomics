@@ -792,36 +792,42 @@ HMP <- read_excel("data/other/sys006182299st7.xlsx")
 ```
 
 ```{r}
-# Subset Coryne data
-HMP_4Corynes <- HMP %>% 
+# Subset data
+HMP_select <- HMP %>% 
   select(-Kingdom,-Phylum,-Class,-Order,-Family,-Genus,-Reads) %>% 
-  filter(grepl('accolens', `Species/Supraspecies`) | 
+  filter(grepl('pigrum', `Species/Supraspecies`) | 
+         grepl('aureus', `Species/Supraspecies`) |   
+         grepl('accolens', `Species/Supraspecies`) | 
          grepl('propinquum', `Species/Supraspecies`) | 
          grepl('pseudodiphtheriticum', `Species/Supraspecies`) |
          grepl('tuberculostearicum', `Species/Supraspecies`)) %>% 
   filter(!grepl(':', `Species/Supraspecies`)) # Remove this line if we want to keep the Supraspecies 
 
-HMP_4Corynes <- HMP_4Corynes %>% t %>% as.data.frame() %>% row_to_names(1)
-HMP_4Corynes <- HMP_4Corynes %>% mutate_if(is.character, as.numeric)
+HMP_select <- HMP_select %>% t %>% as.data.frame() %>% row_to_names(1)
+HMP_select <- HMP_select %>% mutate_if(is.character, as.numeric)
 ```
 
 ```{r}
-# Subset of the 4 Corynebacterium with >0 reads == TRUE
-HMP_4Corynes_reads <- HMP_4Corynes %>% 
+# Subset with >0 reads == TRUE
+HMP_select_reads <- HMP_select %>% 
+  mutate(Dpi = ifelse(pigrum > 0, TRUE, FALSE)) %>% 
+  mutate(Sau = ifelse(aureus > 0, TRUE, FALSE)) %>%   
   mutate(Cac = ifelse(accolens > 0, TRUE, FALSE)) %>% 
   mutate(Ctu = ifelse(tuberculostearicum > 0, TRUE, FALSE)) %>% 
   mutate(Cpr = ifelse(propinquum > 0, TRUE, FALSE)) %>% 
   mutate(Cps = ifelse(pseudodiphtheriticum > 0, TRUE, FALSE)) %>% 
-  select(c("Cac","Ctu","Cpr","Cps"))
+  select(c("Dpi","Sau","Cac","Ctu","Cpr","Cps"))
 ```
 
 ### Venn Diagram
 ```{r}
 sample_list <- list(
-  Cpr = row.names(HMP_4Corynes_reads %>% filter(Cpr == "TRUE")),
-  Cac = row.names(HMP_4Corynes_reads %>% filter(Cac == "TRUE")),
-  Ctu = row.names(HMP_4Corynes_reads %>% filter(Ctu == "TRUE")),
-  Cps = row.names(HMP_4Corynes_reads %>% filter(Cps == "TRUE")))
+  Dpi = row.names(HMP_select_reads %>% filter(Dpi == "TRUE")),
+  Sau = row.names(HMP_select_reads %>% filter(Sau == "TRUE")),
+  Cpr = row.names(HMP_select_reads %>% filter(Cpr == "TRUE")),
+  Cac = row.names(HMP_select_reads %>% filter(Cac == "TRUE")),
+  CtuCna = row.names(HMP_select_reads %>% filter(Ctu == "TRUE")),
+  Cps = row.names(HMP_select_reads %>% filter(Cps == "TRUE")))
 
 venn <- Venn(sample_list)
 data <- process_data(venn)
@@ -829,8 +835,13 @@ data <- process_data(venn)
 p <- ggVennDiagram(sample_list,
                    label = "percent",
                    label_percent_digit = 1,
+                   label_size = 4,
                    label_alpha = 0, 
-                   set_color = c("#FF8C00","#9400D3","#0000ff","#FF0000"))
+                   set_label_size = 20,
+                   set_color = c("pink","green","#FF8C00","#9400D3","#0000ff","#FF0000")
+                   #set_color = c("green","#FF8C00","#9400D3","#0000ff","#FF0000")
+                   #set_color = c("#FF8C00","#9400D3","#0000ff","#FF0000")
+)
 
 p + 
   #scale_fill_viridis_c(direction = -1, option = "C") +
@@ -839,14 +850,16 @@ p +
 
 ### All combinations of species
 ```{r}
+#HMP_select_reads <- HMP_select_reads %>% select(-Dpi)
+
 # Generate combinations
-combinations <- unlist(lapply(1:4, function(x) combn(names(HMP_4Corynes_reads), x, simplify = FALSE)), recursive = FALSE)
+combinations <- unlist(lapply(1:5, function(x) combn(names(HMP_select_reads), x, simplify = FALSE)), recursive = FALSE)
 combinations_mat <- do.call(rbind, combinations)
 ```
 
 ```{r}
 # Iterate over combinations and create new columns
-Table_combinations <- HMP_4Corynes_reads
+Table_combinations <- HMP_select_reads
 for (i in 1:length(combinations)) {
   new_col_name <- paste0("Count_",combinations[i])
   
@@ -865,8 +878,8 @@ kable(paste(names(Table_combinations_Sums), Table_combinations_Sums, sep = ":"),
 ### Samples with a given number of species
 
 ```{r}
-HMP_4Corynes_reads$Sum <- rowSums(Filter(is.logical, HMP_4Corynes_reads))
-Table_counts <- HMP_4Corynes_reads %>% 
+HMP_select_reads$Sum <- rowSums(Filter(is.logical, HMP_select_reads))
+Table_counts <- HMP_select_reads %>% 
   dplyr::count(Sum, sort = FALSE)
 Table_counts$Freq <- round((Table_counts$n/sum(Table_counts$n))*100,2)
 kable(Table_counts)
