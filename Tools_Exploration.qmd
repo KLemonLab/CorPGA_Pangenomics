@@ -822,12 +822,13 @@ HMP_select_reads <- HMP_select %>%
 ### Venn Diagram
 ```{r}
 sample_list <- list(
-  Dpi = row.names(HMP_select_reads %>% filter(Dpi == "TRUE")),
-  Sau = row.names(HMP_select_reads %>% filter(Sau == "TRUE")),
+  #Dpi = row.names(HMP_select_reads %>% filter(Dpi == "TRUE")),
+  #Sau = row.names(HMP_select_reads %>% filter(Sau == "TRUE")),
   Cpr = row.names(HMP_select_reads %>% filter(Cpr == "TRUE")),
   Cac = row.names(HMP_select_reads %>% filter(Cac == "TRUE")),
-  CtuCna = row.names(HMP_select_reads %>% filter(Ctu == "TRUE")),
-  Cps = row.names(HMP_select_reads %>% filter(Cps == "TRUE")))
+  `Ctu/Cna` = row.names(HMP_select_reads %>% filter(Ctu == "TRUE")),
+  Cps = row.names(HMP_select_reads %>% filter(Cps == "TRUE"))
+  )
 
 venn <- Venn(sample_list)
 data <- process_data(venn)
@@ -835,17 +836,21 @@ data <- process_data(venn)
 p <- ggVennDiagram(sample_list,
                    label = "percent",
                    label_percent_digit = 1,
-                   label_size = 4,
+                   label_size = 11,
                    label_alpha = 0, 
-                   set_label_size = 20,
-                   set_color = c("pink","green","#FF8C00","#9400D3","#0000ff","#FF0000")
+                   set_size = 13,
+                   #set_color = c("pink","green","#FF8C00","#9400D3","#0000ff","#FF0000")
                    #set_color = c("green","#FF8C00","#9400D3","#0000ff","#FF0000")
-                   #set_color = c("#FF8C00","#9400D3","#0000ff","#FF0000")
+                   set_color = c("#FF8C00","#9400D3","#0000ff","#FF0000")
+                   #set_color = c("pink","green","#9400D3","#0000ff")
 )
 
-p + 
+p <- p + 
   #scale_fill_viridis_c(direction = -1, option = "C") +
-  scale_fill_gradientn(colours = c("white", "grey40")) 
+  scale_fill_gradientn(colours = c("white", "grey40")) +
+  theme(legend.position = "none")
+
+ggsave(plot = p, filename = "data/other/venn_HMP.svg", width = 8, height = 6, dpi = 300)
 ```
 
 ### All combinations of species
